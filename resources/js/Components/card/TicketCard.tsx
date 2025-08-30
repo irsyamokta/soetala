@@ -27,7 +27,7 @@ const TicketCard = ({ title, price, description, otsPrice, href }: TicketCardPro
                     {description.map((d: string, i: number) => (
                         <p key={i} className="paragraph mb-4">{d}</p>
                     ))}
-                    <p className="paragraph mt-10">Harga OTS {otsPrice}</p>
+                    <p className="paragraph mt-10">{t("ots_price")} {otsPrice}</p>
                 </div>
                 <Link
                     href={href}

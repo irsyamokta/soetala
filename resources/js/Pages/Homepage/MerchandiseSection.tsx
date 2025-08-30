@@ -1,23 +1,26 @@
-import { useState } from "react";
-import { useForm } from "@inertiajs/react";
+import { useState, useEffect } from "react";
+import { useForm, usePage } from "@inertiajs/react";
 import { LuMinus, LuPlus } from "react-icons/lu";
 
 import merch1 from "../../../assets/images/image-merch-2.png";
 import merch2 from "../../../assets/images/image-merch-3.png";
 import merch3 from "../../../assets/images/image-merch-4.png";
 import merch4 from "../../../assets/images/image-merch-5.png";
+
 import useTranslate from "@/hooks/useTranslate";
+import useApiTranslate from "@/hooks/useApiTranslate";
 import Button from "@/Components/ui/button/Button";
 import Input from "@/Components/form/input/InputField";
 
-
-export default function MerchandiseSection() {
+function MerchandiseSection() {
     const [quantity, setQuantity] = useState(2);
     const [color, setColor] = useState("white");
     const [size, setSize] = useState("M");
     const [mainImage, setMainImage] = useState(merch1);
 
     const t = useTranslate();
+    const { locale }: any = usePage().props;
+    const { translate } = useApiTranslate();
 
     const price = 150000;
     const subtotal = price * quantity;
@@ -29,17 +32,34 @@ export default function MerchandiseSection() {
         quantity: quantity,
     });
 
-    // const handleSubmit = () => {
-    //     post(route("merchandise.order"), {
-    //         data: { ...data, color, size, quantity },
-    //     });
-    // };
+    const baseMerch = {
+        title: "Official Soetala Merchandise",
+        desc: "Kaos resmi Soetala ini terbuat dari bahan katun berkualitas tinggi, nyaman dipakai, dan memiliki desain eksklusif yang hanya tersedia untuk pengunjung Soetala. Tampilkan gayamu sekaligus abadikan momen berkesanmu!",
+    };
+
+    const [merch, setMerch] = useState(baseMerch);
+
+    useEffect(() => {
+        const doTranslate = async () => {
+            if (locale === "en") {
+                const translated = {
+                    ...baseMerch,
+                    title: await translate(baseMerch.title, "en"),
+                    desc: await translate(baseMerch.desc, "en"),
+                };
+                setMerch(translated);
+            } else {
+                setMerch(baseMerch);
+            }
+        };
+        doTranslate();
+    }, [locale]);
 
     return (
         <section className="bg-primary text-white py-16 px-4 lg:px-20">
             {/* Header */}
-            <div className="text-centr mb-16 md:mb-24">
-                <h2 className="heading text-center">{t("merch.heading")}</h2>
+            <div className="text-center mb-16 md:mb-24">
+                <h2 className="heading">{t("merch.heading")}</h2>
                 <p className="subheading">
                     {t("merch.subheading").split("\n").map((line, i) => (
                         <span key={i}>
@@ -52,7 +72,7 @@ export default function MerchandiseSection() {
 
             {/* Content */}
             <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8">
-                 {/* Left - Product Image */}
+                {/* Left - Product Image */}
                 <div className="flex flex-col lg:flex-row gap-4">
                     <img
                         src={mainImage}
@@ -77,16 +97,15 @@ export default function MerchandiseSection() {
                 {/* Right - Details */}
                 <div className="lg:w-1/2">
                     <h2 className="text-2xl font-semibold mb-4">
-                        Official Soetala Merchandise
+                        {merch.title}
                     </h2>
                     <p className="text-sm mb-4 leading-relaxed">
-                        Kaos resmi Soetala ini terbuat dari bahan katun berkualitas tinggi,
-                        nyaman dipakai, dan memiliki desain eksklusif yang hanya tersedia
-                        untuk pengunjung Soetala. Tampilkan gayamu sekaligus abadikan
-                        momen berkesanmu!
+                        {merch.desc}
                     </p>
 
-                    <p className="text-2xl lg:text-4xl font-semibold mb-10">Rp{price.toLocaleString("id-ID")}</p>
+                    <p className="text-2xl lg:text-4xl font-semibold mb-10">
+                        Rp{price.toLocaleString("id-ID")}
+                    </p>
 
                     <div className="flex flex-col md:flex-row lg:justify-between gap-4 md:gap-10 mb-4 md:mb-8">
                         {/* Color */}
@@ -153,14 +172,18 @@ export default function MerchandiseSection() {
                                 >
                                     <LuPlus size={16} />
                                 </button>
-                                <span className="text-[#FFFB00] text-sm font-semibold">{t("merch.stock")}: {t("merch.reminder")} 8</span>
+                                <span className="text-[#FFFB00] text-sm font-semibold">
+                                    {t("merch.stock")}: {t("merch.reminder")} 8
+                                </span>
                             </div>
                         </div>
 
                         {/* Subtotal */}
                         <div>
                             <p className="text-sm text-gray-200 mb-4">Subtotal</p>
-                            <p className="text-3xl font-semibold">Rp{subtotal.toLocaleString("id-ID")}</p>
+                            <p className="text-3xl font-semibold">
+                                Rp{subtotal.toLocaleString("id-ID")}
+                            </p>
                         </div>
                     </div>
 
@@ -178,3 +201,5 @@ export default function MerchandiseSection() {
         </section>
     );
 }
+
+export default MerchandiseSection;

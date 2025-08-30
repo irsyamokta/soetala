@@ -38,6 +38,7 @@ class AppServiceProvider extends ServiceProvider
                 'transactions' => __('transactions'),
                 'logout' => __('logout'),
                 'buy_ticket' => __('buy_ticket'),
+                'ots_price' => __('ots_price'),
 
                 'cancel' => __('cancel'),
                 'save' => __('save'),

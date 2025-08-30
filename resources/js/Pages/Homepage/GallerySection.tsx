@@ -1,6 +1,8 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
+import { usePage } from "@inertiajs/react";
 import type { Swiper as SwiperType } from "swiper";
 import useTranslate from "@/hooks/useTranslate";
+import useApiTranslate from "@/hooks/useApiTranslate";
 import { PhotoProvider, PhotoView } from 'react-photo-view';
 import 'react-photo-view/dist/react-photo-view.css';
 import { Swiper, SwiperSlide } from "swiper/react";
@@ -19,24 +21,77 @@ import Painting7 from "../../../assets/images/image-about-3.png";
 
 function GallerySection() {
     const t = useTranslate();
+    const { locale }: any = usePage().props;
+    const { translate } = useApiTranslate();
 
-    const paintings = [
+    const basePaintings = [
         {
             title: "Judul Karya Lukisan",
-            desc: "Melalui pameran ini, kami ingin mengajak generasi muda untuk lebih dekat mengenal nilai patriotisme, keberanian, dan keteguhan hati Jenderal Soedirman. Seni tidak hanya menjadi saksi bisu sejarah, tapi juga menjembatani pesan perjuangan agar tetap hidup di hati kita semua.",
+            desc: "Dalam pameran ini, kami berusaha mengajak anak muda agar semakin akrab mengenal arti patriotisme, keberanian, serta keteguhan Jenderal Soedirman. Karya seni bukan sekadar saksi sejarah, melainkan jembatan pesan perjuangan agar terus bersemayam di hati kita bersama.",
             painter: "Nama Pelukis",
             image: Painting1,
         },
-        { title: "Mona Lisa", desc: "Melalui pameran ini, kami ingin mengajak generasi muda untuk lebih dekat mengenal nilai patriotisme, keberanian, dan keteguhan hati Jenderal Soedirman. Seni tidak hanya menjadi saksi bisu sejarah, tapi juga menjembatani pesan perjuangan agar tetap hidup di hati kita semua.", painter: "Leonardo da Vinci", image: Painting2 },
-        { title: "Scene Kerakyatan", desc: "Melalui pameran ini, kami ingin mengajak generasi muda untuk lebih dekat mengenal nilai patriotisme, keberanian, dan keteguhan hati Jenderal Soedirman. Seni tidak hanya menjadi saksi bisu sejarah, tapi juga menjembatani pesan perjuangan agar tetap hidup di hati kita semua.", painter: "Pelukis Nusantara", image: Painting3 },
-        { title: "Detail Tangan", desc: "Melalui pameran ini, kami ingin mengajak generasi muda untuk lebih dekat mengenal nilai patriotisme, keberanian, dan keteguhan hati Jenderal Soedirman. Seni tidak hanya menjadi saksi bisu sejarah, tapi juga menjembatani pesan perjuangan agar tetap hidup di hati kita semua.", painter: "Pelukis Lokal", image: Painting4 },
-        { title: "Detail Tangan", desc: "Melalui pameran ini, kami ingin mengajak generasi muda untuk lebih dekat mengenal nilai patriotisme, keberanian, dan keteguhan hati Jenderal Soedirman. Seni tidak hanya menjadi saksi bisu sejarah, tapi juga menjembatani pesan perjuangan agar tetap hidup di hati kita semua.", painter: "Pelukis Lokal", image: Painting5 },
-        { title: "Detail Tangan", desc: "Melalui pameran ini, kami ingin mengajak generasi muda untuk lebih dekat mengenal nilai patriotisme, keberanian, dan keteguhan hati Jenderal Soedirman. Seni tidak hanya menjadi saksi bisu sejarah, tapi juga menjembatani pesan perjuangan agar tetap hidup di hati kita semua.", painter: "Pelukis Lokal", image: Painting6 },
-        { title: "Detail Tangan", desc: "Melalui pameran ini, kami ingin mengajak generasi muda untuk lebih dekat mengenal nilai patriotisme, keberanian, dan keteguhan hati Jenderal Soedirman. Seni tidak hanya menjadi saksi bisu sejarah, tapi juga menjembatani pesan perjuangan agar tetap hidup di hati kita semua.", painter: "Pelukis Lokal", image: Painting7 },
+        {
+            title: "Mona Lisa",
+            desc: "Lewat pameran ini, generasi muda kami ajak untuk lebih memahami makna patriotisme, keberanian, dan semangat teguh Jenderal Soedirman. Seni tidak semata menjadi saksi sejarah, namun juga penghubung pesan perjuangan supaya senantiasa hidup di lubuk hati setiap insan bangsa.",
+            painter: "Leonardo da Vinci",
+            image: Painting2,
+        },
+        {
+            title: "Scene Kerakyatan",
+            desc: "Pameran ini menjadi sarana mengajak generasi penerus agar mendekatkan diri dengan nilai patriotisme, keberanian, serta tekad Jenderal Soedirman. Seni berperan bukan hanya saksi perjalanan sejarah, melainkan penghubung pesan perjuangan supaya tetap abadi dalam ingatan bersama.",
+            painter: "Pelukis Nusantara",
+            image: Painting3,
+        },
+        {
+            title: "Detail Tangan",
+            desc: "Melalui kegiatan pameran ini, harapan kami ialah membawa generasi muda mengenal lebih jauh arti patriotisme, keberanian, dan keteguhan Jenderal Soedirman. Seni hadir bukan cuma saksi sejarah, melainkan juga perantara pesan perjuangan agar tetap hidup di hati bangsa kita semua.",
+            painter: "Pelukis Lokal",
+            image: Painting4,
+        },
+        {
+            title: "Detail Tangan",
+            desc: "Pameran ini kami sajikan untuk mengajak generasi muda mengenal lebih dekat nilai patriotisme, keberanian, serta keteguhan Jenderal Soedirman. Seni berfungsi tidak hanya menjadi saksi sejarah, tetapi juga perantara pesan perjuangan supaya senantiasa hidup dalam hati rakyat semua.",
+            painter: "Pelukis Lokal",
+            image: Painting5,
+        },
+        {
+            title: "Detail Tangan",
+            desc: "Melalui pameran seni ini, tujuan kami adalah mendorong generasi muda agar lebih mengenal nilai patriotisme, keberanian, dan keteguhan Jenderal Soedirman. Karya seni bukan hanya saksi sejarah, melainkan juga penghubung pesan perjuangan supaya terus hidup dalam hati seluruh bangsa.",
+            painter: "Pelukis Lokal",
+            image: Painting6,
+        },
+        {
+            title: "Detail Tangan",
+            desc: "Acara pameran ini hadir untuk mengajak generasi muda lebih mengenal nilai patriotisme, keberanian, serta keteguhan hati Jenderal Soedirman. Seni memiliki peran tidak hanya sebagai saksi sejarah, namun juga perantara pesan perjuangan agar tetap hidup dalam jiwa masyarakat luas.",
+            painter: "Pelukis Lokal",
+            image: Painting7,
+        },
     ];
 
+
     const [activeIndex, setActiveIndex] = useState(0);
+    const [paintings, setPaintings] = useState(basePaintings);
+
     const thumbsSwiperRef = useRef<SwiperType | null>(null);
+
+    useEffect(() => {
+        const doTranslate = async () => {
+            if (locale === "en") {
+                const translated = await Promise.all(
+                    basePaintings.map(async (p) => ({
+                        ...p,
+                        title: await translate(p.title, "en"),
+                        desc: await translate(p.desc, "en"),
+                    }))
+                );
+                setPaintings(translated);
+            } else {
+                setPaintings(basePaintings);
+            }
+        };
+        doTranslate();
+    }, [locale]);
 
     const goTo = (next: number) => {
         setActiveIndex(next);
