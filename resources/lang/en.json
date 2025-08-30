@@ -1,0 +1,103 @@
+{
+    "login": "LOGIN",
+    "forgot-password": "Forgot password?",
+    "dont-have-account": "Don't have an account?",
+    "have-account": "Have an account?",
+    "register": "REGISTER",
+    "home": "Home",
+    "profile": "Profile",
+    "tickets": "Tickets",
+    "transactions": "Transactions",
+    "logout": "Logout",
+    "buy_ticket": "BUY TICKET",
+
+    "cancel": "Cancel",
+    "save": "Save",
+    "delete": "Delete",
+
+    "male": "Male",
+    "female": "Female",
+
+    "name-label": "Full Name",
+    "phone-label": "Phone Number",
+    "gender-label": "Gender",
+    "password-label": "Password",
+    "newpassword-label": "New Password",
+    "confirmpassword-label": "Confirm Password",
+
+    "name-placeholder": "Enter your full name",
+    "phone-placeholder": "Enter your phone number",
+    "gender-placeholder": "Select your gender",
+    "email-placeholder": "Enter your email address",
+    "password-placeholder": "Enter your password",
+    "newpassword-placeholder": "Enter your new password",
+    "confirmpassword-placeholder": "Confirm your password",
+
+    "quote-1": "If the power of birth is less powerful, then there is no way to win except by relying on inner strength.",
+    "quote-2": "Freedom means being free to do all good, not being free to commit all evil without being judged.",
+
+    "about": "About",
+    "exhi": "exhi",
+    "bition": "bition",
+    "about-1": "This exhibition presents the life and struggles of General Sudirman through meaningful works of art. From his youth as a humble yet dignified commander, to his guerrilla struggle amidst illness to defend the nation's independence, each painting invites us to trace his footsteps. Behind every stroke of color lies a fighting spirit, courage, and a timeless example.",
+    "about-2": "Through this exhibition, we want to invite the younger generation to learn more about General Sudirman's values ​​of patriotism, courage, and fortitude. Art not only serves as a silent witness to history, but also bridges the message of struggle so that it lives on in all our hearts. May his spirit continue to inspire, ignite hope, and serve as a reminder that love for one's country is always relevant today and in the future.",
+
+    "gallery.heading": "Gallery",
+    "gallery.subheading": "Enjoy an exclusive selection of paintings by talented painters. Each work \ntells its own story and enriches your experience at Soetala.",
+    "gallery.email-1": "Like this work? Email us directly at ",
+    "gallery.email-2": "get more information!",
+
+    "ticket.heading": "Buy Ticket",
+    "ticket.subheading": "An electronic version of your ticket will be sent to \nyou via the email address provided.",
+
+    "merch.heading": "Merchandise",
+    "merch.subheading": "Each Soetala t-shirt is custom-made to capture the moments \nof your visit. Comfortable, stylish, and of course, exclusive!",
+    "merch.button": "BUY NOW",
+
+    "merch.color": "Choose Color",
+    "merch.size": "Choose Size",
+    "merch.quantity": "Quantity",
+    "merch.note": "Notes",
+    "merch.stock": "Stock",
+    "merch.reminder": "Remaining",
+
+    "footer.initiator": "Initiator",
+    "footer.contact": "Contact",
+    "footer.location": "Location",
+    "footer.copyright": "Copyright Protected by Telkom University Purwokerto.",
+
+    "emailverify.description": "Thank you for signing up! Before you begin, please verify your email address by clicking the link we just sent you. If you haven't received the email, click the button below to resend it.",
+    "emailverify.status": "A new verification link has been sent to the email address you registered.",
+    "emailverify.button": "Resend Verification Code",
+
+    "forgotpassword.description": "Forgot your password? Enter your email address and we'll send you a password reset link to create a new one.",
+    "forgotpassword.button": "Send Password Reset Link",
+
+    "resetpassword.description": "Enter your new password below to replace your old password.",
+    "resetpassword.button": "Save New Password",
+
+    "profile.edit": "Edit Profile",
+    "profile.title": "Profile",
+    "profile.information": "Profile Information",
+    "profile.photo": "Profile Photo",
+    "profile.name": "Full Name",
+    "profile.email": "Email",
+    "profile.phone": "Phone Number",
+
+    "profile.changepassword": "Change Password",
+    "changepassword.description": "Reset your account password for security.",
+    "changepassword.button": "Change",
+
+    "oldpassword.label": "Old Password",
+    "newpassword.label": "New Password",
+    "confirmpassword.label": "Confirm Password",
+
+    "oldpassword.placeholder": "Enter your old password",
+    "newpassword.placeholder": "Enter your new password",
+    "confirmpassword.placeholder": "Confirm your new password",
+
+    "profile.deleteaccount": "Delete Account",
+    "deleteaccount.description": "Once you delete your account, there is no going back. Please be certain.",
+    "deleteaccount.button": "Delete Account",
+    "deleteaccount.warning": "This action cannot be undone. Please make sure you are absolutely sure."
+}
