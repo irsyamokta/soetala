@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('dioramas', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('thumbnail')->nullable();
+            $table->string('public_id')->nullable();
             $table->string('title');
             $table->text('description')->nullable();
             $table->string('author')->nullable();
