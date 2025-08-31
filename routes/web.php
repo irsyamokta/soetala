@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\TicketController;
 
 // Localization
 Route::get('/locale/{lang}', function ($lang) {
@@ -33,11 +34,17 @@ Route::get('/', function () {
 
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])
-    ->prefix('/dashboard')
     ->group(function () {
-        Route::get('/', function () {
+        Route::get('/dashboard', function () {
             return Inertia::render('Admin/Dashboard');
         })->name('dashboard.admin');
+
+        Route::group(['prefix' => 'ticket'], function () {
+            Route::get('/', [TicketController::class, 'index'])->name('dashboard.ticket');
+            Route::post('/create', [TicketController::class, 'store'])->name('ticket.store');
+            Route::patch('/update/{id}', [TicketController::class, 'update'])->name('ticket.update');
+            Route::delete('/delete/{id}', [TicketController::class, 'destroy'])->name('ticket.destroy');
+        });
     });
 
 // Profile Routes

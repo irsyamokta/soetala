@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 /**
  * @property string $id
  * @property string|null $thumbnail
+ * @property string|null $public_id
  * @property string $category
  * @property string|null $description
  * @property string|null $location
@@ -19,7 +20,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
  * @property string|null $end_time
  * @property float $online_price
  * @property float $offline_price
- * @property string|null $requirement
+ * @property array $requirement
  * @property bool $visibility
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -34,6 +35,7 @@ class Ticket extends Model
 
     protected $fillable = [
         'thumbnail',
+        'public_id',
         'category',
         'description',
         'location',
@@ -55,6 +57,7 @@ class Ticket extends Model
         'start_time' => 'string',
         'end_time' => 'string',
         'visibility' => 'boolean',
+        'requirement' => 'array',
     ];
 
     public function ticketOrders()
