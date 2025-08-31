@@ -75,4 +75,43 @@ class ValidationHelper
             ]
         );
     }
+
+    public static function diorama($data, $isUpdate = false)
+    {
+        $rules = [
+            'title' => 'required|string|max:255',
+            'description' => 'required|string|min:265|max:265',
+            'author' => 'required|string|max:255',
+            'visibility' => 'required|boolean',
+        ];
+
+        $rules['thumbnail'] = $isUpdate
+            ? 'nullable|image|mimes:jpeg,png,jpg|max:2048'
+            : 'required|image|mimes:jpeg,png,jpg|max:2048';
+
+        return Validator::make(
+            $data,
+            $rules,
+            [
+                'thumbnail.required' => 'Thumbnail wajib diisi.',
+                'thumbnail.image' => 'Thumbnail harus berupa gambar.',
+                'thumbnail.mimes' => 'Thumbnail hanya boleh berformat jpeg, png, atau jpg.',
+                'thumbnail.max' => 'Ukuran thumbnail maksimal 2MB.',
+
+                'title.required' => 'Kategori wajib diisi.',
+                'title.max' => 'Kategori maksimal 255 karakter.',
+
+                'description.required' => 'Deskripsi wajib diisi.',
+                'description.string' => 'Deskripsi harus berupa teks.',
+                'description.min' => 'Deskripsi minimal 265 karakter.',
+                'description.max' => 'Deskripsi maksimal 265 karakter.',
+
+                'author.required' => 'Penulis wajib diisi.',
+                'author.max' => 'Penulis maksimal 255 karakter.',
+
+                'visibility.required' => 'Visibility wajib diisi.',
+                'visibility.boolean' => 'Visibility harus berupa true atau false.',
+            ]
+        );
+    }
 }

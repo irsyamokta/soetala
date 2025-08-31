@@ -1,7 +1,6 @@
 import { useState, useCallback } from "react";
 import { router, usePage } from "@inertiajs/react";
 import { toast } from "react-toastify";
-import DOMPurify from "dompurify";
 
 import { ModalTicket } from "@/Pages/Admin/Components/modal/ModalTicket";
 import Button from "@/Components/ui/button/Button";
