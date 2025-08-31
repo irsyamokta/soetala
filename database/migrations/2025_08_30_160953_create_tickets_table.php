@@ -14,6 +14,7 @@ return new class extends Migration
         Schema::create('tickets', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->string('thumbnail')->nullable();
+            $table->string('public_id')->nullable();
             $table->string('category');
             $table->text('description')->nullable();
             $table->string('location')->nullable();
@@ -23,7 +24,7 @@ return new class extends Migration
             $table->time('end_time')->nullable();
             $table->decimal('online_price', 12, 2)->default(0);
             $table->decimal('offline_price', 12, 2)->default(0);
-            $table->text('requirement')->nullable();
+            $table->json('requirement')->nullable();
             $table->boolean('visibility')->default(true);
             $table->timestamps();
         });
