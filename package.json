@@ -22,6 +22,7 @@
         "apexcharts": "^4.1.0",
         "axios": "^1.11.0",
         "date-fns": "^4.1.0",
+        "dompurify": "^3.2.6",
         "flatpickr": "^4.6.13",
         "quill": "^2.0.3",
         "react": "^19.1.0",
