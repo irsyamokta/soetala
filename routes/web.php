@@ -5,6 +5,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\TicketController;
+use App\Http\Controllers\DioramaController;
 
 // Localization
 Route::get('/locale/{lang}', function ($lang) {
@@ -44,6 +45,13 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             Route::post('/create', [TicketController::class, 'store'])->name('ticket.store');
             Route::patch('/update/{id}', [TicketController::class, 'update'])->name('ticket.update');
             Route::delete('/delete/{id}', [TicketController::class, 'destroy'])->name('ticket.destroy');
+        });
+
+        Route::group(['prefix' => 'diorama'], function () {
+            Route::get('/', [DioramaController::class, 'index'])->name('dashboard.diorama');
+            Route::post('/create', [DioramaController::class, 'store'])->name('diorama.store');
+            Route::patch('/update/{id}', [DioramaController::class, 'update'])->name('diorama.update');
+            Route::delete('/delete/{id}', [DioramaController::class, 'destroy'])->name('diorama.destroy');
         });
     });
 

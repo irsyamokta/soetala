@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 /**
  * @property string $id
  * @property string|null $thumbnail
+ * @property string|null $public_id
  * @property string $title
  * @property string|null $description
  * @property string|null $author
@@ -26,6 +27,7 @@ class Diorama extends Model
 
     protected $fillable = [
         'thumbnail',
+        'public_id',
         'title',
         'description',
         'author',
