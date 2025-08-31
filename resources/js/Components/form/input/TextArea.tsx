@@ -4,11 +4,12 @@ interface TextareaProps {
     placeholder?: string;
     rows?: number;
     value?: string;
-    onChange?: ChangeEventHandler<HTMLTextAreaElement>; // Menerima event handler untuk onChange
+    onChange?: ChangeEventHandler<HTMLTextAreaElement>;
     className?: string;
     disabled?: boolean;
     error?: boolean;
     hint?: string;
+    maxLength?: number;
 }
 
 const TextArea: React.FC<TextareaProps> = ({
@@ -20,10 +21,14 @@ const TextArea: React.FC<TextareaProps> = ({
     disabled = false,
     error = false,
     hint = "",
+    maxLength = 255,
 }) => {
     const handleChange = (e: React.ChangeEvent<HTMLTextAreaElement>) => {
         if (onChange) {
-            onChange(e); // Menyampaikan event ke onChange
+            // Batasi agar tidak lebih dari maxLength
+            if (e.target.value.length <= maxLength) {
+                onChange(e);
+            }
         }
     };
 
@@ -43,17 +48,27 @@ const TextArea: React.FC<TextareaProps> = ({
                 placeholder={placeholder}
                 rows={rows}
                 value={value}
-                onChange={handleChange} // Menggunakan handleChange untuk meneruskan event
+                onChange={handleChange}
                 disabled={disabled}
                 className={textareaClasses}
             />
-            {hint && (
+            {/* Counter */}
+            <div className="mt-1 flex justify-between text-xs">
+                {hint && (
+                    <p className={`${error ? "text-error-500" : "text-error-500"}`}>
+                        {hint}
+                    </p>
+                )}
                 <p
-                    className={`mt-2 text-sm ${error ? "text-error-500" : "text-gray-500 dark:text-gray-400"}`}
+                    className={`ml-auto ${
+                        value.length >= maxLength
+                            ? "text-success-500 font-medium"
+                            : "text-gray-500 dark:text-gray-400"
+                    }`}
                 >
-                    {hint}
+                    {value.length}/{maxLength}
                 </p>
-            )}
+            </div>
         </div>
     );
 };
