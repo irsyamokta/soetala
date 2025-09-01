@@ -91,6 +91,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                 reset();
                 setImageFile(null);
             }
+            setServerErrors({});
         } else {
             reset();
             setImageFile(null);
@@ -158,7 +159,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                 <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                     {/* Thumbnail */}
                     <div>
-                        <Label>Thumbnail</Label>
+                        <Label required={true}>Thumbnail</Label>
                         <input
                             type="file"
                             accept="image/*"
@@ -174,7 +175,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
 
                     {/* Category */}
                     <div>
-                        <Label>Kategori</Label>
+                        <Label required={true}>Kategori</Label>
                         <Select
                             value={data.category}
                             onChange={(value) => setData("category", value)}
@@ -188,7 +189,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
 
                     {/* Description */}
                     <div>
-                        <Label>Deskripsi</Label>
+                        <Label required={true}>Deskripsi</Label>
                         <RichTextEditor
                             value={data.description}
                             onChange={(value: string) => setData("description", value)}
@@ -198,7 +199,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
 
                     {/* Location */}
                     <div>
-                        <Label>Lokasi</Label>
+                        <Label required={true}>Lokasi</Label>
                         <Input
                             value={data.location}
                             onChange={(e) => setData("location", e.target.value)}
@@ -210,7 +211,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                     {/* Date */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <Label>Tanggal Mulai</Label>
+                            <Label required={true}>Tanggal Mulai</Label>
                             <Input
                                 type="date"
                                 value={data.start_date}
@@ -219,7 +220,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                             {serverErrors.start_date && <p className="text-xs text-red-500 mt-1">{serverErrors.start_date}</p>}
                         </div>
                         <div>
-                            <Label>Tanggal Selesai</Label>
+                            <Label required={true}>Tanggal Selesai</Label>
                             <Input
                                 type="date"
                                 value={data.end_date}
@@ -232,7 +233,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                     {/* Time */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <Label>Jam Mulai</Label>
+                            <Label required={true}>Jam Mulai</Label>
                             <Input
                                 type="time"
                                 value={data.start_time}
@@ -241,7 +242,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                             {serverErrors.start_time && <p className="text-xs text-red-500 mt-1">{serverErrors.start_time}</p>}
                         </div>
                         <div>
-                            <Label>Jam Selesai</Label>
+                            <Label required={true}>Jam Selesai</Label>
                             <Input
                                 type="time"
                                 value={data.end_time}
@@ -254,7 +255,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                     {/* Price */}
                     <div className="grid grid-cols-2 gap-4">
                         <div>
-                            <Label>Harga Online</Label>
+                            <Label required={true}>Harga Online</Label>
                             <CurrencyInput
                                 value={data.online_price}
                                 onChange={(val) => setData("online_price", val)}
@@ -262,7 +263,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                             {serverErrors.online_price && <p className="text-xs text-red-500 mt-1">{serverErrors.online_price}</p>}
                         </div>
                         <div>
-                            <Label>Harga Offline</Label>
+                            <Label required={true}>Harga Offline</Label>
                             <CurrencyInput
                                 value={data.offline_price}
                                 onChange={(val) => setData("offline_price", val)}
@@ -273,7 +274,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
 
                     {/* Requirement */}
                     <div>
-                        <Label>Syarat</Label>
+                        <Label required={true}>Syarat</Label>
                         <MultiSelect
                             label=""
                             options={optionRequirement}
@@ -285,7 +286,7 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
 
                     {/* Visibility */}
                     <div>
-                        <Label>Visibility</Label>
+                        <Label required={true}>Visibility</Label>
                         <Select
                             value={data.visibility ? "1" : "0"}
                             onChange={(value) => setData("visibility", value === "1")}

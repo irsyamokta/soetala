@@ -8,7 +8,7 @@ export const navConfig: Record<string, any[]> = {
         { icon: <LuLayoutDashboard />, name: "Dashboard", path: "/dashboard" },
         { icon: <LuTicket />, name: "Tiket", path: "/ticket" },
         { icon: <IoImageOutline />, name: "Diorama", path: "/diorama" },
-        { icon: <MdOutlineProductionQuantityLimits />, name: "Merchandise", path: "/dashboard/merchandise" },
+        { icon: <MdOutlineProductionQuantityLimits />, name: "Merchandise", path: "/merchandise" },
         { icon: <GrTransaction />, name: "Transaksi", path: "/transaction" },
         { icon: <LuUserRound />, name: "User", path: "/user" },
     ],

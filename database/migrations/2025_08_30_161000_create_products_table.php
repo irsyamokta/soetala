@@ -20,6 +20,8 @@ return new class extends Migration
         Schema::create('products', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('category_id')->nullable();
+            $table->string('thumbnail')->nullable();
+            $table->string('public_id')->nullable();
             $table->string('product_name');
             $table->text('description')->nullable();
             $table->decimal('price', 12, 2)->default(0);
@@ -33,6 +35,8 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('product_id');
             $table->string('image');
+            $table->string('public_id');
+            $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });
@@ -43,6 +47,7 @@ return new class extends Migration
             $table->string('size')->nullable();
             $table->string('color')->nullable();
             $table->integer('stock')->default(0);
+            $table->timestamps();
 
             $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
         });

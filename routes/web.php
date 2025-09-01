@@ -6,6 +6,7 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DioramaController;
+use App\Http\Controllers\ProductController;
 
 // Localization
 Route::get('/locale/{lang}', function ($lang) {
@@ -52,6 +53,14 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             Route::post('/create', [DioramaController::class, 'store'])->name('diorama.store');
             Route::patch('/update/{id}', [DioramaController::class, 'update'])->name('diorama.update');
             Route::delete('/delete/{id}', [DioramaController::class, 'destroy'])->name('diorama.destroy');
+        });
+
+        Route::group(['prefix' => 'merchandise'], function () {
+            Route::get('/', [ProductController::class, 'index'])->name('dashboard.merchandise');
+            Route::post('/create', [ProductController::class, 'store'])->name('merchandise.store');
+            Route::patch('/update/{id}', [ProductController::class, 'update'])->name('merchandise.update');
+            Route::delete('/images/{id}', [ProductController::class, 'destroyImage'])->name('merchandise.images.destroy');
+            Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('merchandise.destroy');
         });
     });
 

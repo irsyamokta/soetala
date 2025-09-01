@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
  * @property string $id
  * @property string $product_id
  * @property string $image
+ * @property string $public_id
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
@@ -24,6 +25,7 @@ class ProductImage extends Model
     protected $fillable = [
         'product_id',
         'image',
+        'public_id',
     ];
 
     public function product()

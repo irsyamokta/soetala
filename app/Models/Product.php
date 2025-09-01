@@ -8,6 +8,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 /**
  * @property string $id
+ * @property string $thumbnail
+ * @property string $public_id
  * @property string|null $category_id
  * @property string $product_name
  * @property string|null $description
@@ -25,7 +27,10 @@ class Product extends Model
     protected $keyType = 'string';
 
     protected $fillable = [
+        'id',
         'category_id',
+        'thumbnail',
+        'public_id',
         'product_name',
         'description',
         'price',
