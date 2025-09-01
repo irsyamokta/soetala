@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DioramaController;
 use App\Http\Controllers\ProductController;
@@ -37,9 +38,7 @@ Route::get('/', function () {
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])
     ->group(function () {
-        Route::get('/dashboard', function () {
-            return Inertia::render('Admin/Dashboard');
-        })->name('dashboard.admin');
+        Route::get('/dashboard', [DashboardController::class, 'index'] )->name('dashboard.admin');
 
         Route::group(['prefix' => 'ticket'], function () {
             Route::get('/', [TicketController::class, 'index'])->name('dashboard.ticket');
