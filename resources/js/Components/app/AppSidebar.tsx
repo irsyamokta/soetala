@@ -26,16 +26,17 @@ type AppSidebarProps = {
 
 const AppSidebar: React.FC<AppSidebarProps> = ({ navItems, othersItems = [] }) => {
     const { isExpanded, isMobileOpen, isHovered, setIsHovered } = useSidebar();
-    const { url } = usePage();
+    const { url: currentUrl } = usePage();
 
     const isActive = useCallback(
         (path?: string) => {
             if (!path) return false;
-            return url === path || url.startsWith(path + "/");
-        },
-        [url]
-    );
 
+            const cleanUrl = currentUrl.split("?")[0];
+            return cleanUrl === path || cleanUrl.startsWith(path + "/");
+        },
+        [currentUrl]
+    );
     const renderMenuItems = (items: NavItem[]) => (
         <ul className="flex flex-col gap-4">
             {items.map((nav) =>

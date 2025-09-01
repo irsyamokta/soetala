@@ -8,6 +8,8 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DioramaController;
 use App\Http\Controllers\ProductController;
+use App\Http\Controllers\TransactionController;
+use App\Http\Controllers\UserController;
 
 // Localization
 Route::get('/locale/{lang}', function ($lang) {
@@ -38,7 +40,7 @@ Route::get('/', function () {
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'] )->name('dashboard.admin');
+        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
 
         Route::group(['prefix' => 'ticket'], function () {
             Route::get('/', [TicketController::class, 'index'])->name('dashboard.ticket');
@@ -61,6 +63,15 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             Route::delete('/images/{id}', [ProductController::class, 'destroyImage'])->name('merchandise.images.destroy');
             Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('merchandise.destroy');
         });
+
+        Route::group(['prefix' => 'transaction'], function () {
+            Route::get('/', [TransactionController::class, 'index'])->name('dashboard.transaction');
+        });
+
+        Route::group(['prefix' => 'user'], function () {
+            Route::get('/', [UserController::class, 'index'])->name('dashboard.user');
+            Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.destroy');
+        });
     });
 
 // Profile Routes
@@ -70,4 +81,4 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

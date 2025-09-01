@@ -48,7 +48,7 @@ export default function DashboardCard() {
                 <StatCard
                     icon={<TbReportAnalytics className="text-white size-8" />}
                     title="Stok Merchandise"
-                    value={stocks[0].stock || 0}
+                    value={stocks.reduce((acc: number, item: any) => acc + (item.stock ?? 0), 0)}
                 />
             </div>
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-6">
