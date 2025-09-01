@@ -52,8 +52,8 @@ export default function DioramaCard() {
         });
     }, []);
 
-    const handleEdit = useCallback((ticket: any) => {
-        setEditDiorama(ticket);
+    const handleEdit = useCallback((diorama: any) => {
+        setEditDiorama(diorama);
         setIsModalOpen(true);
     }, []);
 

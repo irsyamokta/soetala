@@ -114,4 +114,69 @@ class ValidationHelper
             ]
         );
     }
+
+    public static function product($data, $isUpdate = false)
+    {
+        $rules = [
+            'product_name'  => 'required|string|max:255',
+            'description'   => 'required|string|min:50|max:255',
+            'category_id'   => 'required|string|exists:product_categories,id',
+            'price'         => 'required|numeric|min:0',
+            'visibility'    => 'required|boolean',
+            'images.*'      => 'image|mimes:jpg,jpeg,png|max:2048',
+            'variants'      => 'array',
+            'variants.*.size'  => 'required|string|max:50',
+            'variants.*.color' => 'required|string|max:50',
+            'variants.*.stock' => 'required|numeric|min:0',
+        ];
+
+        $rules['thumbnail'] = $isUpdate
+            ? 'nullable|image|mimes:jpg,jpeg,png|max:2048'
+            : 'required|image|mimes:jpg,jpeg,png|max:2048';
+
+        return Validator::make(
+            $data,
+            $rules,
+            [
+                'thumbnail.required' => 'Thumbnail produk wajib diisi.',
+                'thumbnail.image'    => 'Thumbnail harus berupa file gambar.',
+                'thumbnail.mimes'    => 'Thumbnail hanya boleh berformat jpg, jpeg, atau png.',
+                'thumbnail.max'      => 'Ukuran thumbnail maksimal 2MB.',
+
+                'product_name.required' => 'Nama produk wajib diisi.',
+                'product_name.string'   => 'Nama produk harus berupa teks.',
+                'product_name.max'      => 'Nama produk maksimal 255 karakter.',
+
+                'description.required' => 'Deskripsi produk wajib diisi.',
+                'description.min'      => 'Deskripsi produk minimal 500 karakter.',
+                'description.max'      => 'Deskripsi produk maksimal 255 karakter.',
+                'description.string' => 'Deskripsi harus berupa teks.',
+
+                'category_id.required' => 'Kategori produk wajib diisi.',
+                'category_id.exists'   => 'Kategori produk tidak valid.',
+
+                'price.required' => 'Harga produk wajib diisi.',
+                'price.numeric'  => 'Harga produk harus berupa angka.',
+                'price.min'      => 'Harga produk minimal 0.',
+
+                'visibility.required' => 'Visibility produk wajib diisi.',
+                'visibility.boolean'  => 'Visibility harus berupa true atau false.',
+
+                'images.*.image' => 'Setiap gambar tambahan harus berupa file gambar.',
+                'images.*.mimes' => 'Gambar tambahan hanya boleh berformat jpg, jpeg, atau png.',
+                'images.*.max'   => 'Ukuran gambar tambahan maksimal 2MB.',
+
+                'variants.array'         => 'Varian harus berupa array.',
+                'variants.*.size.required' => 'Ukuran varian wajib diisi.',
+                'variants.*.size.string' => 'Ukuran varian harus berupa teks.',
+                'variants.*.size.max'    => 'Ukuran varian maksimal 50 karakter.',
+                'variants.*.color.required' => 'Warna varian wajib diisi.',
+                'variants.*.color.string' => 'Warna varian harus berupa teks.',
+                'variants.*.color.max'   => 'Warna varian maksimal 50 karakter.',
+                'variants.*.stock.required' => 'Stok varian wajib diisi.',
+                'variants.*.stock.numeric' => 'Stok varian harus berupa angka.',
+                'variants.*.stock.min'    => 'Stok varian minimal 0.',
+            ]
+        );
+    }
 }

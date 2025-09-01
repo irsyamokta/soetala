@@ -45,7 +45,7 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
             if (diorama) {
                 setData({
                     thumbnail: null,
-                    title: diorama.title|| "",
+                    title: diorama.title || "",
                     description: diorama.description || "",
                     author: diorama.author || "",
                     visibility: diorama.visibility ?? true,
@@ -55,6 +55,7 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
                 reset();
                 setImageFile(null);
             }
+            setServerErrors({});
         } else {
             reset();
             setImageFile(null);
@@ -122,7 +123,7 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
                 <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
                     {/* Thumbnail */}
                     <div>
-                        <Label>Thumbnail</Label>
+                        <Label required={true}>Thumbnail</Label>
                         <input
                             type="file"
                             accept="image/*"
@@ -138,7 +139,7 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
 
                     {/* Title */}
                     <div>
-                        <Label>Judul Lukisan</Label>
+                        <Label required={true}>Judul Lukisan</Label>
                         <Input
                             value={data.title}
                             onChange={(e) => setData("title", e.target.value)}
@@ -149,7 +150,7 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
 
                     {/* Description */}
                     <div>
-                        <Label>Deskripsi</Label>
+                        <Label required={true}>Deskripsi</Label>
                         <TextArea
                             value={data.description}
                             onChange={(e) => setData("description", e.target.value)}
@@ -162,7 +163,7 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
 
                     {/* Author */}
                     <div>
-                        <Label>Nama Pelukis</Label>
+                        <Label required={true}>Nama Pelukis</Label>
                         <Input
                             value={data.author}
                             onChange={(e) => setData("author", e.target.value)}
@@ -173,7 +174,7 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
 
                     {/* Visibility */}
                     <div>
-                        <Label>Visibility</Label>
+                        <Label required={true}>Visibility</Label>
                         <Select
                             value={data.visibility ? "1" : "0"}
                             onChange={(value) => setData("visibility", value === "1")}

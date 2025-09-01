@@ -4,7 +4,7 @@ interface ButtonProps {
     type?: "button" | "submit" | "reset";
     children: ReactNode; // Button text or content
     size?: "none" | "ghost" | "square" | "xs" | "sm" | "md"; // Button size
-    variant?: "default" | "primary" | "outline" | "popover" | "danger" | "alternate" | "link"; // Button variant
+    variant?: "default" | "primary" | "outline" | "outlineDash" | "popover" | "danger" | "alternate" | "link"; // Button variant
     startIcon?: ReactNode; // Icon before the text
     endIcon?: ReactNode; // Icon after the text
     onClick?: () => void; // Click handler
@@ -36,6 +36,7 @@ const Button: React.FC<ButtonProps> = ({
     const variantClasses = {
         default: "bg-primary text-white hover:bg-primary/90",
         outline: "border bg-transparent",
+        outlineDash: "border border-dashed border-primary bg-transparent",
         popover: "border text-primary bg-white hover:bg-primary/10 shadow-xs",
         danger: "bg-error-600 text-white hover:bg-secondary/90",
         alternate: "bg-secondary text-white hover:bg-secondary/90",
