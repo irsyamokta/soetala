@@ -69,6 +69,7 @@ export default function MerchandiseCard() {
             <HeaderSection
                 title="Merchandise"
                 buttonLabel="Tambah"
+                showButton={merchandises.length === 0}
                 onButtonClick={handleCreate}
             />
 
