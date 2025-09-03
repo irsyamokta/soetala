@@ -10,7 +10,7 @@ import MerchandiseSection from "./Homepage/MerchandiseSection";
 export default function Homepage() {
     return (
         <>
-            <Head title="Homepage" />
+            <Head title="Soetala" />
             <AppLayout>
                 <HeroSection />
                 <AboutSection />

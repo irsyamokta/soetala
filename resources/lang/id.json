@@ -59,6 +59,7 @@
     "merch.size": "Pilih Ukuran",
     "merch.quantity": "Jumlah Pembelian",
     "merch.note": "Catatan",
+    "merch.note-placeholder": "Tulis catatan di sini...",
     "merch.stock": "Stok",
     "merch.reminder": "Sisa",
 

@@ -80,7 +80,7 @@ class ValidationHelper
     {
         $rules = [
             'title' => 'required|string|max:255',
-            'description' => 'required|string|min:265|max:265',
+            'description' => 'required|string|min:200|max:265',
             'author' => 'required|string|max:255',
             'visibility' => 'required|boolean',
         ];
@@ -106,8 +106,8 @@ class ValidationHelper
                 'description.min' => 'Deskripsi minimal 265 karakter.',
                 'description.max' => 'Deskripsi maksimal 265 karakter.',
 
-                'author.required' => 'Penulis wajib diisi.',
-                'author.max' => 'Penulis maksimal 255 karakter.',
+                'author.required' => 'Pelukis wajib diisi.',
+                'author.max' => 'Pelukis maksimal 255 karakter.',
 
                 'visibility.required' => 'Visibility wajib diisi.',
                 'visibility.boolean' => 'Visibility harus berupa true atau false.',

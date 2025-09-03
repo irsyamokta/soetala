@@ -4,6 +4,7 @@ use App\Http\Controllers\ProfileController;
 use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
+use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TicketController;
 use App\Http\Controllers\DioramaController;
@@ -18,24 +19,7 @@ Route::get('/locale/{lang}', function ($lang) {
 })->name('locale.switch');
 
 // Homepage Routes
-Route::get('/', function () {
-    $user = Auth::user();
-
-    if ($user && $user->hasRole('admin')) {
-        return redirect()->route('dashboard.admin');
-    }
-
-    if ($user && !$user->hasVerifiedEmail()) {
-        return redirect()->route('verification.notice');
-    }
-
-    return Inertia::render('Homepage', [
-        'canLogin' => Route::has('login'),
-        'canRegister' => Route::has('register'),
-        'laravelVersion' => Application::VERSION,
-        'phpVersion' => PHP_VERSION,
-    ]);
-})->name('homepage');
+Route::get('/', [HomepageController::class, 'index'])->name('homepage');
 
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])

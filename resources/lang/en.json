@@ -59,6 +59,7 @@
     "merch.size": "Choose Size",
     "merch.quantity": "Quantity",
     "merch.note": "Notes",
+    "merch.note-placeholder": "Write notes here...",
     "merch.stock": "Stock",
     "merch.reminder": "Remaining",
 

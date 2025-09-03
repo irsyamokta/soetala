@@ -108,11 +108,7 @@ class ProductController extends Controller
                 'visibility'   => $validated['visibility'],
             ]);
 
-            foreach ($product->images as $oldImage) {
-                Cloudinary::uploadApi()->destroy($oldImage->public_id);
-                $oldImage->delete();
-            }
-
+            // === Thumbnail ===
             if ($request->hasFile('thumbnail')) {
                 $oldThumbnail = $product->images()->first();
                 if ($oldThumbnail) {
@@ -132,6 +128,7 @@ class ProductController extends Controller
                 ]);
             }
 
+            // === Images tambahan ===
             if ($request->hasFile('images')) {
                 foreach ($request->file('images') as $img) {
                     $upload = Cloudinary::uploadApi()->upload(
@@ -147,6 +144,7 @@ class ProductController extends Controller
                 }
             }
 
+            // === Variants ===
             $product->variants()->delete();
             if (!empty($validated['variants'])) {
                 foreach ($validated['variants'] as $variant) {
@@ -166,6 +164,7 @@ class ProductController extends Controller
             return back()->with('error', 'Gagal memperbarui merchandise: ' . $e->getMessage())->withInput();
         }
     }
+
 
     public function destroyImage($id)
     {

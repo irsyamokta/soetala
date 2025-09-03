@@ -6,12 +6,12 @@ import { IoMdArrowDropright } from "react-icons/io";
 interface TicketCardProps {
     title: string;
     price: string;
-    description: string[];
+    requirement: string;
     otsPrice: string;
     href: string;
 }
 
-const TicketCard = ({ title, price, description, otsPrice, href }: TicketCardProps) => {
+const TicketCard = ({ title, price, requirement, otsPrice, href }: TicketCardProps) => {
     const t = useTranslate();
 
     return (
@@ -24,9 +24,9 @@ const TicketCard = ({ title, price, description, otsPrice, href }: TicketCardPro
                         <h2 className="text-3xl md:text-4xl font-semibold">{title}</h2>
                         <span className="text-xl md:text-2xl">{price}</span>
                     </div>
-                    {description.map((d: string, i: number) => (
-                        <p key={i} className="paragraph mb-4">{d}</p>
-                    ))}
+                    <p className="paragraph mb-4">{requirement}</p>
+                    {/* {description.map((d: string, i: number) => (
+                    ))} */}
                     <p className="paragraph mt-10">{t("ots_price")} {otsPrice}</p>
                 </div>
                 <Link

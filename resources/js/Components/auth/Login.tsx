@@ -3,7 +3,6 @@ import { Head, useForm } from "@inertiajs/react";
 import { Link } from "@inertiajs/react";
 import useTranslate from "@/hooks/useTranslate";
 import capitalizeFirst from "@/utils/capitalize";
-import { toast } from "react-toastify";
 import { AiOutlineLoading3Quarters, AiFillEye, AiFillEyeInvisible } from "react-icons/ai";
 import Label from "@/Components/form/Label";
 import Input from "@/Components/form/input/InputField";
@@ -23,9 +22,6 @@ export default function Login({ status }: { status?: string }) {
     const submit = (e: React.FormEvent) => {
         e.preventDefault();
         post(route("login"), {
-            onSuccess: () => {
-                toast.success("Login berhasil 🚀");
-            },
             onFinish: () => {
                 reset("password");
             },

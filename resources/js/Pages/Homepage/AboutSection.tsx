@@ -96,7 +96,7 @@ function AboutSection() {
 
                     {/* Bottom grid: image + text */}
                     <div className="grid grid-cols-1 gap-6 items-start">
-                        <img src={About4} alt="About 4" className="w-2/4 rounded shadow-lg" />
+                        <img src={About4} alt="About 4" className="w-3/4 rounded shadow-lg" />
                         <p className="paragraph">
                             {t("about-2")}
                         </p>

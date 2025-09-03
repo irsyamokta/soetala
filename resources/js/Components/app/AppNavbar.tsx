@@ -191,7 +191,7 @@ const Navbar = ({ lang, setLang, forceSolid = false }: NavbarProps) => {
                     </span>
 
                     {/* Language */}
-                    <div>
+                    <div ref={langRef}>
                         <button
                             onClick={() => setOpenLang(!openLang)}
                             className="flex items-center gap-2 text-lg cursor-pointer"

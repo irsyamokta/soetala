@@ -87,6 +87,7 @@ class AppServiceProvider extends ServiceProvider
                 'merch.size' => __('merch.size'),
                 'merch.quantity' => __('merch.quantity'),
                 'merch.note' => __('merch.note'),
+                'merch.note-placeholder' => __('merch.note-placeholder'),
                 'merch.stock' => __('merch.stock'),
                 'merch.reminder' => __('merch.reminder'),
 
