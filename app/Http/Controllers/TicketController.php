@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Helpers\ValidationHelper;
 use App\Models\Ticket;
+use App\Models\TicketCategory;
 use Illuminate\Support\Facades\DB;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 use Inertia\Inertia;
@@ -13,14 +14,14 @@ class TicketController extends Controller
 {
     public function index()
     {
-        $tickets = Ticket::all();
+        $tickets = Ticket::with('categories')->get();
 
         return Inertia::render('Admin/Ticket', compact('tickets'));
     }
 
     public function show($id)
     {
-        $ticket = Ticket::findOrFail($id);
+        $ticket = Ticket::with('categories')->findOrFail($id);
 
         return Inertia::render('Admin/Ticket/Show', compact('ticket'));
     }
@@ -48,9 +49,18 @@ class TicketController extends Controller
                 $validated['public_id']  = $uploaded['public_id'];
             }
 
-            $validated['requirement'] = json_encode($validated['requirement']);
+            $ticket = Ticket::create($validated);
 
-            Ticket::create($validated);
+            if ($request->has('categories')) {
+                foreach ($request->categories as $cat) {
+                    TicketCategory::create([
+                        'ticket_id'      => $ticket->id,
+                        'category_name'  => $cat['category_name'] ?? '',
+                        'description'    => $cat['description'],
+                        'price'          => $cat['price'] ?? 0,
+                    ]);
+                }
+            }
 
             DB::commit();
 
@@ -75,10 +85,6 @@ class TicketController extends Controller
 
         $validated = $validator->validated();
 
-        if (isset($validated['requirement']) && is_array($validated['requirement'])) {
-            $validated['requirement'] = json_encode($validated['requirement']);
-        }
-
         try {
             DB::beginTransaction();
 
@@ -101,6 +107,18 @@ class TicketController extends Controller
 
             $ticket->update($validated);
 
+            $ticket->categories()->delete();
+            if ($request->has('categories')) {
+                foreach ($request->categories as $cat) {
+                    TicketCategory::create([
+                        'ticket_id'      => $ticket->id,
+                        'category_name'  => $cat['category_name'] ?? '',
+                        'description'    => $cat['description'],
+                        'price'          => $cat['price'] ?? 0,
+                    ]);
+                }
+            }
+
             DB::commit();
 
             return redirect()
@@ -111,7 +129,6 @@ class TicketController extends Controller
             return back()->with('error', 'Gagal memperbarui tiket: ' . $e->getMessage())->withInput();
         }
     }
-
 
     public function destroy($id)
     {

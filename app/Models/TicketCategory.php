@@ -8,50 +8,39 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 
 /**
  * @property string $id
- * @property string $transaction_id
  * @property string $ticket_id
- * @property string $ticket_category_id
- * @property string $buyer_name
- * @property string|null $phone
+ * @property string $category_name
+ * @property string $description
  * @property float $price
- * @property string|null $qr_code
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
-class TicketOrder extends Model
+class TicketCategory extends Model
 {
     use HasFactory, HasUuids;
 
-    protected $table = 'ticket_orders';
+    protected $table = 'ticket_categories';
     public $incrementing = false;
     protected $keyType = 'string';
 
     protected $fillable = [
-        'transaction_id',
         'ticket_id',
-        'ticket_category_id',
-        'buyer_name',
-        'phone',
+        'category_name',
+        'description',
         'price',
-        'qr_code',
     ];
 
     protected $casts = [
         'price' => 'float',
     ];
 
-    public function transaction()
-    {
-        return $this->belongsTo(Transaction::class, 'transaction_id');
-    }
-
     public function ticket()
     {
         return $this->belongsTo(Ticket::class, 'ticket_id');
     }
 
-    public function category()
+    public function orders()
     {
-        return $this->belongsTo(TicketCategory::class, 'ticket_category_id');
+        return $this->hasMany(TicketOrder::class, 'ticket_category_id');
     }
 }
