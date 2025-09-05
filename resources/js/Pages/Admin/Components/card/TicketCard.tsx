@@ -7,7 +7,6 @@ import Button from "@/Components/ui/button/Button";
 import HeaderSection from "@/Components/card/HeaderSectionCard";
 import EmptyState from "@/Components/empty/EmptyState";
 import ImageFallback from "@/Components/ui/images/ImageFallback";
-import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDate, formatTime } from "@/utils/formateDate";
 import { confirmDialog } from "@/utils/confirmationDialog";
 import { createMarkup } from "@/utils/htmlMarkup";
@@ -102,7 +101,7 @@ export default function TicketCard() {
                             {/* Content */}
                             <div>
                                 <h1 className="text-xl font-bold text-gray-800 line-clamp-1">
-                                    {item.category === "adult" ? "Dewasa" : "Anak"}
+                                    {item.title}
                                 </h1>
                                 <div
                                     className="text-sm text-gray-500 mt-2 line-clamp-3"
@@ -125,25 +124,6 @@ export default function TicketCard() {
                                     <div className="flex items-center gap-2 min-w-0">
                                         <LuMapPin className="w-4 h-4 shrink-0" />
                                         <span className="truncate">{item.location}</span>
-                                    </div>
-                                    <div className="flex gap-3">
-                                        <div className="flex items-center gap-2 font-bold text-gray-700">
-                                            <LuTickets className="w-4 h-4 shrink-0" />
-                                            <span>
-                                                Online:{" "}
-                                                {item.online_price === 0
-                                                    ? "Gratis"
-                                                    : formatCurrency(item.online_price)}
-                                            </span>
-                                        </div>
-                                        <div className="flex items-center gap-2 font-bold text-gray-700">
-                                            <span>
-                                                Offline:{" "}
-                                                {item.offline_price === 0
-                                                    ? "Gratis"
-                                                    : formatCurrency(item.offline_price)}
-                                            </span>
-                                        </div>
                                     </div>
                                 </div>
                             </div>
