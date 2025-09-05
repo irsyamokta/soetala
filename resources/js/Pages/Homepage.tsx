@@ -11,7 +11,7 @@ export default function Homepage() {
     return (
         <>
             <Head title="Soetala" />
-            <AppLayout>
+            <AppLayout className="bg-primary">
                 <HeroSection />
                 <AboutSection />
                 <GallerySection />

@@ -2,7 +2,11 @@ import { useState } from "react";
 import { PropsWithChildren } from "react";
 import AppNavbar from "@/Components/app/AppNavbar";
 
-const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
+interface AppLayoutProps {
+    className?: string;
+}
+
+const AppLayout: React.FC<PropsWithChildren<AppLayoutProps>> = ({ children, className }) => {
     const [lang, setLang] = useState("id");
 
     return (
@@ -11,7 +15,7 @@ const AppLayout: React.FC<PropsWithChildren> = ({ children }) => {
             <AppNavbar lang={lang} setLang={setLang} />
 
             {/* Main Content */}
-            <main className="overflow-hidden">
+            <main className={`flex-1 overflow-hidden ${className ?? ""}`}>
                 {children}
             </main>
         </div>

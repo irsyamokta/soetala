@@ -11,6 +11,7 @@ use App\Http\Controllers\DioramaController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CheckoutController;
 
 // Localization
 Route::get('/locale/{lang}', function ($lang) {
@@ -20,6 +21,12 @@ Route::get('/locale/{lang}', function ($lang) {
 
 // Homepage Routes
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
+
+Route::middleware(['auth', 'verified', 'role:visitor'])->group(function () {
+    Route::get('/ticket/checkout/{ticket_id}', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::post('/ticket/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
+    Route::get('/transactions', [CheckoutController::class, 'history'])->name('checkout.history');
+});
 
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])

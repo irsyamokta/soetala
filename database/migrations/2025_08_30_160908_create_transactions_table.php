@@ -15,7 +15,7 @@ return new class extends Migration
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id');
-            $table->enum('type', ['ticket', 'merchandise']);
+            $table->enum('type', ['ticket', 'merchandise', 'mixed']);
             $table->enum('channel', ['online', 'offline']);
             $table->decimal('total_price', 12, 2)->default(0);
             $table->string('payment_method')->nullable();
@@ -29,9 +29,12 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('transaction_id');
             $table->enum('item_type', ['ticket', 'product']);
+            $table->string('item_name');
             $table->uuid('item_id');
             $table->integer('quantity')->default(1);
             $table->decimal('price', 12, 2);
+            $table->json('variant_details')->nullable();
+            $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');
         });

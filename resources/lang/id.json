@@ -11,21 +11,17 @@
     "logout": "Keluar",
     "buy_ticket": "BELI TIKET",
     "ots_price": "Harga OTS",
-
     "cancel": "Batal",
     "save": "Simpan",
     "delete": "Hapus",
-
     "male": "Laki-laki",
     "female": "Perempuan",
-
     "name-label": "Nama Lengkap",
     "phone-label": "No Hp",
     "gender-label": "Jenis Kelamin",
     "password-label": "Kata Sandi",
     "newpassword-label": "Kata Sandi Baru",
     "confirmpassword-label": "Konfirmasi Kata Sandi",
-
     "name-placeholder": "Masukkan nama lengkap",
     "phone-placeholder": "Masukkan nomor telepon",
     "gender-placeholder": "Pilih jenis kelamin",
@@ -33,28 +29,22 @@
     "password-placeholder": "Masukkan kata sandi",
     "newpassword-placeholder": "Masukkan kata sandi baru",
     "confirmpassword-placeholder": "Konfirmasi kata sandi",
-
     "quote-1": "Jika kekuatan lahir kalah kuat, maka tak ada jalan untuk menang kecuali dengan mengandalkan kekuatan batin.",
     "quote-2": "Kebebasan berarti bebas melakukan semua kebaikan, bukan bebas lepas melakukan semua kejahatan tanpa boleh diadili.",
-
     "about": "Tentang",
     "exhi": "eksi",
     "bition": "bisi",
     "about-1": "Pameran ini menghadirkan kisah perjalanan hidup dan perjuangan Jenderal Besar Soedirman melalui karya seni rupa yang penuh makna. Dari masa mudanya sebagai panglima yang sederhana namun berwibawa, hingga perjuangan gerilya di tengah sakit untuk mempertahankan kemerdekaan bangsa, setiap lukisan seakan mengajak kita menyusuri jejak langkah beliau. Di balik setiap goresan warna, ada semangat juang, keberanian, dan teladan yang tak lekang oleh waktu.",
     "about-2": "Melalui pameran ini, kami ingin mengajak generasi muda untuk lebih dekat mengenal nilai patriotisme, keberanian, dan keteguhan hati Jenderal Soedirman. Seni tidak hanya menjadi saksi bisu sejarah, tapi juga menjembatani pesan perjuangan agar tetap hidup di hati kita semua. Semoga semangat beliau terus menginspirasi, menyalakan harapan, dan menjadi pengingat bahwa cinta tanah air selalu relevan untuk masa kini dan masa depan.",
-
     "gallery.heading": "Galeri",
     "gallery.subheading": "Nikmati rangkaian lukisan eksklusif dari para pelukis berbakat. Setiap karya \nmenceritakan kisahnya sendiri dan memperkaya pengalamanmu di Soetala.",
     "gallery.email-1": "Suka dengan karya ini? Langsung email kami di ",
     "gallery.email-2": "dapatkan informasi selengkapnya!",
-
     "ticket.heading": "Beli Tiket",
     "ticket.subheading": "Versi elektronik tiket Anda akan dikirimkan kepada \nAnda melalui alamat email yang ditentukan",
-
     "merch.heading": "Merchandise",
     "merch.subheading": "Setiap kaos Soetala dibuat khusus untuk mengabadikan momen \nkunjunganmu. Nyaman dipakai, penuh gaya, dan tentu saja eksklusif!",
     "merch.button": "BELI SEKARANG",
-
     "merch.color": "Pilih Warna",
     "merch.size": "Pilih Ukuran",
     "merch.quantity": "Jumlah Pembelian",
@@ -62,22 +52,17 @@
     "merch.note-placeholder": "Tulis catatan di sini...",
     "merch.stock": "Stok",
     "merch.reminder": "Sisa",
-
     "footer.initiator": "Inisiator",
     "footer.contact": "Kontak",
     "footer.location": "Lokasi",
     "footer.copyright": "Hak Cipta Dilindungi oleh Telkom University Purwokerto.",
-
     "emailverify.description": "Terima kasih telah mendaftar! Sebelum mulai, silakan verifikasi alamat email kamu dengan mengklik tautan yang baru saja kami kirimkan. Jika kamu belum menerima email, klik tombol di bawah ini untuk mengirim ulang.",
     "emailverify.status": "Tautan verifikasi baru telah dikirim ke alamat email yang kamu daftarkan.",
     "emailverify.button": "Kirim Ulang Kode Verifikasi",
-
     "forgotpassword.description": "Lupa kata sandi kamu? Masukkan alamat email dan kami akan mengirimkan tautan reset password ke email kamu untuk membuat kata sandi baru.",
     "forgotpassword.button": "Kirim Tautan Reset Kata Sandi",
-
     "resetpassword.description": "Masukkan kata sandi baru kamu di bawah ini untuk mengganti password lama.",
     "resetpassword.button": "Simpan Kata Sandi Baru",
-
     "profile.edit": "Edit Profil",
     "profile.title": "Profil",
     "profile.information": "Informasi Profil",
@@ -88,18 +73,32 @@
     "profile.changepassword": "Ubah Kata Sandi",
     "changepassword.description": "Atur ulang password akun kamu untuk keamanan.",
     "changepassword.button": "Ubah",
-
     "oldpassword.label": "Kata Sandi Lama",
     "newpassword.label": "Kata Sandi Baru",
     "confirmpassword.label": "Konfirmasi Kata sandi Baru",
-
     "oldpassword.placeholder": "Masukkan kata sandi lama",
     "newpassword.placeholder": "Masukkan kata sandi baru",
     "confirmpassword.placeholder": "Konfirmasi kata sandi baru",
-
     "profile.deleteaccount": "Hapus Akun",
     "deleteaccount.description": "Saat kamu menghapus akun kamu, tidak ada lagi jalan kembali. Pastikan kamu yakin.",
     "deleteaccount.button": "Hapus Akun",
-    "deleteaccount.warning": "Tindakan ini tidak dapat dibatalkan. Pastikan Anda benar-benar yakin."
-
+    "deleteaccount.warning": "Tindakan ini tidak dapat dibatalkan. Pastikan Anda benar-benar yakin.",
+    "checkout.ticket": "Pilih Tiket Lainnya",
+    "checkout.merch": "Tambah Merchandise",
+    "checkout.detail": "Detail Pesanan",
+    "checkout.empty": "Belum ada item",
+    "checkout.add": "Tambah",
+    "merch.modal.color": "Warna",
+    "merch.modal.size": "Ukuran",
+    "merch.modal.note": "Catatan (Opsional)",
+    "merch.modal.note-placeholder": "Tulis catatan di sini...",
+    "merch.modal.reminder": "Stok Sisa",
+    "merch.modal.quantity": "Jumlah Pembelian",
+    "merch.modal.button.add": "Tambah ke Keranjang",
+    "merch.modal.button.disable": "Stok Habis",
+    "transaction.title": "Riwayat Transaksi",
+    "transaction.detail": "Detail Transaksi",
+    "transaction.button.cancel": "Batalkan Pembayaran",
+    "transaction.button.payment": "Bayar Sekarang",
+    "transaction.empty": "Belum ada transaksi"
 }

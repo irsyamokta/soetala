@@ -38,7 +38,7 @@ return new class extends Migration
             $table->enum('ticket_type', ['adult', 'child']);
             $table->decimal('price', 12, 2);
             $table->string('qr_code')->nullable();
-            $table->timestamp('created_at')->useCurrent();
+            $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');
             $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');

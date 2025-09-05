@@ -91,7 +91,7 @@ function TicketSection() {
                                     ))
                                     : []}
                                 otsPrice={formatCurrency(t.offline_price)}
-                                href={t.id}
+                                href={route("checkout.index", { ticket_id: t.id })}
                             />
                         ))}
                     </div>

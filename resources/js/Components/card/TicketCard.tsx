@@ -25,13 +25,12 @@ const TicketCard = ({ title, price, requirement, otsPrice, href }: TicketCardPro
                         <span className="text-xl md:text-2xl">{price}</span>
                     </div>
                     <p className="paragraph mb-4">{requirement}</p>
-                    {/* {description.map((d: string, i: number) => (
-                    ))} */}
                     <p className="paragraph mt-10">{t("ots_price")} {otsPrice}</p>
                 </div>
                 <Link
                     href={href}
                     className="flex justify-center items-center mt-10"
+                    target="_blank"
                 >
                     <Button
                         variant="outline"

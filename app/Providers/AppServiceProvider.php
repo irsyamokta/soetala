@@ -129,6 +129,27 @@ class AppServiceProvider extends ServiceProvider
                 'deleteaccount.description' => __('deleteaccount.description'),
                 'deleteaccount.button' => __('deleteaccount.button'),
                 'deleteaccount.warning' => __('deleteaccount.warning'),
+
+                'checkout.ticket' => __('checkout.ticket'),
+                'checkout.merch' => __('checkout.merch'),
+                'checkout.detail' => __('checkout.detail'),
+                'checkout.empty' => __('checkout.empty'),
+                'checkout.add' => __('checkout.add'),
+
+                'merch.modal.color' => __('merch.modal.color'),
+                'merch.modal.size' => __('merch.modal.size'),
+                'merch.modal.quantity' => __('merch.modal.quantity'),
+                'merch.modal.note' => __('merch.modal.note'),
+                'merch.modal.note-placeholder' => __('merch.modal.note-placeholder'),
+                'merch.modal.reminder' => __('merch.modal.reminder'),
+                'merch.modal.button.add' => __('merch.modal.button.add'),
+                'merch.modal.button.disable' => __('merch.modal.button.disable'),
+
+                'transaction.title' => __('transaction.title'),
+                'transaction.detail' => __('transaction.detail'),
+                'transaction.button.cancel' => __('transaction.button.cancel'),
+                'transaction.button.payment' => __('transaction.button.payment'),
+                'transaction.empty' => __('transaction.empty'),
             ],
         ]);
     }

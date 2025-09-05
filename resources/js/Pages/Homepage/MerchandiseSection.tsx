@@ -92,13 +92,13 @@ function MerchandiseSection() {
                     {/* Content */}
                     <div className="flex flex-col lg:flex-row justify-center items-center lg:items-start gap-8">
                         {/* Left - Product Image + Gallery */}
-                        <div className="flex flex-col lg:flex-row gap-4">
+                        <div className="flex flex-col gap-4">
                             <img
                                 src={mainImage}
                                 alt={merch.title}
-                                className="rounded-lg shadow-md h-[300px] lg:w-[400px] md:h-[500px] object-cover"
+                                className="rounded-md shadow-md h-[300px] md:h-[400px] object-cover"
                             />
-                            <div className="flex justify-center lg:flex-col lg:justify-start gap-4">
+                            <div className="flex justify-center gap-4">
                                 {(merchant.images ?? []).map((img: any, i: number) => (
                                     <img
                                         key={i}
