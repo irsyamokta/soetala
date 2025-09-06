@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             Route::post('/create', [ProductController::class, 'store'])->name('merchandise.store');
             Route::patch('/update/{id}', [ProductController::class, 'update'])->name('merchandise.update');
             Route::delete('/images/{id}', [ProductController::class, 'destroyImage'])->name('merchandise.images.destroy');
+            Route::delete('/variants/image/{id}', [ProductController::class, 'destroyVariantImage'])->name('merchandise.variants.image.destroy');
             Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('merchandise.destroy');
         });
 

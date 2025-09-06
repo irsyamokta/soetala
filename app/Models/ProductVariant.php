@@ -9,6 +9,8 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 /**
  * @property string $id
  * @property string $product_id
+ * @property string|null $image
+ * @property string|null $public_id
  * @property string|null $size
  * @property string|null $color
  * @property int $stock
@@ -25,6 +27,8 @@ class ProductVariant extends Model
 
     protected $fillable = [
         'product_id',
+        'image',
+        'public_id',
         'size',
         'color',
         'stock',

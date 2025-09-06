@@ -3,6 +3,7 @@
 namespace App\Helpers;
 
 use Illuminate\Support\Facades\Validator;
+use App\Models\ProductCategory;
 
 class ValidationHelper
 {
@@ -36,7 +37,7 @@ class ValidationHelper
                 'title.required' => 'Judul wajib diisi.',
                 'title.string' => 'Judul harus berupa teks.',
                 'title.max' => 'Judul maksimal 255 karakter.',
-                
+
                 'thumbnail.required' => 'Thumbnail wajib diisi.',
                 'thumbnail.image' => 'Thumbnail harus berupa gambar.',
                 'thumbnail.mimes' => 'Thumbnail hanya boleh berformat jpeg, png, atau jpg.',
@@ -83,7 +84,7 @@ class ValidationHelper
     {
         $rules = [
             'title' => 'required|string|max:255',
-            'description' => 'required|string|min:200|max:265',
+            'description' => 'required|string|min:150|max:265',
             'author' => 'required|string|max:255',
             'visibility' => 'required|boolean',
         ];
@@ -106,8 +107,8 @@ class ValidationHelper
 
                 'description.required' => 'Deskripsi wajib diisi.',
                 'description.string' => 'Deskripsi harus berupa teks.',
-                'description.min' => 'Deskripsi minimal 265 karakter.',
-                'description.max' => 'Deskripsi maksimal 265 karakter.',
+                'description.min' => 'Deskripsi minimal 150 karakter.',
+                'description.max' => 'Deskripsi maksimal 150 karakter.',
 
                 'author.required' => 'Pelukis wajib diisi.',
                 'author.max' => 'Pelukis maksimal 255 karakter.',
@@ -120,65 +121,81 @@ class ValidationHelper
 
     public static function product($data, $isUpdate = false)
     {
-        $rules = [
-            'product_name'  => 'required|string|max:255',
-            'description'   => 'required|string|min:50|max:255',
-            'category_id'   => 'required|string|exists:product_categories,id',
-            'price'         => 'required|numeric|min:0',
-            'visibility'    => 'required|boolean',
-            'images.*'      => 'image|mimes:jpg,jpeg,png|max:2048',
-            'variants'      => 'array',
-            'variants.*.size'  => 'required|string|max:50',
-            'variants.*.color' => 'required|string|max:50',
-            'variants.*.stock' => 'required|numeric|min:0',
+        $baseRules = [
+            'product_name' => 'required|string|max:255',
+            'description' => 'required|string|min:50|max:255',
+            'category_id' => 'required|string|exists:product_categories,id',
+            'price' => 'required|numeric|min:0',
+            'visibility' => 'required|boolean',
+            'images.*' => 'image|mimes:jpg,jpeg,png|max:2048',
+            'variants' => 'array',
         ];
 
-        $rules['thumbnail'] = $isUpdate
-            ? 'nullable|image|mimes:jpg,jpeg,png|max:2048'
-            : 'required|image|mimes:jpg,jpeg,png|max:2048';
+        $baseRules['thumbnail'] = $isUpdate ? 'nullable|image|mimes:jpg,jpeg,png|max:2048' : 'required|image|mimes:jpg,jpeg,png|max:2048';
+
+        $category = ProductCategory::find($data['category_id']);
+        if ($category) {
+            $categoryName = strtolower($category->category_name);
+            if ($categoryName === 'Shirt') {
+                $baseRules['variants'] = 'required|array|min:1';
+                $baseRules['variants.*.size'] = 'required|string|max:50';
+                $baseRules['variants.*.color'] = 'required|string|max:50';
+                $baseRules['variants.*.stock'] = 'required|integer|min:0';
+                $baseRules['variants.*.image'] = 'nullable|image|mimes:jpg,jpeg,png|max:2048';
+            } elseif ($categoryName === 'Sticker') {
+                $baseRules['variants'] = 'required|array|size:1';
+                $baseRules['variants.0.size'] = 'nullable';
+                $baseRules['variants.0.color'] = 'nullable';
+                $baseRules['variants.0.stock'] = 'required|integer|min:0';
+                $baseRules['variants.0.image'] = 'nullable';
+            }
+        }
 
         return Validator::make(
             $data,
-            $rules,
+            $baseRules,
             [
                 'thumbnail.required' => 'Thumbnail produk wajib diisi.',
-                'thumbnail.image'    => 'Thumbnail harus berupa file gambar.',
-                'thumbnail.mimes'    => 'Thumbnail hanya boleh berformat jpg, jpeg, atau png.',
-                'thumbnail.max'      => 'Ukuran thumbnail maksimal 2MB.',
+                'thumbnail.image' => 'Thumbnail harus berupa file gambar.',
+                'thumbnail.mimes' => 'Thumbnail hanya boleh berformat jpg, jpeg, atau png.',
+                'thumbnail.max' => 'Ukuran thumbnail maksimal 2MB.',
 
                 'product_name.required' => 'Nama produk wajib diisi.',
-                'product_name.string'   => 'Nama produk harus berupa teks.',
-                'product_name.max'      => 'Nama produk maksimal 255 karakter.',
+                'product_name.string' => 'Nama produk harus berupa teks.',
+                'product_name.max' => 'Nama produk maksimal 255 karakter.',
 
                 'description.required' => 'Deskripsi produk wajib diisi.',
-                'description.min'      => 'Deskripsi produk minimal 500 karakter.',
-                'description.max'      => 'Deskripsi produk maksimal 255 karakter.',
+                'description.min' => 'Deskripsi produk minimal 50 karakter.',
+                'description.max' => 'Deskripsi produk maksimal 255 karakter.',
                 'description.string' => 'Deskripsi harus berupa teks.',
 
                 'category_id.required' => 'Kategori produk wajib diisi.',
-                'category_id.exists'   => 'Kategori produk tidak valid.',
+                'category_id.exists' => 'Kategori produk tidak valid.',
 
                 'price.required' => 'Harga produk wajib diisi.',
-                'price.numeric'  => 'Harga produk harus berupa angka.',
-                'price.min'      => 'Harga produk minimal 0.',
+                'price.numeric' => 'Harga produk harus berupa angka.',
+                'price.min' => 'Harga produk minimal 0.',
 
                 'visibility.required' => 'Visibility produk wajib diisi.',
-                'visibility.boolean'  => 'Visibility harus berupa true atau false.',
+                'visibility.boolean' => 'Visibility harus berupa true atau false.',
 
                 'images.*.image' => 'Setiap gambar tambahan harus berupa file gambar.',
                 'images.*.mimes' => 'Gambar tambahan hanya boleh berformat jpg, jpeg, atau png.',
-                'images.*.max'   => 'Ukuran gambar tambahan maksimal 2MB.',
+                'images.*.max' => 'Ukuran gambar tambahan maksimal 2MB.',
 
-                'variants.array'         => 'Varian harus berupa array.',
+                'variants.array' => 'Varian harus berupa array.',
                 'variants.*.size.required' => 'Ukuran varian wajib diisi.',
                 'variants.*.size.string' => 'Ukuran varian harus berupa teks.',
-                'variants.*.size.max'    => 'Ukuran varian maksimal 50 karakter.',
+                'variants.*.size.max' => 'Ukuran varian maksimal 50 karakter.',
                 'variants.*.color.required' => 'Warna varian wajib diisi.',
                 'variants.*.color.string' => 'Warna varian harus berupa teks.',
-                'variants.*.color.max'   => 'Warna varian maksimal 50 karakter.',
+                'variants.*.color.max' => 'Warna varian maksimal 50 karakter.',
                 'variants.*.stock.required' => 'Stok varian wajib diisi.',
-                'variants.*.stock.numeric' => 'Stok varian harus berupa angka.',
-                'variants.*.stock.min'    => 'Stok varian minimal 0.',
+                'variants.*.stock.integer' => 'Stok varian harus berupa angka bulat.',
+                'variants.*.stock.min' => 'Stok varian minimal 0.',
+                'variants.*.image.image' => 'Image varian harus berupa file gambar.',
+                'variants.*.image.mimes' => 'Image varian hanya boleh berformat jpg, jpeg, atau png.',
+                'variants.*.image.max' => 'Ukuran image varian maksimal 2MB.',
             ]
         );
     }

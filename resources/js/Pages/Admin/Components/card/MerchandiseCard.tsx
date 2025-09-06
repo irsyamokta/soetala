@@ -7,6 +7,7 @@ import Button from "@/Components/ui/button/Button";
 import HeaderSection from "@/Components/card/HeaderSectionCard";
 import EmptyState from "@/Components/empty/EmptyState";
 import ImageFallback from "@/Components/ui/images/ImageFallback";
+
 import { confirmDialog } from "@/utils/confirmationDialog";
 import { formatCurrency } from "@/utils/formatCurrency";
 
@@ -69,7 +70,6 @@ export default function MerchandiseCard() {
             <HeaderSection
                 title="Merchandise"
                 buttonLabel="Tambah"
-                showButton={merchandises.length === 0}
                 onButtonClick={handleCreate}
             />
 
