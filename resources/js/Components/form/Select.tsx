@@ -31,7 +31,7 @@ const Select: React.FC<SelectProps> = ({
             <button
                 type="button"
                 onClick={() => setOpen(!open)}
-                className={`flex h-11 w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm shadow-sm focus:border-primary focus:ring-3 focus:ring-primary/20 dark:bg-gray-800 dark:text-white`}
+                className={`flex h-11 w-full items-center justify-between rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm focus:border-primary focus:ring-3 focus:ring-primary/20 dark:bg-gray-800 dark:text-white`}
             >
                 <span className={selected ? "text-gray-800 dark:text-white" : "text-gray-400"}>
                     {selected ? selected.label : placeholder}
@@ -41,7 +41,7 @@ const Select: React.FC<SelectProps> = ({
 
             {/* Dropdown */}
             {open && (
-                <ul className="absolute z-20 mt-2 w-full rounded-lg border border-gray-200 bg-white shadow-lg dark:border-gray-700 dark:bg-gray-800">
+                <ul className="absolute z-20 mt-2 w-full rounded-lg border border-gray-200 bg-white dark:border-gray-700 dark:bg-gray-800">
                     {options.map((opt) => (
                         <li
                             key={opt.value}

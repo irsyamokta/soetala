@@ -40,17 +40,19 @@ return new class extends Migration
         Schema::create('ticket_orders', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('transaction_id');
-            $table->uuid('ticket_id');
-            $table->uuid('ticket_category_id');
+            $table->uuid('ticket_id')->nullable();
+            $table->uuid('ticket_category_id')->nullable();
             $table->string('buyer_name');
             $table->string('phone')->nullable();
+            $table->integer('quantity');
             $table->decimal('price', 12, 2);
             $table->string('qr_code')->nullable();
+            $table->timestamp('used_at')->nullable();
             $table->timestamps();
 
             $table->foreign('transaction_id')->references('id')->on('transactions')->onDelete('cascade');
-            $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
-            $table->foreign('ticket_category_id')->references('id')->on('ticket_categories')->onDelete('cascade');
+            $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('set null');
+            $table->foreign('ticket_category_id')->references('id')->on('ticket_categories')->onDelete('set null');
         });
     }
 
@@ -62,5 +64,11 @@ return new class extends Migration
         Schema::dropIfExists('ticket_orders');
         Schema::dropIfExists('ticket_categories');
         Schema::dropIfExists('tickets');
+
+        Schema::table('ticket_orders', function (Blueprint $table) {
+            $table->dropForeign(['ticket_id']);
+            $table->uuid('ticket_id')->nullable(false)->change();
+            $table->foreign('ticket_id')->references('id')->on('tickets')->onDelete('cascade');
+        });
     }
 };

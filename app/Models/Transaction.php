@@ -9,6 +9,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
 /**
  * @property string $id
  * @property string $user_id
+ * @property string|null $responsible_id
  * @property string $type
  * @property string $channel
  * @property float $total_price
@@ -27,6 +28,7 @@ class Transaction extends Model
 
     protected $fillable = [
         'user_id',
+        'responsible_id',
         'type',
         'channel',
         'total_price',
@@ -44,6 +46,11 @@ class Transaction extends Model
     public function user()
     {
         return $this->belongsTo(User::class, 'user_id');
+    }
+
+    public function responsible()
+    {
+        return $this->belongsTo(User::class, 'responsible_id');
     }
 
     public function items()
