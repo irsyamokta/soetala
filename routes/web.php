@@ -1,9 +1,7 @@
 <?php
 
 use App\Http\Controllers\ProfileController;
-use Illuminate\Foundation\Application;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
 use App\Http\Controllers\HomepageController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\TicketController;
@@ -58,6 +56,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
         Route::group(['prefix' => 'transaction'], function () {
             Route::get('/', [TransactionController::class, 'index'])->name('dashboard.transaction');
+            Route::post('/create', [TransactionController::class, 'store'])->name('transaction.store');
         });
 
         Route::group(['prefix' => 'user'], function () {

@@ -199,4 +199,86 @@ class ValidationHelper
             ]
         );
     }
+
+    public static function transaction($data, $isUpdate = false)
+    {
+        $rules = [
+            'buyer_name' => 'required|string|max:255',
+            'payment_method' => 'required|in:cash,qris',
+            'total_price' => 'required|numeric|min:0',
+            'type' => 'required|in:ticket,merchandise,mixed',
+            'channel' => 'required|in:offline',
+
+            'items' => 'required|array|min:1',
+            'items.*.item_type' => 'required|in:ticket,product',
+            'items.*.item_id' => 'required|string',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.price' => 'required|numeric|min:0',
+            'items.*.color' => 'nullable|string',
+            'items.*.size' => 'nullable|string',
+            'items.*.note' => 'nullable|string',
+            'items.*.variantKey' => 'nullable|string',
+
+            'ticket_details' => 'required_if:type,ticket,mixed|array',
+            'ticket_details.*.ticket_category_id' => 'required_if:type,ticket,mixed|exists:ticket_categories,id',
+            'ticket_details.*.buyer_name' => 'required_if:type,ticket,mixed|string|max:255',
+            'ticket_details.*.price' => 'required_if:type,ticket,mixed|numeric|min:0',
+            'ticket_details.*.quantity' => 'required_if:type,ticket,mixed|integer|min:1',
+        ];
+
+        return Validator::make(
+            $data,
+            $rules,
+            [
+                'buyer_name.required' => 'Nama pembeli wajib diisi.',
+                'buyer_name.string' => 'Nama pembeli harus berupa teks.',
+                'buyer_name.max' => 'Nama pembeli maksimal 255 karakter.',
+
+                'payment_method.required' => 'Metode pembayaran wajib dipilih.',
+                'payment_method.in' => 'Metode pembayaran tidak valid.',
+
+                'total_price.required' => 'Total harga wajib diisi.',
+                'total_price.numeric' => 'Total harga harus berupa angka.',
+                'total_price.min' => 'Total harga minimal 0.',
+
+                'type.required' => 'Tipe transaksi wajib diisi.',
+                'type.in' => 'Tipe transaksi tidak valid.',
+
+                'channel.required' => 'Channel wajib diisi.',
+                'channel.in' => 'Channel tidak valid.',
+
+                'items.required' => 'Items wajib diisi minimal 1.',
+                'items.array' => 'Items harus berupa array.',
+                'items.min' => 'Minimal harus ada 1 item.',
+
+                'items.*.item_type.required' => 'Tipe item wajib diisi.',
+                'items.*.item_type.in' => 'Tipe item tidak valid.',
+                'items.*.item_id.required' => 'ID item wajib diisi.',
+                'items.*.quantity.required' => 'Jumlah item wajib diisi.',
+                'items.*.quantity.integer' => 'Jumlah item harus berupa angka bulat.',
+                'items.*.quantity.min' => 'Jumlah item minimal 1.',
+                'items.*.price.required' => 'Harga item wajib diisi.',
+                'items.*.price.numeric' => 'Harga item harus berupa angka.',
+                'items.*.price.min' => 'Harga item minimal 0.',
+
+                'ticket_details.required_if' => 'Detail tiket wajib diisi jika type adalah ticket atau mixed.',
+                'ticket_details.array' => 'Detail tiket harus berupa array.',
+
+                'ticket_details.*.ticket_category_id.required_if' => 'Kategori tiket wajib diisi.',
+                'ticket_details.*.ticket_category_id.exists' => 'Kategori tiket tidak ditemukan.',
+
+                'ticket_details.*.buyer_name.required_if' => 'Nama pembeli tiket wajib diisi.',
+                'ticket_details.*.buyer_name.string' => 'Nama pembeli tiket harus berupa teks.',
+                'ticket_details.*.buyer_name.max' => 'Nama pembeli tiket maksimal 255 karakter.',
+
+                'ticket_details.*.price.required_if' => 'Harga tiket wajib diisi.',
+                'ticket_details.*.price.numeric' => 'Harga tiket harus berupa angka.',
+                'ticket_details.*.price.min' => 'Harga tiket minimal 0.',
+
+                'ticket_details.*.quantity.required_if' => 'Jumlah tiket wajib diisi.',
+                'ticket_details.*.quantity.integer' => 'Jumlah tiket harus berupa angka bulat.',
+                'ticket_details.*.quantity.min' => 'Jumlah tiket minimal 1.',
+            ]
+        );
+    }
 }
