@@ -12,7 +12,18 @@ class DashboardController extends Controller
     {
         $stocks = Product::with('variants')->get()->map(function ($product) {
             return [
-                'stock' => $product->variants->sum('stock'),
+                'id' => $product->id,
+                'product_name' => $product->product_name,
+                'category' => $product->category->category_name ?? null,
+                'total_stock' => $product->variants->sum('stock'),
+                'variants' => $product->variants->map(function ($variant) {
+                    return [
+                        'id' => $variant->id,
+                        'color' => $variant->color,
+                        'size' => $variant->size,
+                        'stock' => $variant->stock,
+                    ];
+                }),
             ];
         });
 

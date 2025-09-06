@@ -16,7 +16,7 @@ return new class extends Migration
             $table->string('name');
             $table->string('email')->unique();
             $table->string('phone')->unique()->default('');
-            $table->enum('role', ['admin', 'visitor'])->default('visitor');
+            $table->enum('role', ['admin', 'visitor', 'volunteer'])->default('visitor');
             $table->enum('gender', ['Laki-laki', 'Perempuan']);
             $table->string('avatar')->nullable();
             $table->string('public_id')->nullable();

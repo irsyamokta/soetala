@@ -48,5 +48,39 @@ class UserSeeder extends Seeder
         );
 
         $vsitor->assignRole('visitor');
+
+        // Volunteer 1
+        $olunteer1 = User::updateOrCreate(
+            ['email' => 'volunteer1@example.com'],
+            [
+                'id' => (string) Str::uuid(),
+                'name' => 'Volunteer 1 User',
+                'phone' => '081234567894',
+                'gender' => 'Perempuan',
+                'password' => Hash::make('Password123!'),
+                'email_verified_at' => now(),
+                'role' => 'volunteer',
+                'avatar' => null,
+            ]
+        );
+
+        $olunteer1->assignRole('volunteer');
+
+        // Volunteer 2
+        $olunteer2 = User::updateOrCreate(
+            ['email' => 'volunteer2@example.com'],
+            [
+                'id' => (string) Str::uuid(),
+                'name' => 'Volunteer 2 User',
+                'phone' => '081234567890',
+                'gender' => 'Perempuan',
+                'password' => Hash::make('Password123!'),
+                'email_verified_at' => now(),
+                'role' => 'volunteer',
+                'avatar' => null,
+            ]
+        );
+
+        $olunteer2->assignRole('volunteer');
     }
 }

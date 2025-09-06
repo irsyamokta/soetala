@@ -29,7 +29,7 @@ export default function UserProfiles() {
                 <div className="space-y-6">
                     <UserMetaCard />
                     <UserInfoCard />
-                    <ChangePasswordCard />
+                    {role !== "volunteer" && <ChangePasswordCard />}
                 </div>
             </div>
         </>

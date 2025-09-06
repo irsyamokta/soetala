@@ -24,7 +24,7 @@ class CategorySeeder extends Seeder
         ProductCategory::updateOrCreate(
             [
                 'id' => (string) Str::uuid(),
-                'category_name' => 'Stiker',
+                'category_name' => 'Sticker',
             ]
         );
     }

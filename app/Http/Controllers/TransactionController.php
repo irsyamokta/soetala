@@ -19,8 +19,16 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $transactions = Transaction::with(['items', 'ticketOrders.category', 'user'])
-            ->where('channel', 'offline')
+        $user = $request->user(); 
+
+        $query = Transaction::with(['items', 'ticketOrders.category', 'user'])
+            ->where('channel', 'offline');
+
+        if ($user->role === 'volunteer') {
+            $query->where('user_id', $user->id);
+        }
+
+        $transactions = $query
             ->orderByDesc('created_at')
             ->paginate(10)
             ->through(function ($transaction) {
@@ -87,6 +95,7 @@ class TransactionController extends Controller
             'merchandises' => $merchandises,
         ]);
     }
+
 
     public function store(Request $request)
     {
