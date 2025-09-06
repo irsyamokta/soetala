@@ -66,7 +66,7 @@ export default function DioramaCard() {
         <div className="grid grid-cols-1 gap-4 md:gap-6">
             {/* Header */}
             <HeaderSection
-                title="Diorama"
+                title="Galeri"
                 buttonLabel="Tambah"
                 onButtonClick={handleCreate}
             />

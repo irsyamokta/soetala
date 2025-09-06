@@ -20,9 +20,11 @@ class RolePermissionSeeder extends Seeder
         // Roles
         $admin   = Role::firstOrCreate(['name' => 'admin']);
         $visitor  = Role::firstOrCreate(['name' => 'visitor']);
+        $volunteer = Role::firstOrCreate(['name' => 'volunteer']);
 
         // Grant permissions
         $admin->givePermissionTo(['view dashboard', 'manage users']);
         $visitor->givePermissionTo(['view self profile']);
+        $volunteer->givePermissionTo(['view dashboard', 'view self profile']);
     }
 }

@@ -29,7 +29,7 @@ Route::middleware(['auth', 'verified', 'role:visitor'])->group(function () {
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])
     ->group(function () {
-        Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
+        // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
 
         Route::group(['prefix' => 'ticket'], function () {
             Route::get('/', [TicketController::class, 'index'])->name('dashboard.ticket');
@@ -38,7 +38,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             Route::delete('/delete/{id}', [TicketController::class, 'destroy'])->name('ticket.destroy');
         });
 
-        Route::group(['prefix' => 'diorama'], function () {
+        Route::group(['prefix' => 'gallery'], function () {
             Route::get('/', [DioramaController::class, 'index'])->name('dashboard.diorama');
             Route::post('/create', [DioramaController::class, 'store'])->name('diorama.store');
             Route::patch('/update/{id}', [DioramaController::class, 'update'])->name('diorama.update');
@@ -54,16 +54,21 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('merchandise.destroy');
         });
 
-        Route::group(['prefix' => 'transaction'], function () {
-            Route::get('/', [TransactionController::class, 'index'])->name('dashboard.transaction');
-            Route::post('/create', [TransactionController::class, 'store'])->name('transaction.store');
-        });
-
         Route::group(['prefix' => 'user'], function () {
             Route::get('/', [UserController::class, 'index'])->name('dashboard.user');
             Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.destroy');
         });
     });
+
+// Admin & Volunteer Routes
+Route::middleware(['auth', 'verified', 'role:admin|volunteer'])->group(function () {
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+});
+
+Route::group(['prefix' => 'transaction'], function () {
+    Route::get('/', [TransactionController::class, 'index'])->name('dashboard.transaction');
+    Route::post('/create', [TransactionController::class, 'store'])->name('transaction.store');
+})->middleware(['auth', 'verified', 'role:admin|volunteer']);
 
 // Profile Routes
 Route::middleware('auth')->group(function () {

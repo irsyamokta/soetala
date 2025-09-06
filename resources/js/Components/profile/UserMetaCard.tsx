@@ -29,6 +29,7 @@ export default function UserMetaCard() {
     const [imageFile, setImageFile] = useState<File | null>(null);
 
     const t = useTranslate();
+    const isVolunteer = auth.user?.role === "volunteer";
 
     const { data, setData, errors } = useForm<UserForm>({
         name: auth.user?.name || "",
@@ -87,13 +88,16 @@ export default function UserMetaCard() {
                             </p>
                         </div>
                     </div>
-                    <button
-                        onClick={() => setIsOpen(true)}
-                        className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
-                    >
-                        <LuPencil className="w-4 h-4" />
-                        Edit
-                    </button>
+
+                    {!isVolunteer && (
+                        <button
+                            onClick={() => setIsOpen(true)}
+                            className="flex w-full items-center justify-center gap-2 rounded-full border border-gray-300 bg-white px-4 py-3 text-sm font-medium text-gray-700 shadow-theme-xs hover:bg-gray-50 hover:text-gray-800 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400 dark:hover:bg-white/[0.03] dark:hover:text-gray-200 lg:inline-flex lg:w-auto"
+                        >
+                            <LuPencil className="w-4 h-4" />
+                            Edit
+                        </button>
+                    )}
                 </div>
             </div>
 

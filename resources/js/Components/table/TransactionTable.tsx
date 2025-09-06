@@ -11,7 +11,7 @@ import {
 import { EmptyTable } from "@/Components/empty/EmptyTable";
 import Badge from "@/Components/ui/badge/Badge";
 import Pagination from "@/Components/ui/pagination/Pagination";
-import { ModalTransaction } from "../modal/ModalTransaction";
+import { ModalTransaction } from "../../Pages/Admin/Components/modal/ModalTransaction";
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDateTime } from "@/utils/formateDate";
 import capitalizeFirst from "@/utils/capitalize";
