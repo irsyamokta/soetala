@@ -44,6 +44,8 @@ return new class extends Migration
         Schema::create('product_variants', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('product_id');
+            $table->string('image')->nullable();
+            $table->string('public_id')->nullable();
             $table->string('size')->nullable();
             $table->string('color')->nullable();
             $table->integer('stock')->default(0);
