@@ -7,6 +7,59 @@ use App\Models\ProductCategory;
 
 class ValidationHelper
 {
+
+    public static function user($data, $isUpdate = false)
+    {
+        $rules = [
+            'avatar' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users',
+            'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
+            'phone' => 'required|string|max:15|unique:users',
+            'gender' => 'required|string|in:Laki-laki,Perempuan',
+            'role' => 'required|string|in:admin,volunteer,visitor',
+        ];
+
+        return Validator::make(
+            $data,
+            $rules,
+            [
+                'avatar.required' => 'Foto profil wajib diisi.',
+                'avatar.image' => 'Foto profil harus berupa gambar.',
+                'avatar.mimes' => 'Foto profil harus berupa gambar dengan ekstensi jpg, jpeg, atau png.',
+                'avatar.max' => 'Foto profil maksimal 2MB.',
+
+                'name.required' => 'Nama wajib diisi.',
+                'name.string' => 'Nama harus berupa teks.',
+                'name.max' => 'Nama maksimal 255 karakter.',
+
+                'email.required' => 'Email wajib diisi.',
+                'email.string' => 'Email harus berupa teks.',
+                'email.email' => 'Format email tidak valid.',
+                'email.max' => 'Email maksimal 255 karakter.',
+                'email.unique' => 'Email sudah terdaftar.',
+
+                'password.required' => 'Kata sandi wajib diisi.',
+                'password.string' => 'Kata sandi harus berupa teks.',
+                'password.min' => 'Kata sandi minimal 8 karakter.',
+                'password.regex' => 'Kata sandi harus mengandung setidaknya satu huruf besar, satu huruf kecil, satu angka, dan satu karakter khusus (@$!%*?&).',
+
+                'phone.required' => 'Nomor telepon wajib diisi.',
+                'phone.string' => 'Nomor telepon harus berupa teks.',
+                'phone.max' => 'Nomor telepon maksimal 15 karakter.',
+                'phone.unique' => 'Nomor telepon sudah terdaftar.',
+
+                'gender.required' => 'Jenis kelamin wajib diisi.',
+                'gender.string' => 'Jenis kelamin harus berupa teks.',
+                'gender.in' => 'Jenis kelamin harus Laki-laki atau Perempuan.',
+
+                'role.required' => 'Role wajib diisi.',
+                'role.string' => 'Role harus berupa teks.',
+                'role.in' => 'Role harus admin, volunteer, atau visitor.',
+            ]
+        );
+    }
+
     public static function ticket($data, $isUpdate = false)
     {
         $rules = [

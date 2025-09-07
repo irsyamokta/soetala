@@ -29,8 +29,6 @@ Route::middleware(['auth', 'verified', 'role:visitor'])->group(function () {
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])
     ->group(function () {
-        // Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard.admin');
-
         Route::group(['prefix' => 'ticket'], function () {
             Route::get('/', [TicketController::class, 'index'])->name('dashboard.ticket');
             Route::post('/create', [TicketController::class, 'store'])->name('ticket.store');
@@ -56,6 +54,7 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
         Route::group(['prefix' => 'user'], function () {
             Route::get('/', [UserController::class, 'index'])->name('dashboard.user');
+            Route::patch('/create', [ProfileController::class, 'store'])->name('profile.store');
             Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.destroy');
         });
     });

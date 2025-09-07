@@ -14,7 +14,7 @@ class UserController extends Controller
     {
         $users = User::select('*')
             ->selectRaw("CASE WHEN email_verified_at IS NULL THEN 'Unverified' ELSE 'Verified' END as status_verified")
-            ->where('role', 'visitor')
+            ->where('role', 'visitor')->orWhere('role', 'volunteer')
             ->paginate(10);
 
         return Inertia::render('Admin/User', [

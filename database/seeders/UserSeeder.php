@@ -50,7 +50,7 @@ class UserSeeder extends Seeder
         $vsitor->assignRole('visitor');
 
         // Volunteer 1
-        $olunteer1 = User::updateOrCreate(
+        $volunteer1 = User::updateOrCreate(
             ['email' => 'volunteer1@example.com'],
             [
                 'id' => (string) Str::uuid(),
@@ -64,10 +64,10 @@ class UserSeeder extends Seeder
             ]
         );
 
-        $olunteer1->assignRole('volunteer');
+        $volunteer1->assignRole('volunteer');
 
         // Volunteer 2
-        $olunteer2 = User::updateOrCreate(
+        $volunteer2 = User::updateOrCreate(
             ['email' => 'volunteer2@example.com'],
             [
                 'id' => (string) Str::uuid(),
@@ -81,6 +81,6 @@ class UserSeeder extends Seeder
             ]
         );
 
-        $olunteer2->assignRole('volunteer');
+        $volunteer2->assignRole('volunteer');
     }
 }
