@@ -49,7 +49,7 @@ function AboutSection() {
                             <img
                                 src={img}
                                 alt={`About ${idx + 1}`}
-                                className="w-full md:w-80 lg:w-full aspect-square object-cover rounded-lg shadow-lg"
+                                className="w-full md:w-80 lg:w-full aspect-square object-cover rounded-lg"
                             />
                         </SwiperSlide>
                     ))}
@@ -82,9 +82,9 @@ function AboutSection() {
 
                     {/* Left images */}
                     <div className="space-y-20">
-                        <img src={About2} alt="About 2" className="w-5/6 rounded shadow-lg" />
+                        <img src={About2} alt="About 2" className="w-5/6 rounded" />
                         <div className="relative lg:left-24">
-                            <img src={About3} alt="About 3" className="w-2/4 rounded shadow-lg" />
+                            <img src={About3} alt="About 3" className="w-2/4 rounded" />
                         </div>
                     </div>
                 </div>
@@ -92,11 +92,11 @@ function AboutSection() {
                 {/* RIGHT SIDE */}
                 <div className="relative top-48 flex flex-col space-y-20">
                     {/* Top image */}
-                    <img src={About1} alt="About 1" className="relative lg:left-42 xl:left-46 2xl:left-56 w-2/3 rounded shadow-lg" />
+                    <img src={About1} alt="About 1" className="relative lg:left-42 xl:left-46 2xl:left-56 w-2/3 rounded" />
 
                     {/* Bottom grid: image + text */}
                     <div className="grid grid-cols-1 gap-6 items-start">
-                        <img src={About4} alt="About 4" className="w-3/4 rounded shadow-lg" />
+                        <img src={About4} alt="About 4" className="w-3/4 rounded" />
                         <p className="paragraph">
                             {t("about-2")}
                         </p>

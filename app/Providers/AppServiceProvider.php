@@ -78,6 +78,12 @@ class AppServiceProvider extends ServiceProvider
 
                 'ticket.heading' => __('ticket.heading'),
                 'ticket.subheading' => __('ticket.subheading'),
+                'ticket.title' => __('ticket.title'),
+                'ticket.description' => __('ticket.description'),
+                'ticket.days' => __('ticket.days'),
+                'ticket.hours' => __('ticket.hours'),
+                'ticket.minutes' => __('ticket.minutes'),
+                'ticket.seconds' => __('ticket.seconds'),
 
                 'merch.heading' => __('merch.heading'),
                 'merch.subheading' => __('merch.subheading'),
@@ -134,7 +140,14 @@ class AppServiceProvider extends ServiceProvider
                 'checkout.merch' => __('checkout.merch'),
                 'checkout.detail' => __('checkout.detail'),
                 'checkout.empty' => __('checkout.empty'),
+                'checkout.noTickets' => __('checkout.noTickets'),
+                'checkout.note' => __('checkout.note'),
                 'checkout.add' => __('checkout.add'),
+                'checkout.cart' => __('checkout.cart'),
+
+                'ticket.readmore' => __('ticket.readmore'),
+                'ticket.close' => __('ticket.close'),
+                'ticket.validation' => __('ticket.validation'),
 
                 'merch.modal.color' => __('merch.modal.color'),
                 'merch.modal.size' => __('merch.modal.size'),
@@ -150,6 +163,19 @@ class AppServiceProvider extends ServiceProvider
                 'transaction.button.cancel' => __('transaction.button.cancel'),
                 'transaction.button.payment' => __('transaction.button.payment'),
                 'transaction.empty' => __('transaction.empty'),
+                'transaction.note' => __('transaction.note'),
+
+                'ticket.history.title' => __('ticket.history.title'),
+                'ticket.history.detail' => __('ticket.history.detail'),
+                'ticket.history.buyer' => __('ticket.history.buyer'),
+                'ticket.history.phone' => __('ticket.history.phone'),
+                'ticket.history.show.qr' => __('ticket.history.show.qr'),
+                'ticket.history.empty' => __('ticket.history.empty'),
+                'ticket.history.category' => __('ticket.history.category'),
+                'ticket.history.price' => __('ticket.history.price'),
+                'ticket.history.quantity' => __('ticket.history.quantity'),
+                'ticket.history.used' => __('ticket.history.used'),
+                'ticket.history.not_used' => __('ticket.history.not_used'),
             ],
         ]);
     }

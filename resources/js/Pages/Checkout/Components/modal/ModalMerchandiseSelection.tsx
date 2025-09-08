@@ -26,9 +26,9 @@ interface MerchModalData {
 
 interface MerchandiseSelectionModalProps {
     isOpen: boolean;
-    merchModal: MerchModalData | null;
-    setMerchModal: (data: MerchModalData | null) => void;
-    handleAddMerch: (merchData: MerchModalData) => void;
+    merchModal: any;
+    setMerchModal: (data: any | null) => void;
+    handleAddMerch: (merchData: any) => void;
 }
 
 export const ModalMerchandiseSelection = ({

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
  * @property string|null $phone
  * @property int $quantity
  * @property float $price
+ * @property string|null $used_at
  * @property string|null $qr_code
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
@@ -35,6 +36,7 @@ class TicketOrder extends Model
         'phone',
         'quantity',
         'price',
+        'used_at',
         'qr_code',
     ];
 

@@ -16,6 +16,7 @@ import { toast } from "react-toastify";
 interface ModalUserProps {
     isOpen: boolean;
     onClose: () => void;
+    user?: any; // User object for editing
 }
 
 type UserForm = {
@@ -28,12 +29,13 @@ type UserForm = {
     password: string;
 };
 
-export const ModalUser = ({ isOpen, onClose }: ModalUserProps) => {
+export const ModalUser = ({ isOpen, onClose, user }: ModalUserProps) => {
     const [loading, setLoading] = useState(false);
     const [imagePreview, setImagePreview] = useState(ImageUser);
-    const [imageFile, setImageFile] = useState<File | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [serverErrors, setServerErrors] = useState<Record<string, string>>({});
+
+    const isEditing = !!user;
 
     const { data, setData, reset, errors } = useForm<UserForm>({
         name: "",
@@ -45,14 +47,25 @@ export const ModalUser = ({ isOpen, onClose }: ModalUserProps) => {
         password: "",
     });
 
+    // Sync form data and image preview when user prop or isOpen changes
     useEffect(() => {
-        if (!isOpen) {
+        if (isOpen && isEditing && user) {
+            setData({
+                name: user.name || "",
+                phone: user.phone || "",
+                email: user.email || "",
+                gender: user.gender || "",
+                avatar: null,
+                role: user.role || "",
+                password: "",
+            });
+            setImagePreview(user.avatar || ImageUser);
+        } else if (!isOpen) {
             reset();
-            setImageFile(null);
             setImagePreview(ImageUser);
+            setServerErrors({});
         }
-        setServerErrors({});
-    }, [isOpen, reset]);
+    }, [isOpen, user, isEditing, setData, reset]);
 
     const handleSubmit: FormEventHandler = (e) => {
         e.preventDefault();
@@ -60,54 +73,65 @@ export const ModalUser = ({ isOpen, onClose }: ModalUserProps) => {
         setLoading(true);
 
         const formData = new FormData();
-        formData.append("_method", "PATCH");
+        if (isEditing) {
+            formData.append("_method", "PUT");
+        }
         Object.entries(data).forEach(([key, value]) => {
             if (key === "avatar" && value instanceof File) {
                 formData.append(key, value);
-            } else if (value !== null && value !== undefined) {
+            } else if (value !== null && value !== undefined && (key !== "password" || value !== "")) {
                 formData.append(key, value as string);
             }
         });
 
-        router.post(route("profile.store"), formData, {
+        router.post(isEditing ? route("user.update", user.id) : route("user.store"), formData, {
             forceFormData: true,
             onSuccess: () => {
-                toast.success("Pengguna berhasil ditambahkan");
+                toast.success(isEditing ? "Pengguna berhasil diperbarui" : "Pengguna berhasil ditambahkan");
                 reset();
+                setImagePreview(ImageUser);
                 setLoading(false);
                 onClose();
             },
             onError: (errors) => {
                 setServerErrors(errors);
+                setLoading(false);
             },
-            onFinish: () => setLoading(false),
         });
     };
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] m-4">
             <div className="no-scrollbar relative w-full max-w-[800px] max-h-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8">
-                <h4 className="mb-4 text-2xl font-semibold text-gray-800 dark:text-white/90">Tambah Pengguna</h4>
+                <h4 className="mb-4 text-2xl font-semibold text-gray-800 dark:text-white/90">
+                    {isEditing ? "Edit Pengguna" : "Tambah Pengguna"}
+                </h4>
 
                 <form className="flex flex-col" onSubmit={handleSubmit}>
                     <div className="space-y-5">
                         {/* Profile */}
                         <div>
                             <Label required={true}>Foto Profil</Label>
-                            <input
-                                name="avatar"
-                                type="file"
-                                accept="image/*"
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0];
-                                    if (file) {
-                                        setData("avatar", file);
-                                        setImageFile(file);
-                                        setImagePreview(URL.createObjectURL(file));
-                                    }
-                                }}
-                                className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary/80"
-                            />
+                            <div className="flex items-center gap-4">
+                                <img
+                                    src={imagePreview}
+                                    alt="Profile Preview"
+                                    className="h-16 w-16 rounded-full object-cover"
+                                />
+                                <input
+                                    name="avatar"
+                                    type="file"
+                                    accept="image/*"
+                                    onChange={(e) => {
+                                        const file = e.target.files?.[0];
+                                        if (file) {
+                                            setData("avatar", file);
+                                            setImagePreview(URL.createObjectURL(file));
+                                        }
+                                    }}
+                                    className="block w-full text-sm text-gray-500 file:mr-4 file:rounded-full file:border-0 file:bg-primary file:px-4 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary/80"
+                                />
+                            </div>
                             {serverErrors.avatar && <p className="mt-1 text-xs text-red-500">{serverErrors.avatar}</p>}
                         </div>
 
@@ -118,7 +142,8 @@ export const ModalUser = ({ isOpen, onClose }: ModalUserProps) => {
                                 name="name"
                                 value={data.name}
                                 placeholder="Masukkan Nama Lengkap"
-                                onChange={(e) => setData("name", e.target.value)} />
+                                onChange={(e) => setData("name", e.target.value)}
+                            />
                             {serverErrors.name && <p className="mt-1 text-xs text-red-500">{serverErrors.name}</p>}
                         </div>
 
@@ -129,7 +154,8 @@ export const ModalUser = ({ isOpen, onClose }: ModalUserProps) => {
                                 name="phone"
                                 value={data.phone}
                                 placeholder="Masukkan No Hp"
-                                onChange={(e) => setData("phone", e.target.value)} />
+                                onChange={(e) => setData("phone", e.target.value)}
+                            />
                             {serverErrors.phone && <p className="mt-1 text-xs text-red-500">{serverErrors.phone}</p>}
                         </div>
 
@@ -158,7 +184,7 @@ export const ModalUser = ({ isOpen, onClose }: ModalUserProps) => {
                                 placeholder="Masukkan Email"
                                 onChange={(e) => setData("email", e.target.value)}
                             />
-                            {serverErrors.email && <p className="text-sm text-red-500">{serverErrors.email}</p>}
+                            {serverErrors.email && <p className="mt-1 text-xs text-red-500">{serverErrors.email}</p>}
                         </div>
 
                         {/* Role */}
@@ -176,9 +202,9 @@ export const ModalUser = ({ isOpen, onClose }: ModalUserProps) => {
                             {serverErrors.role && <p className="text-xs text-red-500 mt-1">{serverErrors.role}</p>}
                         </div>
 
-                        {/* New Password */}
+                        {/* Password */}
                         <div>
-                            <Label required={true}>Kata Sandi</Label>
+                            <Label required={!isEditing}>Kata Sandi {isEditing && "(Kosongkan jika tidak ingin mengubah)"}</Label>
                             <div className="relative">
                                 <Input
                                     type={showPassword ? "text" : "password"}
@@ -214,7 +240,7 @@ export const ModalUser = ({ isOpen, onClose }: ModalUserProps) => {
                                     Loading...
                                 </>
                             ) : (
-                                "Simpan"
+                                isEditing ? "Perbarui" : "Simpan"
                             )}
                         </Button>
                     </div>

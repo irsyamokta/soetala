@@ -16,11 +16,9 @@ type TransactionItem = {
     item_id: string;
     quantity: number;
     price: number;
-    variant_details?: {
-        color?: string;
-        size?: string;
-        note?: string;
-    };
+    color?: string;
+    size?: string;
+    note?: string;
     item_name: string;
 };
 
@@ -191,22 +189,18 @@ export default function TransactionHistory({ transactions }: Props) {
                                         >
                                             <div className="flex-1">
                                                 <p className="font-medium">{capitalizeFirst(item.item_name)}</p>
-                                                {item.variant_details && (
+                                                {(item.color || item.size || item.note) && (
                                                     <div className="flex gap-2 text-sm text-gray-500 mt-1">
-                                                        {item.variant_details.color && (
+                                                        {item.color && (
                                                             <span className="inline-flex items-center gap-1">
                                                                 <div
                                                                     className="w-4 h-4 rounded-full border border-gray-400"
-                                                                    style={{ backgroundColor: item.variant_details.color }}
+                                                                    style={{ backgroundColor: item.color }}
                                                                 />
                                                             </span>
                                                         )}
-                                                        {item.variant_details.size && (
-                                                            <span>Size {item.variant_details.size}</span>
-                                                        )}
-                                                        {item.variant_details.note && (
-                                                            <p>Note: {item.variant_details.note}</p>
-                                                        )}
+                                                        {item.size && <span>Size {item.size}</span>}
+                                                        {item.note && <p>Note: {item.note}</p>}
                                                     </div>
                                                 )}
                                                 <p className="text-sm text-gray-500 mt-1">
@@ -220,11 +214,14 @@ export default function TransactionHistory({ transactions }: Props) {
                                     ))}
                                 </ul>
 
-                                <div className="flex items-center justify-end gap-2 mb-4 mt-4">
-                                    <h3 className="font-bold text-xl">Subtotal:</h3>
-                                    <h1 className="font-bold text-xl">
-                                        {formatCurrency(transaction.total_price)}
-                                    </h1>
+                                <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2 mb-4 mt-4">
+                                    <p className="text-xs sm:text-sm"><span className="text-red-500 font-bold">*</span>{t("transaction.note")}</p>
+                                    <div className="flex justify-end gap-2">
+                                        <h3 className="font-bold text-xl">Subtotal:</h3>
+                                        <h1 className="font-bold text-xl">
+                                            {formatCurrency(transaction.total_price)}
+                                        </h1>
+                                    </div>
                                 </div>
 
                                 {transaction.status === "pending" && (

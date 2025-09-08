@@ -1,66 +1,75 @@
 import { useEffect, useState } from "react";
-import { usePage, router } from "@inertiajs/react";
+import { usePage, Link } from "@inertiajs/react";
 import useTranslate from "@/hooks/useTranslate";
 import useApiTranslate from "@/hooks/useApiTranslate";
-import TicketCard from "@/Components/card/TicketCard";
-import capitalizeFirst from "@/utils/capitalize";
-import { formatCurrency } from "@/utils/formatCurrency";
+import Button from "@/Components/ui/button/Button";
+import { IoMdArrowDropright } from "react-icons/io";
+import ImageTicket from "../../../assets/images/image-ticket.png";
+import { LuCalendar, LuClock, LuMapPin } from "react-icons/lu";
+
+type TicketCategory = {
+    category_name: string;
+    description?: string;
+};
+
+type Ticket = {
+    id: string;
+    title: string;
+    description: string;
+    price: number;
+    start_date: string;
+    end_date: string;
+    start_time: string;
+    end_time: string;
+    location: string;
+    thumbnail: string;
+    categories: TicketCategory[];
+};
 
 function TicketSection() {
-    const { locale, ticket }: any = usePage().props
+    const { locale, ticket } = usePage<{
+        auth: any;
+        locale: string;
+        ticket: Ticket[];
+    }>().props;
+
     const t = useTranslate();
     const { translate } = useApiTranslate();
 
-    const categoryMap: Record<string, string> = {
-        adult: "Dewasa",
-        child: "Anak",
-    };
+    const [tickets, setTickets] = useState<Ticket[]>(ticket || []);
+
+    const [timeLeft, setTimeLeft] = useState({
+        days: 0,
+        hours: 0,
+        minutes: 0,
+        seconds: 0,
+    });
 
     useEffect(() => {
-        const interval = setInterval(() => {
-            router.reload({ only: ["ticket"], preserveUrl: true });
-        }, 1000);
+        const targetDate = new Date("2025-11-10T00:00:00+07:00");
+
+        const updateCountdown = () => {
+            const now = new Date().getTime();
+            const distance = targetDate.getTime() - now;
+
+            if (distance <= 0) {
+                setTimeLeft({ days: 0, hours: 0, minutes: 0, seconds: 0 });
+                return;
+            }
+
+            setTimeLeft({
+                days: Math.floor(distance / (1000 * 60 * 60 * 24)),
+                hours: Math.floor((distance / (1000 * 60 * 60)) % 24),
+                minutes: Math.floor((distance / (1000 * 60)) % 60),
+                seconds: Math.floor((distance / 1000) % 60),
+            });
+        };
+
+        updateCountdown(); // run first
+        const interval = setInterval(updateCountdown, 1000);
 
         return () => clearInterval(interval);
     }, []);
-
-    const [tickets, setTickets] = useState<any[]>(ticket || []);
-
-    useEffect(() => {
-        const doTranslate = async () => {
-            if (!ticket) return;
-
-            if (locale === "en") {
-                const translated = await Promise.all(
-                    ticket.map(async (t: any) => {
-                        const reqArray = JSON.parse(t.requirement);
-
-                        const translatedReq = await Promise.all(
-                            reqArray.map((req: string) => translate(req, "en"))
-                        );
-
-                        return {
-                            ...t,
-                            category: await translate(t.category, "en"),
-                            online_price: t.online_price,
-                            offline_price: t.offline_price,
-                            requirement: translatedReq,
-                        };
-                    })
-                );
-                setTickets(translated);
-            } else {
-                const localized = ticket.map((t: any) => ({
-                    ...t,
-                    category: categoryMap[t.category.toLowerCase()] || t.category,
-                    requirement: JSON.parse(t.requirement),
-                }));
-
-                setTickets(localized);
-            }
-        };
-        doTranslate();
-    }, [locale, ticket]);
 
     return (
         <>
@@ -79,21 +88,70 @@ function TicketSection() {
                         </p>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8 max-w-5xl w-full">
-                        {tickets.map((t, i) => (
-                            <TicketCard
-                                key={i}
-                                title={capitalizeFirst(t.category)}
-                                price={formatCurrency(t.online_price)}
-                                requirement={Array.isArray(t.requirement)
-                                    ? t.requirement.map((req: string, idx: number) => (
-                                        <li style={{ listStyleType: "none" }} className="paragraph" key={idx}>{req}</li>
-                                    ))
-                                    : []}
-                                otsPrice={formatCurrency(t.offline_price)}
-                                href={route("checkout.index", { ticket_id: t.id })}
+                    <div className="flex flex-col md:flex-row items-center gap-6 sm:gap-0 max-w-4xl w-full">
+                        {/* Image */}
+                        <div className="flex-1">
+                            <img
+                                src={ImageTicket}
+                                alt="Auction"
+                                className="rounded-ss-[52px] rounded-ee-[52px] shadow-lg sm:h-112 object-cover"
                             />
-                        ))}
+                        </div>
+
+                        {/* Content */}
+                        <div className="flex-1">
+                            <h2 className="text-2xl md:text-3xl font-bold mb-4">
+                                {t("ticket.title")}
+                            </h2>
+                            <p className="text-sm md:text-base text-white/80 mb-6">
+                                {t("ticket.description")}
+                            </p>
+
+                            <div className="flex flex-col gap-2 mb-4">
+                                <p className="flex items-center gap-2">
+                                    <LuCalendar /> 10 - 16 November 2025
+                                </p>
+                                <p className="flex items-center gap-2">
+                                    <LuClock /> 10.00 - 20.00 WIB
+                                </p>
+                                <p className="flex items-center gap-2">
+                                    <LuMapPin /> Museum Panglima Besar Jenderal Soedirman
+                                </p>
+                            </div>
+
+                            {/* Buttons */}
+                            <div className="flex items-center gap-6 mb-6">
+                                <Link href={route("checkout.index")} target="_blank">
+                                    <Button
+                                        variant="outline"
+                                        size="sm"
+                                        className="px-12 text-lg font-medium hover:bg-white/10 rounded-none"
+                                    >
+                                        {t("buy_ticket")} <IoMdArrowDropright size={24} />
+                                    </Button>
+                                </Link>
+                            </div>
+
+                            {/* Countdown */}
+                            <div className="flex gap-3">
+                                <div className="bg-white/10 rounded-md px-4 py-2 text-center">
+                                    <div className="text-2xl font-bold">{timeLeft.days}</div>
+                                    <div className="text-xs">{t("ticket.days")}</div>
+                                </div>
+                                <div className="bg-white/10 rounded-md px-4 py-2 text-center">
+                                    <div className="text-2xl font-bold">{timeLeft.hours}</div>
+                                    <div className="text-xs">{t("ticket.hours")}</div>
+                                </div>
+                                <div className="bg-white/10 rounded-md px-4 py-2 text-center">
+                                    <div className="text-2xl font-bold">{timeLeft.minutes}</div>
+                                    <div className="text-xs">{t("ticket.minutes")}</div>
+                                </div>
+                                <div className="bg-white/10 rounded-md px-4 py-2 text-center">
+                                    <div className="text-2xl font-bold">{timeLeft.seconds}</div>
+                                    <div className="text-xs">{t("ticket.seconds")}</div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </section>
             )}

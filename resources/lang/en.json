@@ -49,7 +49,13 @@
     "gallery.email-2": "get more information!",
 
     "ticket.heading": "Buy Ticket",
-    "ticket.subheading": "An electronic version of your ticket will be sent to \nyou via the email address provided.",
+    "ticket.subheading": "Every ticket you purchase is a step towards an experience full of energy and excitement \nto be part of a special moment that will be remembered forever.",
+    "ticket.title": "Soetala Exhibition",
+    "ticket.description": "Featuring a series of paintings depicting the journey of General Sudirman, a major figure in the history of the Indonesian struggle. Each work depicts the fighting spirit, sacrifice, and leadership values ​​inherited from the General.",
+    "ticket.days": "Days",
+    "ticket.hours": "Hours",
+    "ticket.minutes": "Minutes",
+    "ticket.seconds": "Seconds",
 
     "merch.heading": "Merchandise",
     "merch.subheading": "Each Soetala t-shirt is custom-made to capture the moments \nof your visit. Comfortable, stylish, and of course, exclusive!",
@@ -107,7 +113,14 @@
     "checkout.merch": "Add Merchandise",
     "checkout.detail": "Order Detail",
     "checkout.empty": "There are no items yet",
+    "checkout.noTickets": "There are no tickets available",
+    "checkout.note": "Notes",
     "checkout.add": "Add",
+    "checkout.cart": "Cart",
+
+    "ticket.readmore": "Read More",
+    "ticket.close": "Close",
+    "ticket.validation": "I declare that the ticket I have selected is appropriate for my age category.",
 
     "merch.modal.color": "Color",
     "merch.modal.size": "Size",
@@ -122,5 +135,18 @@
     "transaction.detail": "Transaction Details",
     "transaction.button.cancel": "Cancel Payment",
     "transaction.button.payment": "Pay Now",
-    "transaction.empty": "There are no transactions yet"
+    "transaction.empty": "There are no transactions yet",
+    "transaction.note": "To collect merchandise, you can come directly to the event location.",
+
+    "ticket.history.title": "Your Tickets",
+    "ticket.history.detail": "Ticket Details",
+    "ticket.history.buyer": "Buyer",
+    "ticket.history.phone": "Phone",
+    "ticket.history.show.qr": "Show QR Code",
+    "ticket.history.empty": "There are no tickets yet",
+    "ticket.history.category": "Category",
+    "ticket.history.price": "Price",
+    "ticket.history.quantity": "Quantity",
+    "ticket.history.used": "Used",
+    "ticket.history.not_used": "Not used"
 }

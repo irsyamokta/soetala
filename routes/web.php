@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\UserTicketController;
 
 // Localization
 Route::get('/locale/{lang}', function ($lang) {
@@ -21,14 +22,18 @@ Route::get('/locale/{lang}', function ($lang) {
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
 
 Route::middleware(['auth', 'verified', 'role:visitor'])->group(function () {
-    Route::get('/ticket/checkout/{ticket_id}', [CheckoutController::class, 'index'])->name('checkout.index');
+    Route::get('/tickets', [CheckoutController::class, 'index'])->name('checkout.index');
     Route::post('/ticket/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/transactions', [CheckoutController::class, 'history'])->name('checkout.history');
+    Route::get('/ticket/history', [UserTicketController::class, 'index'])->name('ticket.history');
 });
 
 // Admin Routes
 Route::middleware(['auth', 'verified', 'role:admin'])
     ->group(function () {
+
+        Route::get('/visitors/export', [DashboardController::class, 'export'])->name('visitors.export');
+
         Route::group(['prefix' => 'ticket'], function () {
             Route::get('/', [TicketController::class, 'index'])->name('dashboard.ticket');
             Route::post('/create', [TicketController::class, 'store'])->name('ticket.store');
@@ -54,7 +59,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 
         Route::group(['prefix' => 'user'], function () {
             Route::get('/', [UserController::class, 'index'])->name('dashboard.user');
-            Route::patch('/create', [ProfileController::class, 'store'])->name('profile.store');
+            Route::post('/create', [UserController::class, 'store'])->name('user.store');
+            Route::put('/update/{id}', [UserController::class, 'update'])->name('user.update');
             Route::delete('/delete/{id}', [UserController::class, 'destroy'])->name('user.destroy');
         });
     });
@@ -62,6 +68,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])
 // Admin & Volunteer Routes
 Route::middleware(['auth', 'verified', 'role:admin|volunteer'])->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+    Route::post('/checkin', [DashboardController::class, 'checkin'])->name('dashboard.checkin');
+    Route::post('/transactions/{id}/pickup-status', [TransactionController::class, 'updatePickupStatus'])->name('transaction.updatePickupStatus');
 });
 
 Route::group(['prefix' => 'transaction'], function () {

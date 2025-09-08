@@ -1,6 +1,5 @@
 import { useState } from "react";
 import { Scanner } from "@yudiel/react-qr-scanner";
-import Swal from "sweetalert2";
 
 type ScanTicketModalProps = {
     open: boolean;
@@ -33,15 +32,6 @@ export default function ModalScanTicket({ open, onClose, onResult }: ScanTicketM
                         onScan={(result) => {
                             if (result && result.length > 0) {
                                 const value = result[0].rawValue;
-
-                                Swal.fire({
-                                    title: "Checkin Berhasil 🎉",
-                                    text: `Pengunjung: ${value}`,
-                                    icon: "success",
-                                    confirmButtonText: "OK",
-                                    confirmButtonColor: "#014C8F",
-                                });
-
                                 onResult(value);
                                 onClose();
                             }

@@ -41,7 +41,6 @@ export default function useApiTranslate() {
 
             return translated;
         } catch (e) {
-            console.error("Translate error:", e);
             return text;
         } finally {
             setLoading(false);

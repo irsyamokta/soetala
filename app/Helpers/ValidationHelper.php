@@ -7,15 +7,25 @@ use App\Models\ProductCategory;
 
 class ValidationHelper
 {
-
-    public static function user($data, $isUpdate = false)
+    public static function user($data, $isUpdate = false, $userId = null)
     {
         $rules = [
-            'avatar' => 'required|image|mimes:jpg,jpeg,png|max:2048',
+            'avatar' => $isUpdate ? 'nullable|image|mimes:jpg,jpeg,png|max:2048' : 'required|image|mimes:jpg,jpeg,png|max:2048',
             'name' => 'required|string|max:255',
-            'email' => 'required|string|email|max:255|unique:users',
-            'password' => 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
-            'phone' => 'required|string|max:15|unique:users',
+            'email' => [
+                'required',
+                'string',
+                'email',
+                'max:255',
+                $isUpdate ? 'unique:users,email,' . $userId : 'unique:users,email',
+            ],
+            'password' => $isUpdate ? 'nullable|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/' : 'required|string|min:8|regex:/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/',
+            'phone' => [
+                'required',
+                'string',
+                'max:15',
+                $isUpdate ? 'unique:users,phone,' . $userId : 'unique:users,phone',
+            ],
             'gender' => 'required|string|in:Laki-laki,Perempuan',
             'role' => 'required|string|in:admin,volunteer,visitor',
         ];
@@ -66,7 +76,7 @@ class ValidationHelper
             'title' => 'required|string|max:255',
             'description' => 'required|string',
             'location' => 'required|string',
-            'start_date' => 'required|date',
+            'start_date' => 'required|date|after_or_equal:today',
             'end_date' => 'required|date|after_or_equal:start_date',
             'start_time' => 'required',
             'end_time' => 'required|after:start_time',
@@ -103,6 +113,7 @@ class ValidationHelper
                 'location.string' => 'Lokasi harus berupa teks.',
 
                 'start_date.required' => 'Tanggal mulai wajib diisi.',
+                'start_date.after_or_equal' => 'Tanggal mulai tidak boleh sebelum hari ini.',
                 'start_date.date' => 'Tanggal mulai harus berupa tanggal yang valid.',
 
                 'end_date.required' => 'Tanggal selesai wajib diisi.',
@@ -329,6 +340,93 @@ class ValidationHelper
                 'ticket_details.*.price.min' => 'Harga tiket minimal 0.',
 
                 'ticket_details.*.quantity.required_if' => 'Jumlah tiket wajib diisi.',
+                'ticket_details.*.quantity.integer' => 'Jumlah tiket harus berupa angka bulat.',
+                'ticket_details.*.quantity.min' => 'Jumlah tiket minimal 1.',
+            ]
+        );
+    }
+
+    public static function order($data, $isUpdate = false)
+    {
+        $rules = [
+            'user_id' => 'required|uuid|exists:users,id',
+            'total_price' => 'required|numeric|min:0',
+            'type' => 'required|string|in:ticket,merchandise,mixed',
+            'channel' => 'required|string|in:online,offline',
+
+            'items' => 'required|array',
+            'items.*.item_type' => 'required|string|in:ticket,product',
+            'items.*.item_name' => 'required|string',
+            'items.*.item_id' => 'required|uuid',
+            'items.*.quantity' => 'required|integer|min:1',
+            'items.*.price' => 'required|numeric|min:0',
+            'items.*.color' => 'nullable|string',
+            'items.*.size' => 'nullable|string',
+            'items.*.note' => 'nullable|string',
+
+            'ticket_details' => 'required_if:type,ticket,mixed|array',
+            'ticket_details.*.ticket_id' => 'required|uuid|exists:tickets,id',
+            'ticket_details.*.ticket_category_id' => 'required|uuid|exists:ticket_categories,id',
+            'ticket_details.*.buyer_name' => 'required|string',
+            'ticket_details.*.phone' => 'nullable|string',
+            'ticket_details.*.price' => 'required|numeric|min:0',
+            'ticket_details.*.quantity' => 'required|integer|min:1',
+        ];
+
+        return Validator::make(
+            $data,
+            $rules,
+            [
+                'user_id.required' => 'User wajib diisi.',
+                'user_id.uuid' => 'User ID harus berupa UUID.',
+                'user_id.exists' => 'User tidak ditemukan.',
+
+                'total_price.required' => 'Total harga wajib diisi.',
+                'total_price.numeric' => 'Total harga harus berupa angka.',
+                'total_price.min' => 'Total harga minimal 0.',
+
+                'type.required' => 'Tipe order wajib diisi.',
+                'type.in' => 'Tipe order tidak valid.',
+
+                'channel.required' => 'Channel wajib diisi.',
+                'channel.in' => 'Channel tidak valid.',
+
+                'items.required' => 'Items wajib diisi.',
+                'items.array' => 'Items harus berupa array.',
+
+                'items.*.item_type.required' => 'Tipe item wajib diisi.',
+                'items.*.item_type.in' => 'Tipe item tidak valid.',
+                'items.*.item_name.required' => 'Nama item wajib diisi.',
+                'items.*.item_id.required' => 'ID item wajib diisi.',
+                'items.*.item_id.uuid' => 'ID item harus berupa UUID.',
+                'items.*.quantity.required' => 'Jumlah item wajib diisi.',
+                'items.*.quantity.integer' => 'Jumlah item harus berupa angka bulat.',
+                'items.*.quantity.min' => 'Jumlah item minimal 1.',
+                'items.*.price.required' => 'Harga item wajib diisi.',
+                'items.*.price.numeric' => 'Harga item harus berupa angka.',
+                'items.*.price.min' => 'Harga item minimal 0.',
+
+                'ticket_details.required_if' => 'Detail tiket wajib diisi jika type adalah ticket atau mixed.',
+                'ticket_details.array' => 'Detail tiket harus berupa array.',
+
+                'ticket_details.*.ticket_id.required' => 'ID tiket wajib diisi.',
+                'ticket_details.*.ticket_id.uuid' => 'ID tiket harus berupa UUID.',
+                'ticket_details.*.ticket_id.exists' => 'Tiket tidak ditemukan.',
+
+                'ticket_details.*.ticket_category_id.required' => 'Kategori tiket wajib diisi.',
+                'ticket_details.*.ticket_category_id.uuid' => 'Kategori tiket harus berupa UUID.',
+                'ticket_details.*.ticket_category_id.exists' => 'Kategori tiket tidak ditemukan.',
+
+                'ticket_details.*.buyer_name.required' => 'Nama pembeli tiket wajib diisi.',
+                'ticket_details.*.buyer_name.string' => 'Nama pembeli tiket harus berupa teks.',
+
+                'ticket_details.*.phone.string' => 'Nomor telepon tiket harus berupa teks.',
+
+                'ticket_details.*.price.required' => 'Harga tiket wajib diisi.',
+                'ticket_details.*.price.numeric' => 'Harga tiket harus berupa angka.',
+                'ticket_details.*.price.min' => 'Harga tiket minimal 0.',
+
+                'ticket_details.*.quantity.required' => 'Jumlah tiket wajib diisi.',
                 'ticket_details.*.quantity.integer' => 'Jumlah tiket harus berupa angka bulat.',
                 'ticket_details.*.quantity.min' => 'Jumlah tiket minimal 1.',
             ]

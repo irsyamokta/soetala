@@ -8,13 +8,9 @@ use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Redirect;
-use Illuminate\Support\Facades\DB;
-use App\Models\User;
-use App\Helpers\ValidationHelper;
 use Inertia\Inertia;
 use Inertia\Response;
 use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
-use Illuminate\Support\Facades\Hash;
 
 class ProfileController extends Controller
 {
@@ -27,47 +23,6 @@ class ProfileController extends Controller
             'mustVerifyEmail' => $request->user() instanceof MustVerifyEmail,
             'status' => session('status'),
         ]);
-    }
-
-    /**
-     * Cretae a new user profile
-     */
-    public function store(Request $request)
-    {
-        $validator = ValidationHelper::user($request->all(), false);
-        if ($validator->fails()) {
-            return back()->withErrors($validator)->withInput();
-        }
-
-        $validated = $validator->validated();
-
-        try {
-            DB::beginTransaction();
-
-            if ($request->hasFile('avatar')) {
-                $uploaded = Cloudinary::uploadApi()->upload(
-                    $request->file('avatar')->getRealPath(),
-                    ['folder' => 'images/profile']
-                );
-
-                $validated['avatar'] = $uploaded['secure_url'];
-                $validated['public_id'] = $uploaded['public_id'];
-            }
-
-            $validated['password'] = Hash::make($validated['password']);
-            $validated['email_verified_at'] = now();
-
-            $user = User::create($validated);
-
-            $user->assignRole($request->role);
-
-            DB::commit();
-
-            return redirect()->route('dashboard.user')->with('success', 'User berhasil dibuat.');
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->with('error', 'Gagal membuat user: ' . $e->getMessage())->withInput();
-        }
     }
 
     /**

@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
  * @property float $total_price
  * @property string|null $payment_method
  * @property string $status
+ * @property string $pickup_status
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
@@ -34,6 +35,7 @@ class Transaction extends Model
         'total_price',
         'payment_method',
         'status',
+        'pickup_status',
     ];
 
     protected $casts = [

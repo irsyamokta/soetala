@@ -17,7 +17,7 @@ import Button from "@/Components/ui/button/Button";
 import Badge from "@/Components/ui/badge/Badge";
 import ImageFallback from "@/Components/ui/images/ImageFallback";
 import { formatDateTime } from "@/utils/formateDate";
-import { LuTrash2 } from "react-icons/lu";
+import { LuTrash2, LuPencil } from "react-icons/lu";
 
 import ImageUser from "../../../../../assets/images/image-user.png";
 import Input from "@/Components/form/input/InputField";
@@ -32,6 +32,7 @@ export default function UserTable() {
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [search, setSearch] = useState("");
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [editingUser, setEditingUser] = useState<any | null>(null);
 
     const filteredUsers = useMemo(() => {
         if (!search) return users;
@@ -66,8 +67,14 @@ export default function UserTable() {
         });
     }, []);
 
+    const handleEdit = useCallback((user: any) => {
+        setEditingUser(user);
+        setIsModalOpen(true);
+    }, []);
+
     const handleClose = useCallback(() => {
         setIsModalOpen(false);
+        setEditingUser(null);
     }, []);
 
     return (
@@ -76,11 +83,14 @@ export default function UserTable() {
             <HeaderSection
                 title="User"
                 buttonLabel="Tambah"
-                onButtonClick={() => setIsModalOpen(true)}
+                onButtonClick={() => {
+                    setEditingUser(null);
+                    setIsModalOpen(true);
+                }}
             />
 
             {/* Modal */}
-            <ModalUser isOpen={isModalOpen} onClose={handleClose} />
+            <ModalUser isOpen={isModalOpen} onClose={handleClose} user={editingUser} />
 
             {/* Table */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
@@ -92,7 +102,7 @@ export default function UserTable() {
                         placeholder="Cari nama atau email..."
                         value={search}
                         onChange={(e) => setSearch(e.target.value)}
-                        className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-white/[0.1] dark:bg-transparent"
+                        className="w-full max-w-xs rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-white/[0.1] dark:bg-transparent"
                     />
                 </div>
                 <div className="max-w-full overflow-x-auto">
@@ -100,7 +110,7 @@ export default function UserTable() {
                         {/* Table Header */}
                         <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                             <TableRow>
-                                <TableCell isHeader className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400">
+                                <TableCell isHeader className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                     Foto Profil
                                 </TableCell>
                                 <TableCell isHeader className="px-5 py-3 text-start text-theme-xs font-medium text-gray-500 dark:text-gray-400 whitespace-nowrap">
@@ -134,20 +144,20 @@ export default function UserTable() {
                             ) : (
                                 filteredUsers.map((user: any) => (
                                     <TableRow key={user.id}>
-                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
+                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                             <ImageFallback
                                                 src={user.avatar || ImageUser}
                                                 alt={user.name}
                                                 className="h-10 w-10 rounded-full object-cover"
                                             />
                                         </TableCell>
-                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
+                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                             {user.name}
                                         </TableCell>
-                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
+                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                             {user.email}
                                         </TableCell>
-                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
+                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                             {user.phone ?? "-"}
                                         </TableCell>
                                         <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
@@ -160,13 +170,22 @@ export default function UserTable() {
                                                 <Badge color="error">Unverified</Badge>
                                             )}
                                         </TableCell>
-                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
+                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400 whitespace-nowrap">
                                             {formatDateTime(user.created_at)}
                                         </TableCell>
-                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400">
+                                        <TableCell className="px-5 py-3 text-theme-sm text-gray-500 dark:text-gray-400 flex gap-2">
                                             <Button
                                                 type="button"
-                                                size="sm"
+                                                size="md"
+                                                variant="default"
+                                                aria-label="Edit user"
+                                                onClick={() => handleEdit(user)}
+                                            >
+                                                <LuPencil />
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                size="md"
                                                 variant="danger"
                                                 aria-label="Hapus user"
                                                 onClick={() => handleDelete(user.id)}
@@ -182,7 +201,6 @@ export default function UserTable() {
                                     </TableRow>
                                 ))
                             )}
-
                         </TableBody>
                     </Table>
                     {props.users.last_page > 1 && (

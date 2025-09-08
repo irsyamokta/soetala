@@ -19,10 +19,9 @@ class TransactionController extends Controller
 {
     public function index(Request $request)
     {
-        $user = $request->user(); 
+        $user = $request->user();
 
-        $query = Transaction::with(['items', 'ticketOrders.category', 'user'])
-            ->where('channel', 'offline');
+        $query = Transaction::with(['items', 'ticketOrders.category', 'user']);
 
         if ($user->role === 'volunteer') {
             $query->where('user_id', $user->id);
@@ -34,7 +33,7 @@ class TransactionController extends Controller
             ->through(function ($transaction) {
                 return [
                     'id' => $transaction->id,
-                    'buyer_name' => $transaction->ticketOrders->first()->buyer_name ?? '-',
+                    'buyer_name' => $transaction->ticketOrders->first()->buyer_name ?? $transaction->user->name,
                     'items' => $transaction->items->map(function ($item) {
                         $variantDetails = $item->variant_details ?? [];
                         return [
@@ -51,6 +50,7 @@ class TransactionController extends Controller
                     'total_price' => $transaction->total_price,
                     'payment_method' => $transaction->payment_method,
                     'payment_status' => $transaction->status,
+                    'pickup_status' => $transaction->pickup_status,
                     'created_at' => $transaction->created_at->toIso8601String(),
                     'responsible' => [
                         'name' => $transaction->responsible?->name ?? '-',
@@ -116,6 +116,7 @@ class TransactionController extends Controller
                 'total_price' => $request->total_price,
                 'payment_method' => $request->payment_method,
                 'status' => 'paid',
+                'pickup_status' => 'picked_up',
             ]);
 
             foreach ($request->items as $item) {
@@ -185,9 +186,26 @@ class TransactionController extends Controller
             DB::commit();
             return redirect()->back()->with('success', 'Transaksi berhasil ditambahkan');
         } catch (\Exception $e) {
-            \Log::error($e);
             DB::rollBack();
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
+    }
+
+    public function updatePickupStatus(Request $request, $id)
+    {
+        $request->validate([
+            'pickup_status' => 'required|in:pending,picked_up',
+        ]);
+
+        try {
+            $transaction = Transaction::findOrFail($id);
+            $transaction->update([
+                'pickup_status' => $request->pickup_status,
+            ]);
+
+            return redirect()->back()->with('success', 'Status pengambilan barang berhasil diperbarui');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Gagal memperbarui status pengambilan barang']);
         }
     }
 }

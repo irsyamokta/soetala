@@ -21,6 +21,7 @@ return new class extends Migration
             $table->decimal('total_price', 12, 2)->default(0);
             $table->string('payment_method')->nullable();
             $table->enum('status', ['pending', 'paid', 'canceled'])->default('pending');
+            $table->enum('pickup_status', ['pending', 'picked_up'])->default('pending');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

@@ -84,7 +84,8 @@ const Navbar = ({ lang, setLang, forceSolid = false }: NavbarProps) => {
                         height={48}
                         src={scrolled ? LogoColor : LogoWhite}
                         alt="Logo"
-                        className="transition-all duration-300"
+                        className={`transition-all duration-100 ${scrolled ? "opacity-100" : "opacity-0"
+                            }`}
                     />
                 </Link>
 
@@ -163,7 +164,7 @@ const Navbar = ({ lang, setLang, forceSolid = false }: NavbarProps) => {
                                 <div className="absolute right-0 mt-2 bg-white rounded shadow text-sm min-w-[150px]">
                                     <Link href="/" className="block px-4 py-2 hover:bg-gray-100">{t("home")}</Link>
                                     <Link href="/profile" className="block px-4 py-2 hover:bg-gray-100">{t("profile")}</Link>
-                                    <Link href="/tickets" className="block px-4 py-2 hover:bg-gray-100">{t("tickets")}</Link>
+                                    <Link href="/ticket/history" className="block px-4 py-2 hover:bg-gray-100">{t("tickets")}</Link>
                                     <Link href="/transactions" className="block px-4 py-2 hover:bg-gray-100">{t("transactions")}</Link>
                                     <Link href="/logout" method="post" as="button" className="w-full px-4 py-2 text-start hover:bg-gray-100 text-red-600">{t("logout")}</Link>
                                 </div>
@@ -240,7 +241,7 @@ const Navbar = ({ lang, setLang, forceSolid = false }: NavbarProps) => {
                         <div className="space-y-2">
                             <Link href="/" className="block px-4 py-2 hover:bg-white/10 rounded">{t("home")}</Link>
                             <Link href="/profile" className="block px-4 py-2 hover:bg-white/10 rounded">{t("profile")}</Link>
-                            <Link href="/tickets" className="block px-4 py-2 hover:bg-white/10 rounded">{t("tickets")}</Link>
+                            <Link href="/ticket/history" className="block px-4 py-2 hover:bg-white/10 rounded">{t("tickets")}</Link>
                             <Link href="/transactions" className="block px-4 py-2 hover:bg-white/10 rounded">{t("transactions")}</Link>
                             <Link href="/logout" method="post" as="button" className="block w-full px-4 py-2 bg-red-600 hover:bg-red-500 rounded">{t("logout")}</Link>
                         </div>

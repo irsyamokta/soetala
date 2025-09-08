@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
-import { usePage } from "@inertiajs/react";
+import { usePage, router } from "@inertiajs/react";
+import Swal from "sweetalert2";
 
 import StatCard from "@/Components/card/StatCard";
 import VisitorTable from "@/Components/table/VisitorTable";
@@ -11,19 +12,105 @@ import { PiMoneyWavyBold, PiUsersThreeBold } from "react-icons/pi";
 import { HiOutlineTicket } from "react-icons/hi";
 import { MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { RiQrScan2Line } from "react-icons/ri";
-import { LuClock3 } from "react-icons/lu";
+import { LuClock3, LuSticker } from "react-icons/lu";
 import { IoShirtOutline } from "react-icons/io5";
-import { LuSticker } from "react-icons/lu";
+
+import { FlashData, Visitor, PageProps } from "@/types/types";
 
 export default function DashboardCard() {
-    const { props }: any = usePage();
-    const stocks = props.stocks || [];
-    const userRole = props.auth?.user?.role;
+    const { props } = usePage<PageProps>();
+    const {
+        stocks = [],
+        totalRevenue = 0,
+        ticketsSold = 0,
+        merchandiseSold = 0,
+        visitors = [],
+        auth,
+        today = new Date().toISOString().split("T")[0],
+        flash,
+    } = props;
+    const userRole = auth?.user?.role;
 
     const [openScan, setOpenScan] = useState(false);
     const [currentTime, setCurrentTime] = useState(new Date());
+    const [flashState, setFlashState] = useState<FlashData | null>(flash || null);
+    const [visitorList, setVisitorList] = useState<Visitor[]>(visitors);
+    const [filteredVisitors, setFilteredVisitors] = useState<Visitor[]>(visitors);
 
-    const handleScanResult = (value: string) => { };
+    useEffect(() => {
+        setVisitorList(visitors);
+        setFlashState(flash || null);
+    }, [visitors, flash]);
+
+    useEffect(() => {
+        const interval = setInterval(() => {
+            router.reload({
+                only: ["stocks", "totalRevenue", "ticketsSold", "merchandiseSold", "visitors", "today", "flash"],
+                preserveState: true,
+                preserveScroll: true,
+            } as any);
+        }, 5000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+    const handleScanResult = (value: string) => {
+        router.post(route("dashboard.checkin"), { qr_code: value }, {
+            preserveState: true,
+            onSuccess: (page) => {
+                const response = page.props.flash as FlashData;
+                setFlashState(response);
+                if (response?.success && response?.data) {
+                    const { buyer_name, category_name, quantity, used_at } = response.data;
+                    const checkinDate = new Date(used_at);
+                    Swal.fire({
+                        title: "Checkin Berhasil 🎉",
+                        html: `
+                            <p>Pengunjung: ${buyer_name}</p>
+                            <p>Kategori: ${category_name}</p>
+                            <p>Jumlah: ${quantity}</p>
+                            <p>Tanggal Checkin: ${checkinDate.toLocaleDateString("id-ID", {
+                                weekday: "long",
+                                day: "numeric",
+                                month: "long",
+                                year: "numeric",
+                            })}</p>
+                        `,
+                        icon: "success",
+                        confirmButtonText: "OK",
+                        confirmButtonColor: "#014C8F",
+                    }).then(() => {
+                        router.reload({ only: ["stocks", "totalRevenue", "ticketsSold", "merchandiseSold", "visitors", "flash"] });
+                    });
+                } else if (response?.message) {
+                    Swal.fire({
+                        title: "Gagal Checkin",
+                        text: response.message,
+                        icon: "error",
+                        confirmButtonText: "OK",
+                        confirmButtonColor: "#014C8F",
+                    });
+                } else {
+                    Swal.fire({
+                        title: "Error",
+                        text: "Tidak ada respons valid dari server.",
+                        icon: "error",
+                        confirmButtonText: "OK",
+                        confirmButtonColor: "#014C8F",
+                    });
+                }
+            },
+            onError: (errors) => {
+                Swal.fire({
+                    title: "Gagal Checkin",
+                    text: errors.qr_code || "Tiket tidak valid atau sudah digunakan.",
+                    icon: "error",
+                    confirmButtonText: "OK",
+                    confirmButtonColor: "#014C8F",
+                });
+            },
+        });
+    };
 
     const isVolunteer = userRole === "volunteer";
 
@@ -51,69 +138,58 @@ export default function DashboardCard() {
         .filter((item: any) => item.category === "Sticker")
         .reduce((acc: number, item: any) => acc + (item.total_stock ?? 0), 0);
 
+    const dynamicTotalVisitors = filteredVisitors.reduce((sum, visitor) => sum + visitor.quantity, 0);
+
     return (
         <div className="grid grid-cols-1 gap-4 md:gap-6">
             {/* First Row */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 md:gap-6">
                 {!isVolunteer && (
                     <>
-                        {/* Revenue */}
                         <StatCard
                             icon={<PiMoneyWavyBold className="text-white size-8" />}
                             title="Total Pendapatan"
-                            value={formatCurrency(10000000)}
+                            value={formatCurrency(totalRevenue)}
                         />
-                        {/* Ticket */}
                         <StatCard
                             icon={<HiOutlineTicket className="text-white size-8" />}
                             title="Total Penjualan Tiket"
-                            value="0"
+                            value={ticketsSold}
                         />
-                        {/* Merchandise Sold */}
                         <StatCard
                             icon={<MdOutlineProductionQuantityLimits className="text-white size-8" />}
                             title="Merchandise Terjual"
-                            value="0"
+                            value={merchandiseSold}
                         />
                     </>
                 )}
-
-                {/* Date & Time */}
                 <StatCard
                     icon={<LuClock3 className="text-white size-8" />}
                     title="Waktu Sekarang"
-                    value={`${formattedTime}`}
+                    value={formattedTime}
                 >
                     <p className="text-sm text-gray-500">{formattedDate}</p>
                 </StatCard>
-
-                {/* Shirt Stock */}
                 <StatCard
                     icon={<IoShirtOutline className="text-white size-8" />}
                     title="Stok Kaos"
                     value={shirtStock}
                 />
-
-                {/* Sticker Stock */}
                 <StatCard
                     icon={<LuSticker className="text-white size-8" />}
                     title="Stok Stiker"
                     value={stickerStock}
                 />
-
             </div>
 
             {/* Second Row */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-6">
                 <div className="sm:col-span-1 grid grid-cols-1 gap-4 md:gap-6">
-                    {/* Visitor */}
                     <StatCard
                         icon={<PiUsersThreeBold className="text-white size-8" />}
                         title="Total Pengunjung"
-                        value="0"
+                        value={dynamicTotalVisitors}
                     />
-
-                    {/* Scan Ticket */}
                     <StatCard
                         icon={<RiQrScan2Line className="text-white size-8" />}
                         title="Scan Tiket"
@@ -125,7 +201,6 @@ export default function DashboardCard() {
                         >
                             Scan Tiket
                         </Button>
-
                         <ModalScanTicket
                             open={openScan}
                             onClose={() => setOpenScan(false)}
@@ -133,10 +208,12 @@ export default function DashboardCard() {
                         />
                     </StatCard>
                 </div>
-
                 <div className="sm:col-span-3 grid grid-cols-1 gap-4 md:gap-6">
-                    {/* Visitor Table */}
-                    <VisitorTable />
+                    <VisitorTable
+                        visitors={visitorList}
+                        today={today}
+                        onFilterChange={setFilteredVisitors}
+                    />
                 </div>
             </div>
         </div>
