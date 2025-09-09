@@ -21,6 +21,14 @@ class TransactionController extends Controller
     {
         $user = $request->user();
 
+        if(!$user) {
+            abort(403);
+        }
+
+        if($user->role !== 'admin' && $user->role !== 'volunteer') {
+            abort(403);
+        }
+
         $query = Transaction::with(['items', 'ticketOrders.category', 'user']);
 
         if ($user->role === 'volunteer') {

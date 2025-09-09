@@ -11,7 +11,6 @@ return new class extends Migration
      */
     public function up(): void
     {
-
         Schema::create('transactions', function (Blueprint $table) {
             $table->uuid('id')->primary();
             $table->uuid('user_id');
@@ -20,8 +19,11 @@ return new class extends Migration
             $table->enum('channel', ['online', 'offline']);
             $table->decimal('total_price', 12, 2)->default(0);
             $table->string('payment_method')->nullable();
-            $table->enum('status', ['pending', 'paid', 'canceled'])->default('pending');
+            $table->enum('status', ['pending', 'paid', 'canceled', 'expired'])->default('pending');
             $table->enum('pickup_status', ['pending', 'picked_up'])->default('pending');
+            $table->string('snap_token')->nullable();
+            $table->timestamp('snap_token_expired_at')->nullable();
+            $table->json('raw_response')->nullable();
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

@@ -26,6 +26,9 @@ Route::middleware(['auth', 'verified', 'role:visitor'])->group(function () {
     Route::post('/ticket/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/transactions', [CheckoutController::class, 'history'])->name('checkout.history');
     Route::get('/ticket/history', [UserTicketController::class, 'index'])->name('ticket.history');
+    Route::get('/checkout/pay/{id}', [CheckoutController::class, 'checkout'])->name('checkout.pay');
+    Route::post('/checkout/pay/{id}', [CheckoutController::class, 'checkout'])->name('checkout.pay');
+    Route::post('/checkout/{transactionId}/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 });
 
 // Admin Routes

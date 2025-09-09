@@ -16,6 +16,9 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
  * @property string|null $payment_method
  * @property string $status
  * @property string $pickup_status
+ * @property string|null $snap_token
+ * @property \Carbon\Carbon $snap_token_expired_at
+ * @property array|null $raw_response
  * @property \Carbon\Carbon $created_at
  * @property \Carbon\Carbon $updated_at
  */
@@ -36,6 +39,9 @@ class Transaction extends Model
         'payment_method',
         'status',
         'pickup_status',
+        'snap_token',
+        'snap_token_expired_at',
+        'raw_response',
     ];
 
     protected $casts = [
@@ -43,6 +49,8 @@ class Transaction extends Model
         'type' => 'string',
         'channel' => 'string',
         'status' => 'string',
+        'snap_token_expired_at' => 'datetime',
+        'raw_response' => 'array',
     ];
 
     public function user()
