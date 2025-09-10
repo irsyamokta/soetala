@@ -64,6 +64,11 @@ const colorMap: Record<string, string> = {
     "#0914B7FF": "Navy",
 };
 
+const TICKET_DISCOUNT_PRICE: Record<string, number> = {
+    adult: 22500,
+    child: 12500,
+};
+
 export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => {
     const { props } = usePage();
     const events = (props.events || []) as Event[];
@@ -88,7 +93,36 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
         }
     }, [isOpen, reset]);
 
-    const total = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
+    const getCategoryType = (categoryName: string): string => {
+        const normalized = categoryName.toLowerCase();
+        if (normalized.includes("adult") || normalized.includes("dewasa") || normalized.includes("mature")) {
+            return "adult";
+        }
+        if (normalized.includes("child") || normalized.includes("anak")) {
+            return "child";
+        }
+        return normalized;
+    };
+
+    const updateTicketPrices = (items: OrderItem[]): OrderItem[] => {
+        const totalTicketQuantity = items
+            .filter((item) => item.type === "ticket")
+            .reduce((sum, item) => sum + item.quantity, 0);
+
+        return items.map((item) => {
+            if (item.type === "ticket" && selectedEvent) {
+                const category = selectedEvent.categories.find((cat) => cat.id === item.id);
+                if (category) {
+                    const categoryType = getCategoryType(category.category_name);
+                    if (totalTicketQuantity >= 20 && TICKET_DISCOUNT_PRICE[categoryType]) {
+                        return { ...item, price: TICKET_DISCOUNT_PRICE[categoryType] };
+                    }
+                    return { ...item, price: category.price };
+                }
+            }
+            return item;
+        });
+    };
 
     const handleAddItem = (
         type: "ticket" | "product",
@@ -100,36 +134,37 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
         setOrderItems((prev) => {
             const variantKey = extra.variantKey;
             const exist = prev.find(
-                (p) =>
-                    p.type === type &&
-                    p.id === id &&
-                    (type === "ticket" || p.variantKey === variantKey)
+                (p) => p.type === type && p.id === id && (type === "ticket" || p.variantKey === variantKey)
             );
+            let newItems: OrderItem[];
             if (exist) {
-                return prev.map((p) =>
+                newItems = prev.map((p) =>
                     p === exist ? { ...p, quantity: p.quantity + quantityToAdd, note: extra.note || p.note } : p
                 );
+            } else {
+                newItems = [...prev, { type, id, price, quantity: quantityToAdd, ...extra }];
             }
-            return [...prev, { type, id, price, quantity: quantityToAdd, ...extra }];
+            return updateTicketPrices(newItems);
         });
     };
 
     const handleDecrease = (id: string, type: "ticket" | "product", variantKey?: string) => {
-        setOrderItems((prev) =>
-            prev
+        setOrderItems((prev) => {
+            const updatedItems = prev
                 .map((p) => {
                     if (p.type === type && p.id === id && (variantKey ? p.variantKey === variantKey : true)) {
                         return { ...p, quantity: p.quantity - 1 };
                     }
                     return p;
                 })
-                .filter((p) => p.quantity > 0)
-        );
+                .filter((p) => p.quantity > 0);
+            return updateTicketPrices(updatedItems);
+        });
     };
 
     const handleIncrease = (id: string, type: "ticket" | "product", variantKey?: string) => {
-        setOrderItems((prev) =>
-            prev.map((p) => {
+        setOrderItems((prev) => {
+            const updatedItems = prev.map((p) => {
                 if (p.type === type && p.id === id && (variantKey ? p.variantKey === variantKey : true)) {
                     if (type === "ticket") {
                         return { ...p, quantity: p.quantity + 1 };
@@ -145,11 +180,24 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                     }
                 }
                 return p;
-            })
-        );
+            });
+            return updateTicketPrices(updatedItems);
+        });
     };
 
-    const handleAddMerch = ({ merch, color, size, note, quantity }: { merch: Merch; color: string; size: string; note: string; quantity: number }) => {
+    const handleAddMerch = ({
+        merch,
+        color,
+        size,
+        note,
+        quantity,
+    }: {
+        merch: Merch;
+        color: string;
+        size: string;
+        note: string;
+        quantity: number;
+    }) => {
         const variantKey = `${merch.id}-${color}-${size}`;
         const extra = {
             product_name: merch.product_name,
@@ -163,7 +211,6 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
 
     const handleSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-
         setLoading(true);
         const ticketItems = orderItems.filter((item) => item.type === "ticket");
         const merchItems = orderItems.filter((item) => item.type === "product");
@@ -173,7 +220,6 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                 : ticketItems.length > 0
                     ? "ticket"
                     : "merchandise";
-
         const payload = {
             buyer_name: data.buyer_name,
             payment_method: data.payment_method,
@@ -208,15 +254,16 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
             onError: (errors) => {
                 const normalizedErrors: Record<string, string> = {};
                 Object.entries(errors).forEach(([key, val]) => {
-                    const newKey = key.replace(/\[(\d+)\]/g, '.$1');
+                    const newKey = key.replace(/\[(\d+)\]/g, ".$1");
                     normalizedErrors[newKey] = val as string;
                 });
                 setServerErrors(normalizedErrors);
-                console.error(errors);
             },
             onFinish: () => setLoading(false),
         });
     };
+
+    const total = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
 
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="max-w-[800px] m-4">
@@ -230,7 +277,9 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                             onChange={(e) => setData("buyer_name", e.target.value)}
                             placeholder="Masukkan nama pembeli"
                         />
-                        {serverErrors.buyer_name && <p className="text-xs text-red-500 mt-1">{serverErrors.buyer_name}</p>}
+                        {serverErrors.buyer_name && (
+                            <p className="text-xs text-red-500 mt-1">{serverErrors.buyer_name}</p>
+                        )}
                     </div>
                     <div>
                         <Label required={true}>Daftar Tiket</Label>
@@ -240,7 +289,9 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                             options={events.map((e) => ({ value: e.id, label: e.title }))}
                             placeholder="Pilih event"
                         />
-                        {serverErrors.items && <p className="text-xs text-red-500 mt-1">{serverErrors.items}</p>}
+                        {serverErrors.items && (
+                            <p className="text-xs text-red-500 mt-1">{serverErrors.items}</p>
+                        )}
                     </div>
                     {selectedEvent && (
                         <div>
@@ -249,16 +300,23 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                 {selectedEvent.categories.map((cat) => {
                                     const exist = orderItems.find((p) => p.type === "ticket" && p.id === cat.id);
                                     return (
-                                        <div key={cat.id} className="border rounded-lg p-3 flex justify-between items-center">
+                                        <div
+                                            key={cat.id}
+                                            className="border rounded-lg p-3 flex justify-between items-center"
+                                        >
                                             <div>
                                                 <p className="font-medium">{cat.category_name}</p>
-                                                <p className="text-sm text-gray-600">{formatCurrency(cat.price)}</p>
+                                                <p className="text-sm text-gray-600">
+                                                    {formatCurrency(exist?.price || cat.price)}
+                                                </p>
                                             </div>
                                             {!exist ? (
                                                 <button
                                                     type="button"
                                                     onClick={() =>
-                                                        handleAddItem("ticket", cat.id, cat.price, 1, { category_name: cat.category_name })
+                                                        handleAddItem("ticket", cat.id, cat.price, 1, {
+                                                            category_name: cat.category_name,
+                                                        })
                                                     }
                                                     className="px-4 py-3 border rounded-lg text-sm hover:bg-gray-100"
                                                 >
@@ -293,7 +351,9 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                         <h5 className="text-lg font-semibold mb-3">Pembelian Merchandise</h5>
                         <div className="grid gap-3">
                             {merchandises.map((merch) => {
-                                const existingItems = orderItems.filter((p) => p.type === "product" && p.id === merch.id);
+                                const existingItems = orderItems.filter(
+                                    (p) => p.type === "product" && p.id === merch.id
+                                );
                                 return (
                                     <div key={merch.id} className="border rounded-lg p-3">
                                         <div className="flex justify-between items-center">
@@ -312,7 +372,10 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                         {existingItems.length > 0 && (
                                             <div className="mt-3 space-y-2">
                                                 {existingItems.map((item, index) => (
-                                                    <div key={index} className="flex justify-between items-center bg-gray-50 p-2 rounded">
+                                                    <div
+                                                        key={index}
+                                                        className="flex justify-between items-center bg-gray-50 p-2 rounded"
+                                                    >
                                                         <div className="flex-1">
                                                             <div className="flex items-center gap-2 text-sm">
                                                                 {item.color && (
@@ -323,7 +386,9 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                                                 )}
                                                                 {item.size && <span>Ukuran {item.size}</span>}
                                                             </div>
-                                                            {item.note && <p className="text-sm text-gray-500 mt-1">Note: {item.note}</p>}
+                                                            {item.note && (
+                                                                <p className="text-sm text-gray-500 mt-1">Note: {item.note}</p>
+                                                            )}
                                                         </div>
                                                         <div className="flex items-center gap-2">
                                                             <button
@@ -361,7 +426,9 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                 { value: "qris", label: "QRIS" },
                             ]}
                         />
-                        {serverErrors.payment_method && <p className="text-xs text-red-500 mt-1">{serverErrors.payment_method}</p>}
+                        {serverErrors.payment_method && (
+                            <p className="text-xs text-red-500 mt-1">{serverErrors.payment_method}</p>
+                        )}
                     </div>
                     <div>
                         <h5 className="text-lg font-semibold mb-3">Detail Pesanan</h5>

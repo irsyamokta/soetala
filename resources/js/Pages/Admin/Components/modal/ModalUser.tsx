@@ -230,10 +230,10 @@ export const ModalUser = ({ isOpen, onClose, user }: ModalUserProps) => {
 
                     {/* Actions */}
                     <div className="flex items-center gap-3 mt-6 justify-end">
-                        <Button size="sm" variant="outline" onClick={onClose} disabled={loading}>
+                        <Button variant="outline" onClick={onClose} disabled={loading}>
                             Batal
                         </Button>
-                        <Button size="sm" type="submit" variant="default" disabled={loading}>
+                        <Button type="submit" variant="default" disabled={loading}>
                             {loading ? (
                                 <>
                                     <AiOutlineLoading3Quarters className="animate-spin text-lg" />

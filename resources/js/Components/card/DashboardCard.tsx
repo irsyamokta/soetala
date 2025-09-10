@@ -1,6 +1,7 @@
 import { useState, useEffect } from "react";
 import { usePage, router } from "@inertiajs/react";
 import Swal from "sweetalert2";
+import Chart from "react-apexcharts";
 
 import StatCard from "@/Components/card/StatCard";
 import VisitorTable from "@/Components/table/VisitorTable";
@@ -28,6 +29,7 @@ export default function DashboardCard() {
         auth,
         today = new Date().toISOString().split("T")[0],
         flash,
+        visitorsChart = {},
     } = props;
     const userRole = auth?.user?.role;
 
@@ -54,6 +56,14 @@ export default function DashboardCard() {
         return () => clearInterval(interval);
     }, []);
 
+    const chartCategories = Object.keys(visitorsChart as object);
+    const chartSeries = [
+        {
+            name: "Jumlah Pengunjung",
+            data: Object.values(visitorsChart as object),
+        },
+    ];
+
     const handleScanResult = (value: string) => {
         router.post(route("dashboard.checkin"), { qr_code: value }, {
             preserveState: true,
@@ -70,11 +80,11 @@ export default function DashboardCard() {
                             <p>Kategori: ${category_name}</p>
                             <p>Jumlah: ${quantity}</p>
                             <p>Tanggal Checkin: ${checkinDate.toLocaleDateString("id-ID", {
-                                weekday: "long",
-                                day: "numeric",
-                                month: "long",
-                                year: "numeric",
-                            })}</p>
+                            weekday: "long",
+                            day: "numeric",
+                            month: "long",
+                            year: "numeric",
+                        })}</p>
                         `,
                         icon: "success",
                         confirmButtonText: "OK",
@@ -184,7 +194,7 @@ export default function DashboardCard() {
 
             {/* Second Row */}
             <div className="grid grid-cols-1 gap-4 sm:grid-cols-4 md:gap-6">
-                <div className="sm:col-span-1 grid grid-cols-1 gap-4 md:gap-6">
+                <div className="col-span-4 lg:col-span-1 grid grid-cols-1 md:grid-cols-2 lg:grid-cols-1 gap-4 md:gap-6">
                     <StatCard
                         icon={<PiUsersThreeBold className="text-white size-8" />}
                         title="Total Pengunjung"
@@ -208,12 +218,51 @@ export default function DashboardCard() {
                         />
                     </StatCard>
                 </div>
-                <div className="sm:col-span-3 grid grid-cols-1 gap-4 md:gap-6">
+                <div className="col-span-4 lg:col-span-3 grid grid-cols-1 gap-4 md:gap-6">
                     <VisitorTable
                         visitors={visitorList}
                         today={today}
                         onFilterChange={setFilteredVisitors}
                     />
+                </div>
+                <div className="col-span-4 gap-4 md:gap-6">
+                    {/* Chart Section */}
+                    {!isVolunteer && (
+                        <div className="bg-white rounded-2xl shadow p-4">
+                            <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-2 mb-4">
+                                <h2 className="text-lg font-semibold">Grafik Kunjungan</h2>
+                            </div>
+                            <Chart
+                                options={
+                                    {
+                                        chart: {
+                                            type: "line",
+                                            toolbar: { show: false },
+                                        },
+                                        xaxis: {
+                                            categories: chartCategories,
+                                        },
+                                        yaxis: {
+                                            labels: {
+                                                formatter: function (value) {
+                                                    return `${Math.floor(value)}`;
+                                                },
+                                            },
+                                        },
+                                        stroke: {
+                                            curve: "smooth",
+                                        },
+                                        dataLabels: {
+                                            enabled: true,
+                                        },
+                                    }
+                                }
+                                series={chartSeries}
+                                type="line"
+                                height={300}
+                            />
+                        </div>
+                    )}
                 </div>
             </div>
         </div>

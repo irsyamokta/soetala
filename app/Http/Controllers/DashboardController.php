@@ -17,6 +17,9 @@ class DashboardController extends Controller
 {
     public function index(Request $request)
     {
+        $dateStart = $request->query('date_start', Carbon::now('Asia/Jakarta')->subDays(6)->toDateString());
+        $dateEnd = $request->query('date_end', Carbon::now('Asia/Jakarta')->toDateString());
+
         $stocks = Product::with('variants')->get()->map(function ($product) {
             return [
                 'id' => $product->id,
@@ -35,40 +38,40 @@ class DashboardController extends Controller
         });
 
         $totalRevenue = Transaction::where('status', 'paid')->sum('total_price');
-
-        $ticketsSold = TicketOrder::whereHas('transaction', fn($q) => $q->where('status', 'paid'))
-            ->sum('quantity');
-
+        $ticketsSold = TicketOrder::whereHas('transaction', fn($q) => $q->where('status', 'paid'))->sum('quantity');
         $merchandiseSold = TransactionItem::where('item_type', 'product')
             ->whereHas('transaction', fn($q) => $q->where('status', 'paid'))
             ->sum('quantity');
-
-        $totalVisitors = TicketOrder::whereNotNull('used_at')->sum('quantity'); // Overall total
+        $totalVisitors = TicketOrder::whereNotNull('used_at')->sum('quantity');
 
         $today = Carbon::now('Asia/Jakarta')->toDateString();
-        $selectedDate = $request->query('date', $today);
 
         $visitors = TicketOrder::whereNotNull('used_at')
             ->with('category')
             ->when(!auth()->check() || auth()->user()->role !== 'admin', function ($query) use ($today) {
                 $query->whereDate('used_at', $today);
             })
-            ->when(auth()->check() && auth()->user()->role === 'admin' && $request->has('date'), function ($query) use ($selectedDate) {
-                $query->whereDate('used_at', $selectedDate);
+            ->when(auth()->check() && auth()->user()->role === 'admin' && $request->has('date'), function ($query) use ($request) {
+                $query->whereDate('used_at', $request->query('date'));
             })
             ->orderBy('used_at', 'desc')
             ->get()
-            ->map(function ($ticketOrder) {
-                return [
-                    'id' => $ticketOrder->id,
-                    'buyer_name' => $ticketOrder->buyer_name,
-                    'quantity' => $ticketOrder->quantity,
-                    'used_at' => $ticketOrder->used_at,
-                    'ticket_id' => $ticketOrder->ticket_id,
-                    'ticket_category_id' => $ticketOrder->ticket_category_id,
-                    'category_name' => $ticketOrder->category->category_name ?? null,
-                ];
-            });
+            ->map(fn($ticketOrder) => [
+                'id' => $ticketOrder->id,
+                'buyer_name' => $ticketOrder->buyer_name,
+                'quantity' => $ticketOrder->quantity,
+                'used_at' => $ticketOrder->used_at,
+                'ticket_id' => $ticketOrder->ticket_id,
+                'ticket_category_id' => $ticketOrder->ticket_category_id,
+                'category_name' => $ticketOrder->category->category_name ?? null,
+            ]);
+
+        $visitorsChart = TicketOrder::selectRaw('DATE(used_at) as date, SUM(quantity) as total')
+            ->whereNotNull('used_at')
+            ->whereBetween(DB::raw('DATE(used_at)'), [$dateStart, $dateEnd])
+            ->groupBy('date')
+            ->orderBy('date')
+            ->pluck('total', 'date');
 
         return Inertia::render('Admin/Dashboard', [
             'stocks' => $stocks,
@@ -76,8 +79,11 @@ class DashboardController extends Controller
             'ticketsSold' => $ticketsSold,
             'merchandiseSold' => $merchandiseSold,
             'visitors' => $visitors,
-            'totalVisitors' => $totalVisitors, 
+            'totalVisitors' => $totalVisitors,
             'today' => $today,
+            'visitorsChart' => $visitorsChart,
+            'dateStart' => $dateStart,
+            'dateEnd' => $dateEnd,
         ]);
     }
 

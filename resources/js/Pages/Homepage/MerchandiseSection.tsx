@@ -35,6 +35,9 @@ interface Image {
 
 interface Product {
     id: string | number;
+    category?: {
+        category_name: string;
+    };
     product_name: string;
     description: string;
     price: number;
@@ -64,12 +67,13 @@ interface MerchItemProps {
 
 function MerchItem({ product, locale, t, translate }: MerchItemProps) {
     const { auth } = usePage().props;
+    const isShirt = product.category?.category_name.toLowerCase().includes("shirt");
     const [mainImage, setMainImage] = useState<string>(product?.thumbnail ?? "");
     const [loading, setLoading] = useState(false);
     const [isManualImageSelection, setIsManualImageSelection] = useState(false);
     const [data, setData] = useState<MerchForm>({
-        color: product?.variants?.[0]?.color ?? "",
-        size: "",
+        color: isShirt && product.variants?.length > 0 ? product.variants[0].color : "",
+        size: isShirt && product.variants?.length > 0 ? product.variants[0].size : "",
         note: "",
         quantity: 1,
     });
@@ -113,11 +117,9 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
         setIsManualImageSelection(false);
     }, [data.color, data.size]);
 
-    const isSticker = product.product_name.toLowerCase().includes("sticker");
-
-    const selectedStock = isSticker
-        ? product.variants.reduce((acc, v) => acc + v.stock, 0)
-        : product.variants.find((v) => v.color === data.color && v.size === data.size)?.stock ?? 0;
+    const selectedStock = isShirt
+        ? product.variants.find((v) => v.color === data.color && v.size === data.size)?.stock ?? 0
+        : product.variants.reduce((acc, v) => acc + v.stock, 0);
 
     const subtotal = product?.price * data.quantity;
 
@@ -134,7 +136,7 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
             toast.error("Stok habis!");
             return;
         }
-        if (!isSticker && (!data.color || !data.size)) {
+        if (isShirt && (!data.color || !data.size)) {
             toast.error("Pilih warna dan ukuran terlebih dahulu!");
             return;
         }
@@ -156,8 +158,8 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                         item_name: product.product_name,
                         quantity: data.quantity,
                         price: product.price,
-                        color: data.color,
-                        size: data.size,
+                        color: isShirt ? data.color : undefined,
+                        size: isShirt ? data.size : undefined,
                         note: data.note,
                     },
                 ],
@@ -262,7 +264,7 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                 <p className="text-2xl lg:text-4xl font-semibold mb-10">{formatCurrency(product.price)}</p>
 
                 {/* Variants */}
-                {!isSticker && (
+                {isShirt && (
                     <div className="flex flex-col md:flex-row lg:justify-between gap-4 md:gap-10 mb-4 md:mb-8">
                         {/* Color */}
                         <div className="mb-4">
@@ -299,7 +301,7 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                             </div>
                         </div>
 
-                        {/* Note (keep for both) */}
+                        {/* Note */}
                         <div className="mb-4">
                             <p className="font-semibold mb-2">{t("merch.note")}</p>
                             <input
@@ -313,7 +315,7 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                     </div>
                 )}
 
-                {isSticker && (
+                {!isShirt && (
                     <div className="mb-4">
                         <p className="font-semibold mb-2">{t("merch.note")}</p>
                         <input
@@ -364,7 +366,7 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                     size="sm"
                     className="w-full py-3 text-lg font-medium hover:bg-white/10 rounded-none"
                     onClick={handleClick}
-                    disabled={selectedStock === 0 || loading || (!isSticker && (!data.color || !data.size))}
+                    disabled={selectedStock === 0 || loading || (isShirt && (!data.color || !data.size))}
                 >
                     {loading
                         ? "Processing..."
