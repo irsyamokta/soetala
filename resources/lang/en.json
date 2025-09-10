@@ -114,6 +114,8 @@
     "checkout.detail": "Order Detail",
     "checkout.empty": "There are no items yet",
     "checkout.noTickets": "There are no tickets available",
+    "checkout.insufficientStock": "Insufficient stock",
+    "checkout.failed": "Checkout failed",
     "checkout.note": "Notes",
     "checkout.add": "Add",
     "checkout.cart": "Cart",
@@ -130,6 +132,7 @@
     "merch.modal.quantity": "Quantity",
     "merch.modal.button.add": "Add to Cart",
     "merch.modal.button.disable": "Out of Stock",
+    "merch.notfound": "Merchandise not found",
 
     "transaction.title": "Transaction History",
     "transaction.detail": "Transaction Details",

@@ -27,7 +27,7 @@ class HomepageController extends Controller
 
         $dioramas = Diorama::where('visibility', 1)->get();
         $ticket = Ticket::where('visibility', 1)->get();
-        $merchant = Product::where('visibility', 1)->with('variants', 'images')->get();
+        $merchant = Product::where('visibility', 1)->with('variants', 'images', 'category')->get();
 
         return Inertia::render('Homepage', [
             'canLogin'       => Route::has('login'),

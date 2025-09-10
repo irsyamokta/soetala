@@ -97,10 +97,10 @@ const ModalPickupStatusUpdate = ({ isOpen, onClose, transactionId }: { isOpen: b
                         />
                     </div>
                     <div className="flex items-center gap-3 justify-end">
-                        <Button size="sm" variant="outline" onClick={onClose} disabled={loading}>
+                        <Button variant="outline" onClick={onClose} disabled={loading}>
                             Batal
                         </Button>
-                        <Button size="sm" type="submit" variant="default" disabled={loading}>
+                        <Button type="submit" variant="default" disabled={loading}>
                             {loading ? "Menyimpan..." : "Simpan"}
                         </Button>
                     </div>
@@ -137,10 +137,19 @@ export default function TransactionTable() {
         );
     }, [transactions, search]);
 
+    const categoryMap: Record<string, string> = {
+        adult: "Dewasa",
+        child: "Anak",
+    };
+
     const getItemSummary = (items: Transaction["items"]) => {
         return items
             .map((item) => {
                 let name = item.item_name;
+
+                if (categoryMap[name.toLowerCase()]) {
+                    name = categoryMap[name.toLowerCase()];
+                }
 
                 const details: string[] = [];
                 if (item.size) details.push(`Ukuran ${item.size}`);
@@ -178,6 +187,7 @@ export default function TransactionTable() {
         paid: { label: "Dibayar", color: "success" },
         pending: { label: "Menunggu", color: "warning" },
         canceled: { label: "Dibatalkan", color: "error" },
+        expired: { label: "Kedaluarsa", color: "error" },
     };
 
     const pickupStatusMap: Record<string, { label: string; color: "success" | "warning" | "error" }> = {
@@ -326,7 +336,7 @@ export default function TransactionTable() {
                                             {capitalizeFirst(transaction.channel)}
                                         </TableCell>
                                         <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm">
-                                            {paymentMethodMap[transaction.payment_method] || transaction.payment_method}
+                                            {paymentMethodMap[transaction.payment_method] || transaction.payment_method || "-"}
                                         </TableCell>
                                         <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm whitespace-nowrap">
                                             <Badge color={paymentStatusMap[transaction.payment_status]?.color || "success"}>

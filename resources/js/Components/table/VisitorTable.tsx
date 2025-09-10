@@ -120,25 +120,29 @@ export default function VisitorTable({ visitors = [], today, onFilterChange }: V
     return (
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             {/* Header */}
-            <div className="flex flex-col xl:flex-row items-center justify-between gap-3 p-4 border-b border-gray-100 dark:border-white/[0.05]">
-                <h1 className="font-semibold text-gray-800">Daftar Pengunjung</h1>
-                <div className="flex items-center gap-3">
-                    <Input
-                        type="text"
-                        placeholder="Cari nama pengunjung.."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full max-w-xs rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500"
-                    />
+            <div className="flex flex-col lg:flex-row items-start justify-between gap-3 p-4 border-b border-gray-100 dark:border-white/[0.05]">
+                <h1 className="font-semibold text-lg text-gray-800">Daftar Pengunjung</h1>
+                <div className="w-full lg:max-w-lg flex flex-col lg:flex-row items-center gap-3">
+                    <div className="w-full">
+                        <Input
+                            type="text"
+                            placeholder="Cari nama pengunjung.."
+                            value={search}
+                            onChange={(e) => setSearch(e.target.value)}
+                            className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                        />
+                    </div>
                     {!isVolunteer && (
-                        <div className="flex items-center gap-2">
-                            <Input
-                                ref={dateInputRef}
-                                type="text"
-                                className="rounded-lg border border-gray-300 px-3 py-3 text-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                placeholder="Pilih tanggal kunjungan"
-                                readOnly
-                            />
+                        <div className="w-full flex items-center gap-2">
+                            <div className="w-full">
+                                <Input
+                                    ref={dateInputRef}
+                                    type="text"
+                                    className="rounded-lg border border-gray-300 px-3 py-3 text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                                    placeholder="Pilih tanggal kunjungan"
+                                    readOnly
+                                />
+                            </div>
                             <Button onClick={handleExport} disabled={!selectedDate}>
                                 <FiDownload />
                             </Button>
@@ -148,23 +152,23 @@ export default function VisitorTable({ visitors = [], today, onFilterChange }: V
             </div>
 
             {/* Table */}
-            <div className="max-w-full overflow-x-auto">
+            <div className="max-w-full h-80 overflow-x-auto">
                 <Table>
                     <TableHeader className="border-b border-gray-100 dark:border-white/[0.05]">
                         <TableRow>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 whitespace-nowrap">
                                 Nama Pengunjung
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 whitespace-nowrap">
                                 Kategori Tiket
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 whitespace-nowrap">
                                 Quantity
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 whitespace-nowrap">
                                 Status Checkin
                             </TableCell>
-                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400">
+                            <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs dark:text-gray-400 whitespace-nowrap">
                                 Tanggal Kunjungan
                             </TableCell>
                         </TableRow>
@@ -175,21 +179,21 @@ export default function VisitorTable({ visitors = [], today, onFilterChange }: V
                         ) : (
                             filteredVisitors.map((visitor) => (
                                 <TableRow key={visitor.id}>
-                                    <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm">
+                                    <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm whitespace-nowrap">
                                         {visitor.buyer_name}
                                     </TableCell>
-                                    <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm">
+                                    <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm whitespace-nowrap">
                                         {visitor.category_name}
                                     </TableCell>
-                                    <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm">
+                                    <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm whitespace-nowrap">
                                         {visitor.quantity}
                                     </TableCell>
-                                    <TableCell className="px-5 py-3 text-gray-500 text-theme-sm">
+                                    <TableCell className="px-5 py-3 text-gray-500 text-theme-sm whitespace-nowrap">
                                         <Badge color={visitor.used_at ? "success" : "warning"}>
                                             {visitor.used_at ? "Checkin" : "Belum Checkin"}
                                         </Badge>
                                     </TableCell>
-                                    <TableCell className="px-5 py-3 text-gray-500 text-theme-sm">
+                                    <TableCell className="px-5 py-3 text-gray-500 text-theme-sm whitespace-nowrap">
                                         {visitor.used_at ? formatDateTime(visitor.used_at) : "-"}
                                     </TableCell>
                                 </TableRow>

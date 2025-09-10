@@ -1,13 +1,11 @@
 import { useState, useEffect } from "react";
 import { Head, usePage } from "@inertiajs/react";
 import useTranslate from "@/hooks/useTranslate";
-import useApiTranslate from "@/hooks/useApiTranslate";
 import AppNavbar from "@/Components/app/AppNavbar";
 import HeaderSection from "@/Components/card/HeaderCard";
 import Badge from "@/Components/ui/badge/Badge";
 import Button from "@/Components/ui/button/Button";
 import { formatCurrency } from "@/utils/formatCurrency";
-import capitalizeFirst from "@/utils/capitalize";
 import { QRCodeCanvas } from "qrcode.react";
 import { EmptyTicket } from "./card/EmptyTicket";
 import { Modal } from "@/Components/ui/modal";
@@ -24,6 +22,7 @@ type TicketOrder = {
     price: number;
     qr_code: string | null;
     used_at: string | null;
+    status_label: string;
 };
 
 type Transaction = {
@@ -48,58 +47,56 @@ export default function TicketHistory({ transactions }: Props) {
 
     const { locale } = usePage().props;
     const t = useTranslate();
-    const { translate } = useApiTranslate();
 
-    console.log(transactions);
-
-    const categoryMap: Record<string, string> = {
+    const categoryMapId: Record<string, string> = {
         adult: "Dewasa",
         child: "Anak",
     };
 
-    const statusMap: Record<string, string> = {
-        pending: "Menunggu",
-        paid: "Dibayar",
-        canceled: "Dibatalkan",
+    const categoryMapEn: Record<string, string> = {
+        adult: "Adult",
+        child: "Child",
+    };
+
+    const normalizeKey = (name?: string | null) => {
+        if (!name) return "";
+        const lower = name.toLowerCase();
+        if (["mature", "dewasa", "adult"].includes(lower)) return "adult";
+        if (["child", "anak"].includes(lower)) return "child";
+        return lower;
     };
 
     useEffect(() => {
-        const doTranslate = async () => {
-            const filteredTransactions = transactions.filter(
-                (t) => t.ticket_orders.length > 0 && t.status === "paid"
-            );
+        const filteredTransactions = transactions.filter(
+            (t) => t.ticket_orders.length > 0 && t.status === "paid"
+        );
 
-            if (locale === "en") {
-                const translated = await Promise.all(
-                    filteredTransactions.map(async (t: Transaction) => {
-                        const ticketOrders = await Promise.all(
-                            t.ticket_orders.map(async (order: TicketOrder) => ({
-                                ...order,
-                                category_name: await translate(order.category_name, "en"),
-                            }))
-                        );
+        const localizedTransactions = filteredTransactions.map((t) => ({
+            ...t,
+            ticket_orders: t.ticket_orders.map((order) => {
+                const categoryName =
+                    locale === "en"
+                        ? categoryMapEn[normalizeKey(order.category_name)] || order.category_name || "-"
+                        : categoryMapId[normalizeKey(order.category_name)] || order.category_name || "-";
 
-                        return {
-                            ...t,
-                            status_label: capitalizeFirst(t.status),
-                            ticket_orders: ticketOrders,
-                        };
-                    })
-                );
-                setTicketTransactions(translated);
-            } else {
-                const localized = filteredTransactions.map((t: Transaction) => ({
-                    ...t,
-                    status_label: statusMap[t.status],
-                    ticket_orders: t.ticket_orders.map((order: TicketOrder) => ({
-                        ...order,
-                        category_name: categoryMap[order.category_name.toLowerCase()] || order.category_name,
-                    })),
-                }));
-                setTicketTransactions(localized);
-            }
-        };
-        doTranslate();
+                const statusLabel =
+                    order.used_at !== null
+                        ? locale === "en"
+                            ? `Used (${formatDateTime(order.used_at)})`
+                            : `Sudah digunakan (${formatDateTime(order.used_at)})`
+                        : locale === "en"
+                            ? "Not used"
+                            : "Belum digunakan";
+
+                return {
+                    ...order,
+                    category_name: categoryName,
+                    status_label: statusLabel,
+                };
+            }),
+        }));
+
+        setTicketTransactions(localizedTransactions);
     }, [locale, transactions]);
 
     const handleSetLang = (lang: string) => {
@@ -155,12 +152,15 @@ export default function TicketHistory({ transactions }: Props) {
                                             )}
                                         </p>
                                     </div>
-                                    <Badge
-                                        className="px-4 py-2"
-                                        color="success"
-                                    >
-                                        {transaction.status_label}
-                                    </Badge>
+                                    {transaction.ticket_orders.map((ticket) => (
+                                        <Badge
+                                            key={ticket.id}
+                                            className="px-4 py-2"
+                                            color={ticket.used_at ? "error" : "success"}
+                                        >
+                                            {ticket.status_label}
+                                        </Badge>
+                                    ))}
                                 </div>
 
                                 <h3 className="text-md font-semibold mb-2">{t("ticket.history.detail")}</h3>
@@ -170,7 +170,7 @@ export default function TicketHistory({ transactions }: Props) {
                                             key={ticket.id}
                                             className="flex flex-col gap-4 sm:flex-row justify-between items-start border-b pb-4"
                                         >
-                                            <div className="flex-1 flex items-center gap-8">
+                                            <div className="flex items-center gap-8">
                                                 <div>
                                                     {ticket.qr_code && (
                                                         <div className="mt-2">
@@ -183,7 +183,7 @@ export default function TicketHistory({ transactions }: Props) {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div>
+                                                <div className="w-56">
                                                     <p className="font-medium">{ticket.category_name}</p>
                                                     <p className="text-sm text-gray-500 mt-1">
                                                         {t("ticket.history.buyer")}: {ticket.buyer_name}
@@ -201,6 +201,7 @@ export default function TicketHistory({ transactions }: Props) {
                                             <div className="flex w-full flex-col items-end gap-2">
                                                 <Button
                                                     variant="outline"
+                                                    size="sm"
                                                     className="border-primary text-primary hover:bg-gray-100"
                                                     onClick={() => showQrCodeModal(ticket)}
                                                 >

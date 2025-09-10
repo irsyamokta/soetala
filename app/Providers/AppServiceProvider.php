@@ -141,6 +141,8 @@ class AppServiceProvider extends ServiceProvider
                 'checkout.detail' => __('checkout.detail'),
                 'checkout.empty' => __('checkout.empty'),
                 'checkout.noTickets' => __('checkout.noTickets'),
+                'checkout.insufficientStock' => __('checkout.insufficientStock'),
+                'checkout.failed' => __('checkout.failed'),
                 'checkout.note' => __('checkout.note'),
                 'checkout.add' => __('checkout.add'),
                 'checkout.cart' => __('checkout.cart'),
@@ -157,6 +159,7 @@ class AppServiceProvider extends ServiceProvider
                 'merch.modal.reminder' => __('merch.modal.reminder'),
                 'merch.modal.button.add' => __('merch.modal.button.add'),
                 'merch.modal.button.disable' => __('merch.modal.button.disable'),
+                'merch.notfound' => __('merch.notfound'),
 
                 'transaction.title' => __('transaction.title'),
                 'transaction.detail' => __('transaction.detail'),

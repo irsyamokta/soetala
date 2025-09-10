@@ -16,7 +16,7 @@ import capitalizeFirst from "@/utils/capitalize";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
 import { LuMinus, LuPlus } from "react-icons/lu";
 
-import { Ticket, MerchVariant, Merch, OrderItem, MerchModalData, PageProps } from "@/types/types";
+import { Ticket, Merch, OrderItem, MerchModalData } from "@/types/types";
 
 export default function CheckoutTicket({
     tickets = [],
@@ -69,6 +69,7 @@ export default function CheckoutTicket({
                 const translated = await Promise.all(
                     tickets.map(async (t: any) => {
                         const translatedCategory = await translate(t.category, "en");
+                        const translatedDescription = await translate(t.description, "en");
                         const normalizedCategory = translatedCategory.toLowerCase().includes("mature")
                             ? "adult"
                             : translatedCategory.toLowerCase().includes("child")
@@ -77,6 +78,7 @@ export default function CheckoutTicket({
                         return {
                             ...t,
                             category: normalizedCategory,
+                            description: translatedDescription,
                         };
                     })
                 );
@@ -85,6 +87,7 @@ export default function CheckoutTicket({
                 const localized = tickets.map((t: any) => ({
                     ...t,
                     category: categoryMap[t.category.toLowerCase()] || t.category,
+                    description: t.description,
                 }));
                 setLocalizedTickets(localized);
             }
@@ -135,26 +138,62 @@ export default function CheckoutTicket({
 
     const handleAdd = (payload: { id: number; type: "ticket" | "merch"; price: number; name?: string }) => {
         setOrderItems((prev) => {
-            const exist = prev.find((p) => p.id === payload.id && p.type === payload.type && !p.variantKey);
             let newItems: OrderItem[];
 
-            if (exist) {
-                newItems = prev.map((p) =>
-                    p.id === payload.id && p.type === payload.type && !p.variantKey
-                        ? { ...p, quantity: p.quantity + 1 }
-                        : p
-                );
+            if (payload.type === "merch") {
+                const merch = merchandises.find((m) => m.id === payload.id);
+                if (!merch) {
+                    toast.error(t("merch.notfound"));
+                    return prev;
+                }
+                const totalStock = merch.variants.reduce((sum, v) => sum + (v.stock || 0), 0);
+                const exist = prev.find((p) => p.id === payload.id && p.type === "merch" && !p.variantKey);
+                const currentQuantity = exist ? exist.quantity : 0;
+                const newQuantity = currentQuantity + 1;
+
+                if (newQuantity > totalStock) {
+                    toast.error(t("checkout.insufficientStock"));
+                    return prev;
+                }
+
+                if (exist) {
+                    newItems = prev.map((p) =>
+                        p.id === payload.id && p.type === "merch" && !p.variantKey
+                            ? { ...p, quantity: newQuantity }
+                            : p
+                    );
+                } else {
+                    newItems = [
+                        ...prev,
+                        {
+                            id: payload.id,
+                            type: "merch",
+                            price: payload.price,
+                            quantity: 1,
+                            name: payload.name,
+                        } as OrderItem,
+                    ];
+                }
             } else {
-                newItems = [
-                    ...prev,
-                    {
-                        id: payload.id,
-                        type: payload.type,
-                        price: payload.price,
-                        quantity: 1,
-                        name: payload.name,
-                    } as OrderItem,
-                ];
+                const exist = prev.find((p) => p.id === payload.id && p.type === payload.type && !p.variantKey);
+                if (exist) {
+                    newItems = prev.map((p) =>
+                        p.id === payload.id && p.type === payload.type && !p.variantKey
+                            ? { ...p, quantity: p.quantity + 1 }
+                            : p
+                    );
+                } else {
+                    newItems = [
+                        ...prev,
+                        {
+                            id: payload.id,
+                            type: payload.type,
+                            price: payload.price,
+                            quantity: 1,
+                            name: payload.name,
+                        } as OrderItem,
+                    ];
+                }
             }
 
             return updateTicketPrices(newItems);
@@ -203,32 +242,6 @@ export default function CheckoutTicket({
             return updateTicketPrices(newItems);
         });
         setMerchModal(null);
-    };
-
-    const handleAddSticker = (merch: Merch) => {
-        setOrderItems((prev) => {
-            const exist = prev.find((p) => p.id === merch.id && p.type === "merch" && !p.variantKey);
-            let newItems: OrderItem[];
-            if (exist) {
-                newItems = prev.map((p) =>
-                    p.id === merch.id && p.type === "merch" && !p.variantKey
-                        ? { ...p, quantity: p.quantity + 1 }
-                        : p
-                );
-            } else {
-                newItems = [
-                    ...prev,
-                    {
-                        id: merch.id,
-                        type: "merch" as const,
-                        price: merch.price,
-                        quantity: 1,
-                        name: merch.product_name,
-                    } as OrderItem,
-                ];
-            }
-            return updateTicketPrices(newItems);
-        });
     };
 
     const handleDecrease = (id: number, type: "ticket" | "merch", variantKey?: string) => {
@@ -353,8 +366,7 @@ export default function CheckoutTicket({
                 router.visit(route("checkout.history"));
             },
             onError: (errors) => {
-                console.error(errors);
-                toast.error("Gagal melakukan checkout: " + errors);
+                toast.error(t("checkout.failed"));
                 setLoading(false);
             },
             onFinish: () => setLoading(false),
@@ -418,7 +430,7 @@ export default function CheckoutTicket({
                                         <Description
                                             description={ticket.description}
                                             lang={lang}
-                                            translate={translate}
+                                            translate={translateRef.current}
                                         />
                                     </div>
                                 );
@@ -434,6 +446,7 @@ export default function CheckoutTicket({
                             <div className="grid gap-4">
                                 {merchandises.map((merch) => {
                                     const existingItems = orderItems.filter((p) => p.id === merch.id && p.type === "merch");
+                                    const hasVariants = merch.variants.some((v) => v.color || v.size);
                                     return (
                                         <div key={merch.id} className="border rounded-lg p-4">
                                             <div className="flex justify-between items-start gap-4">
@@ -444,10 +457,15 @@ export default function CheckoutTicket({
                                                 <Button
                                                     variant="outline"
                                                     onClick={() => {
-                                                        if (merch.product_name.toLowerCase().includes("sticker")) {
-                                                            handleAddSticker(merch);
-                                                        } else {
+                                                        if (hasVariants) {
                                                             openMerchModal(merch);
+                                                        } else {
+                                                            handleAdd({
+                                                                id: merch.id,
+                                                                type: "merch",
+                                                                price: merch.price,
+                                                                name: merch.product_name,
+                                                            });
                                                         }
                                                     }}
                                                     className="w-1/4 border-gray-300 hover:bg-primary/5"

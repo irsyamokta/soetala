@@ -124,7 +124,7 @@ class TransactionController extends Controller
                 'total_price' => $request->total_price,
                 'payment_method' => $request->payment_method,
                 'status' => 'paid',
-                'pickup_status' => 'picked_up',
+                'pickup_status' => 'pending',
             ]);
 
             foreach ($request->items as $item) {

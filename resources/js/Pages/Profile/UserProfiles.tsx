@@ -20,7 +20,7 @@ export default function UserProfiles() {
 
     const content = (
         <>
-            <Head title="Profile" />
+            <Head title={t("profile.title")} />
             <PageBreadcrumb pageTitle="Profile" />
             <div className="rounded-2xl border border-gray-200 bg-white p-5 lg:p-6">
                 <h3 className="mb-5 text-lg font-semibold text-gray-800 lg:mb-7">
@@ -40,7 +40,7 @@ export default function UserProfiles() {
             <div className="min-h-screen flex flex-col">
                 <AppNavbar lang={lang} setLang={setLang} forceSolid={true} />
 
-                <Head title="Profile" />
+                <Head title={t("profile.title")} />
                 <div className="pt-20 lg:pt-24 px-4 lg:px-20 mb-4">
                     <div className="relative rounded-2xl border border-gray-200 bg-white p-5 dark:border-gray-800 dark:bg-white/[0.03] lg:p-6">
                         <h3 className="mb-5 text-lg font-semibold text-gray-800 dark:text-white lg:mb-7">
