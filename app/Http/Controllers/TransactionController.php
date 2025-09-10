@@ -104,7 +104,6 @@ class TransactionController extends Controller
         ]);
     }
 
-
     public function store(Request $request)
     {
         $validator = ValidationHelper::transaction($request->all());
@@ -148,7 +147,7 @@ class TransactionController extends Controller
                     ],
                 ]);
 
-                if ($item['item_type'] === 'merchandise') {
+                if ($item['item_type'] === 'product') {
                     $product = Product::findOrFail($item['item_id']);
                     $variant = ProductVariant::where('product_id', $item['item_id'])
                         ->where('color', $item['color'] ?? '')
