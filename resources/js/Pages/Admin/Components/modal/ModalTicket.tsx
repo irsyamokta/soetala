@@ -6,6 +6,8 @@ import { v4 as uuidv4 } from 'uuid';
 
 import { Modal } from "@/Components/ui/modal";
 import Input from "@/Components/form/input/InputField";
+import DatePicker from "@/Components/form/date-picker";
+import TimeSelect from "@/Components/form/TimeSelect";
 import CurrencyInput from "@/Components/form/input/CurrencyInput";
 import Select from "@/Components/form/Select";
 import RichTextEditor from "@/Components/form/RichTextEditor";
@@ -186,7 +188,15 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
             <div className="no-scrollbar relative w-full max-w-[700px] max-h-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
                 <h4 className="text-2xl font-semibold mb-4">{ticket ? "Edit Tiket" : "Tambah Tiket"}</h4>
 
-                <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+                <form
+                    className="flex flex-col gap-4"
+                    onSubmit={handleSubmit}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+                            e.preventDefault();
+                        }
+                    }}
+                >
                     {/* Thumbnail */}
                     <div>
                         <Label required={true}>Thumbnail</Label>
@@ -239,12 +249,22 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <Label required={true}>Tanggal Mulai</Label>
-                            <Input type="date" value={data.start_date} onChange={(e) => setData("start_date", e.target.value)} />
+                            <DatePicker
+                                id="start_date"
+                                value={data.start_date}
+                                placeholder="Pilih tanggal mulai"
+                                onChange={(dateStr) => setData("start_date", dateStr)}
+                            />
                             {serverErrors.start_date && <p className="text-xs text-red-500 mt-1">{serverErrors.start_date}</p>}
                         </div>
                         <div>
                             <Label required={true}>Tanggal Selesai</Label>
-                            <Input type="date" value={data.end_date} onChange={(e) => setData("end_date", e.target.value)} />
+                            <DatePicker
+                                id="end_date"
+                                value={data.end_date}
+                                placeholder="Pilih tanggal selesai"
+                                onChange={(dateStr) => setData("end_date", dateStr)}
+                            />
                             {serverErrors.end_date && <p className="text-xs text-red-500 mt-1">{serverErrors.end_date}</p>}
                         </div>
                     </div>
@@ -253,13 +273,23 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                     <div className="grid grid-cols-2 gap-4">
                         <div>
                             <Label required={true}>Jam Mulai</Label>
-                            <Input type="time" value={data.start_time} onChange={(e) => setData("start_time", e.target.value)} />
-                            {serverErrors.start_time && <p className="text-xs text-red-500 mt-1">{serverErrors.start_time}</p>}
+                            <TimeSelect
+                                value={data.start_time}
+                                onChange={(val) => setData("start_time", val)}
+                            />
+                            {serverErrors.start_time && (
+                                <p className="text-xs text-red-500 mt-1">{serverErrors.start_time}</p>
+                            )}
                         </div>
                         <div>
                             <Label required={true}>Jam Selesai</Label>
-                            <Input type="time" value={data.end_time} onChange={(e) => setData("end_time", e.target.value)} />
-                            {serverErrors.end_time && <p className="text-xs text-red-500 mt-1">{serverErrors.end_time}</p>}
+                            <TimeSelect
+                                value={data.end_time}
+                                onChange={(val) => setData("end_time", val)}
+                            />
+                            {serverErrors.end_time && (
+                                <p className="text-xs text-red-500 mt-1">{serverErrors.end_time}</p>
+                            )}
                         </div>
                     </div>
 

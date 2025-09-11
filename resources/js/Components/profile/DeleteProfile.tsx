@@ -69,7 +69,15 @@ export default function DeleteProfile() {
                         {t("deleteaccount.warning")}
                     </p>
 
-                    <form className="flex flex-col space-y-5" onSubmit={handleDelete}>
+                    <form
+                        className="flex flex-col space-y-5"
+                        onSubmit={handleDelete}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+                                e.preventDefault();
+                            }
+                        }}
+                    >
                         {/* Password Confirm */}
                         <div>
                             <Label>{t("password-label")}</Label>

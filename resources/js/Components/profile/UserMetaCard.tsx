@@ -106,7 +106,15 @@ export default function UserMetaCard() {
                 <div className="relative w-full max-w-[700px] overflow-y-auto rounded-3xl bg-white p-6 dark:bg-gray-900">
                     <h4 className="mb-4 text-2xl font-semibold text-gray-800 dark:text-white/90">{t("profile.edit")}</h4>
 
-                    <form className="flex flex-col" onSubmit={handleSave}>
+                    <form
+                        className="flex flex-col"
+                        onSubmit={handleSave}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+                                e.preventDefault();
+                            }
+                        }}
+                    >
                         <div className="space-y-5">
                             {/* Profile */}
                             <div>

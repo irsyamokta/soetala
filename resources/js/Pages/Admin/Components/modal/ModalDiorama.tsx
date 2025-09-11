@@ -88,7 +88,7 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
             router.post(route("diorama.update", diorama.id), formData, {
                 forceFormData: true,
                 onSuccess: () => {
-                    toast.success("Tiket berhasil diperbarui");
+                    toast.success("Galeri berhasil diperbarui");
                     reset();
                     setImageFile(null);
                     onClose();
@@ -102,7 +102,7 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
             router.post(route("diorama.store"), formData, {
                 forceFormData: true,
                 onSuccess: () => {
-                    toast.success("Tiket berhasil ditambahkan");
+                    toast.success("Galeri berhasil ditambahkan");
                     reset();
                     setImageFile(null);
                     onClose();
@@ -118,9 +118,17 @@ export const ModalDiorama = ({ isOpen, onClose, diorama }: ModalDioramaProps) =>
     return (
         <Modal isOpen={isOpen} onClose={onClose} className="max-w-[700px] m-4">
             <div className="no-scrollbar relative w-full max-w-[700px] max-h-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-11">
-                <h4 className="text-2xl font-semibold mb-4">{diorama ? "Edit Diorama" : "Tambah Diorama"}</h4>
+                <h4 className="text-2xl font-semibold mb-4">{diorama ? "Edit Galeri" : "Tambah Galeri"}</h4>
                 {/* Form */}
-                <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+                <form
+                    className="flex flex-col gap-4"
+                    onSubmit={handleSubmit}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+                            e.preventDefault();
+                        }
+                    }}
+                >
                     {/* Thumbnail */}
                     <div>
                         <Label required={true}>Thumbnail</Label>

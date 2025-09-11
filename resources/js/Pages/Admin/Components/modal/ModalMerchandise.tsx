@@ -315,7 +315,15 @@ export const ModalMerchandise = ({
                 </h4>
 
                 {/* Form */}
-                <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
+                <form
+                    className="flex flex-col gap-4"
+                    onSubmit={handleSubmit}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+                            e.preventDefault();
+                        }
+                    }}
+                >
                     {/* Thumbnail */}
                     <div>
                         <Label required={true}>Thumbnail</Label>

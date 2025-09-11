@@ -12,10 +12,12 @@ interface SelectProps {
     value: string;
     onChange: (value: string) => void;
     className?: string;
+    hideChevron?: boolean;
 }
 
 const Select: React.FC<SelectProps> = ({
     options,
+    hideChevron,
     placeholder = "Pilih Opsi",
     value,
     onChange,
@@ -36,7 +38,7 @@ const Select: React.FC<SelectProps> = ({
                 <span className={selected ? "text-gray-800 dark:text-white" : "text-gray-400"}>
                     {selected ? selected.label : placeholder}
                 </span>
-                <LuChevronDown className="h-4 w-4 text-gray-500" />
+                {!hideChevron && <LuChevronDown className="h-4 w-4 text-gray-500" />}
             </button>
 
             {/* Dropdown */}

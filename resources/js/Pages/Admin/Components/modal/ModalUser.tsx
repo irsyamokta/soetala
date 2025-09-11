@@ -107,7 +107,15 @@ export const ModalUser = ({ isOpen, onClose, user }: ModalUserProps) => {
                     {isEditing ? "Edit Pengguna" : "Tambah Pengguna"}
                 </h4>
 
-                <form className="flex flex-col" onSubmit={handleSubmit}>
+                <form
+                    className="flex flex-col"
+                    onSubmit={handleSubmit}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+                            e.preventDefault();
+                        }
+                    }}
+                >
                     <div className="space-y-5">
                         {/* Profile */}
                         <div>

@@ -269,7 +269,15 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
         <Modal isOpen={isOpen} onClose={onClose} className="max-w-[800px] m-4">
             <div className="no-scrollbar relative w-full max-w-[800px] max-h-[700px] overflow-y-auto rounded-3xl bg-white p-4 dark:bg-gray-900 lg:p-8">
                 <h4 className="text-2xl font-semibold mb-6">Tambah Transaksi</h4>
-                <form className="flex flex-col gap-6" onSubmit={handleSubmit}>
+                <form
+                    className="flex flex-col gap-6"
+                    onSubmit={handleSubmit}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" && (e.target as HTMLElement).tagName !== "TEXTAREA") {
+                            e.preventDefault();
+                        }
+                    }}
+                >
                     <div>
                         <Label required={true}>Nama Pembeli</Label>
                         <Input
