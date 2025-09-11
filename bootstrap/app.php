@@ -2,9 +2,10 @@
 
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
-use Inertia\Inertia;
 use Illuminate\Foundation\Configuration\Middleware;
 use Illuminate\Auth\AuthenticationException;
+use Illuminate\Validation\ValidationException;
+use Inertia\Inertia;
 use Spatie\Permission\Exceptions\UnauthorizedException;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -20,7 +21,6 @@ return Application::configure(basePath: dirname(__DIR__))
             \Illuminate\Http\Middleware\AddLinkHeadersForPreloadedAssets::class,
             \Illuminate\Session\Middleware\StartSession::class,
             \App\Http\Middleware\SetLocale::class,
-
         ]);
 
         $middleware->alias([
@@ -31,6 +31,11 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions): void {
         $exceptions->render(function (Throwable $e, $request) {
+            if ($e instanceof ValidationException) {
+                // biar balik ke inertia dengan errors
+                return back()->withErrors($e->errors())->withInput();
+            }
+
             if ($e instanceof AuthenticationException) {
                 return redirect()->guest(route('login'));
             }
