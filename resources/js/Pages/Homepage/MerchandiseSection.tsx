@@ -223,9 +223,8 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                                     setMainImage(img.image || product.thumbnail);
                                     setIsManualImageSelection(true);
                                 }}
-                                className={`w-18 h-18 md:w-24 md:h-24 lg:w-20 lg:h-20 rounded-md border cursor-pointer hover:scale-105 transition ${
-                                    mainImage === img.image ? "ring-2 ring-secondary" : ""
-                                }`}
+                                className={`w-18 h-18 md:w-24 md:h-24 lg:w-20 lg:h-20 rounded-md border cursor-pointer hover:scale-105 transition ${mainImage === img.image ? "ring-2 ring-secondary" : ""
+                                    }`}
                                 alt={`thumbnail-${i}`}
                             />
                         ))
@@ -244,9 +243,8 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                                             setMainImage(img.image || product.thumbnail);
                                             setIsManualImageSelection(true);
                                         }}
-                                        className={`w-18 h-18 md:w-24 md:h-24 lg:w-20 lg:h-20 rounded-md border cursor-pointer hover:scale-105 transition ${
-                                            mainImage === img.image ? "ring-2 ring-secondary" : ""
-                                        }`}
+                                        className={`w-18 h-18 md:w-24 md:h-24 lg:w-20 lg:h-20 rounded-md border cursor-pointer hover:scale-105 transition ${mainImage === img.image ? "ring-2 ring-secondary" : ""
+                                            }`}
                                         alt={`thumbnail-${i}`}
                                     />
                                 </SwiperSlide>
@@ -265,52 +263,54 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
 
                 {/* Variants */}
                 {isShirt && (
-                    <div className="flex flex-col md:flex-row lg:justify-between gap-4 md:gap-10 mb-4 md:mb-8">
-                        {/* Color */}
-                        <div className="mb-4">
-                            <p className="font-semibold mb-2">{t("merch.color")}</p>
-                            <div className="flex gap-3">
-                                {[...new Set(product.variants.map((v) => v.color))].map((c) => (
-                                    <button
-                                        key={c}
-                                        onClick={() => setData((prev) => ({ ...prev, color: c }))}
-                                        className={`w-8 h-8 rounded-full border ${
-                                            data.color === c ? "ring-2 ring-secondary" : ""
-                                        }`}
-                                        style={{ backgroundColor: c }}
-                                    />
-                                ))}
+                    <div className="flex flex-col 2xl:flex-row lg:justify-between gap-4 2xl:gap-10 mb-4 md:mb-8">
+                        <div className="flex gap-10">
+                            {/* Color */}
+                            <div className="mb-4">
+                                <p className="font-semibold mb-2">{t("merch.color")}</p>
+                                <div className="flex gap-3">
+                                    {[...new Set(product.variants.map((v) => v.color))].map((c) => (
+                                        <button
+                                            key={c}
+                                            onClick={() => setData((prev) => ({ ...prev, color: c }))}
+                                            className={`w-8 h-8 rounded-full border ${data.color === c ? "ring-2 ring-secondary" : ""
+                                                }`}
+                                            style={{ backgroundColor: c }}
+                                        />
+                                    ))}
+                                </div>
                             </div>
-                        </div>
 
-                        {/* Size */}
-                        <div className="mb-4">
-                            <p className="font-semibold mb-2">{t("merch.size")}</p>
-                            <div className="flex gap-3">
-                                {[...new Set(product.variants.map((v) => v.size))].map((s) => (
-                                    <button
-                                        key={s}
-                                        onClick={() => handleSizeClick(s)}
-                                        className={`px-4 py-2 rounded-md border ${
-                                            data.size === s ? "bg-white text-[#0E4A86] font-bold" : "bg-transparent border-white"
-                                        }`}
-                                    >
-                                        {s}
-                                    </button>
-                                ))}
+                            {/* Size */}
+                            <div className="mb-4">
+                                <p className="font-semibold mb-2">{t("merch.size")}</p>
+                                <div className="flex gap-3">
+                                    {[...new Set(product.variants.map((v) => v.size))].map((s) => (
+                                        <button
+                                            key={s}
+                                            onClick={() => handleSizeClick(s)}
+                                            className={`px-4 py-2 rounded-md border ${data.size === s ? "bg-white text-[#0E4A86] font-bold" : "bg-transparent border-white"
+                                                }`}
+                                        >
+                                            {s}
+                                        </button>
+                                    ))}
+                                </div>
                             </div>
                         </div>
 
                         {/* Note */}
-                        <div className="mb-4">
+                        <div className="sm:w-full 2xl:w-60 mb-4">
                             <p className="font-semibold mb-2">{t("merch.note")}</p>
-                            <input
-                                type="text"
-                                className="w-full px-3 py-2 rounded-none text-white border border-white focus:outline-none focus:ring-0"
-                                placeholder={t("merch.note-placeholder")}
-                                value={data.note}
-                                onChange={(e) => setData((prev) => ({ ...prev, note: e.target.value }))}
-                            />
+                            <div className="w-full">
+                                <input
+                                    type="text"
+                                    className="w-full px-3 py-2 rounded-none text-white border border-white focus:outline-none focus:ring-0"
+                                    placeholder={t("merch.note-placeholder")}
+                                    value={data.note}
+                                    onChange={(e) => setData((prev) => ({ ...prev, note: e.target.value }))}
+                                />
+                            </div>
                         </div>
                     </div>
                 )}
