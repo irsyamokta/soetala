@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { usePage, Link } from "@inertiajs/react";
 import useTranslate from "@/hooks/useTranslate";
-import useApiTranslate from "@/hooks/useApiTranslate";
 import Button from "@/Components/ui/button/Button";
 import { IoMdArrowDropright } from "react-icons/io";
 import ImageTicket from "../../../assets/images/image-ticket.png";
@@ -34,7 +33,6 @@ function TicketSection() {
     }>().props;
 
     const t = useTranslate();
-    const { translate } = useApiTranslate();
 
     const [tickets, setTickets] = useState<Ticket[]>(ticket || []);
 
@@ -65,7 +63,7 @@ function TicketSection() {
             });
         };
 
-        updateCountdown(); // run first
+        updateCountdown();
         const interval = setInterval(updateCountdown, 1000);
 
         return () => clearInterval(interval);

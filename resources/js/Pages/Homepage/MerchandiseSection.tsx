@@ -384,14 +384,6 @@ function MerchandiseSection() {
     const t = useTranslate();
     const { translate } = useApiTranslate();
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            router.reload({ only: ["merchant"], preserveUrl: true });
-        }, 1000);
-
-        return () => clearInterval(interval);
-    }, []);
-
     if (!merchantArr || merchantArr.length === 0) {
         return null;
     }

@@ -1,5 +1,5 @@
 import { useState, useMemo, useCallback } from "react";
-import { router, usePage } from "@inertiajs/react";
+import { router, usePage, usePoll } from "@inertiajs/react";
 import { confirmDialog } from "@/utils/confirmationDialog";
 import { toast } from "react-toastify";
 
@@ -33,6 +33,10 @@ export default function UserTable() {
     const [search, setSearch] = useState("");
     const [deletingId, setDeletingId] = useState<string | null>(null);
     const [editingUser, setEditingUser] = useState<any | null>(null);
+
+    usePoll(5000, {
+        only: ["users"],
+    });
 
     const filteredUsers = useMemo(() => {
         if (!search) return users;

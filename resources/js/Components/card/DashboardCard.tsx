@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { usePage, router } from "@inertiajs/react";
+import { usePage, router, usePoll } from "@inertiajs/react";
 import Swal from "sweetalert2";
 import Chart from "react-apexcharts";
 
@@ -44,17 +44,9 @@ export default function DashboardCard() {
         setFlashState(flash || null);
     }, [visitors, flash]);
 
-    useEffect(() => {
-        const interval = setInterval(() => {
-            router.reload({
-                only: ["stocks", "totalRevenue", "ticketsSold", "merchandiseSold", "visitors", "today", "flash"],
-                preserveState: true,
-                preserveScroll: true,
-            } as any);
-        }, 5000);
-
-        return () => clearInterval(interval);
-    }, []);
+    usePoll(5000, {
+        only: ["stocks", "totalRevenue", "ticketsSold", "merchandiseSold", "visitors", "today", "flash"]
+    });
 
     const chartCategories = Object.keys(visitorsChart as object);
     const chartSeries = [

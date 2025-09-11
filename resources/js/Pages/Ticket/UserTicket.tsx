@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Head, usePage } from "@inertiajs/react";
+import { Head, usePage, usePoll } from "@inertiajs/react";
 import useTranslate from "@/hooks/useTranslate";
 import AppNavbar from "@/Components/app/AppNavbar";
 import HeaderSection from "@/Components/card/HeaderCard";
@@ -99,6 +99,10 @@ export default function TicketHistory({ transactions }: Props) {
         setTicketTransactions(localizedTransactions);
     }, [locale, transactions]);
 
+    usePoll(10000, {
+        only: ["transactions"],
+    });
+
     const handleSetLang = (lang: string) => {
         if (lang === "id" || lang === "en") {
             setLang(lang);
@@ -152,15 +156,6 @@ export default function TicketHistory({ transactions }: Props) {
                                             )}
                                         </p>
                                     </div>
-                                    {transaction.ticket_orders.map((ticket) => (
-                                        <Badge
-                                            key={ticket.id}
-                                            className="px-4 py-2"
-                                            color={ticket.used_at ? "error" : "success"}
-                                        >
-                                            {ticket.status_label}
-                                        </Badge>
-                                    ))}
                                 </div>
 
                                 <h3 className="text-md font-semibold mb-2">{t("ticket.history.detail")}</h3>
@@ -183,7 +178,7 @@ export default function TicketHistory({ transactions }: Props) {
                                                         </div>
                                                     )}
                                                 </div>
-                                                <div className="w-56">
+                                                <div className="w-56 sm:w-72">
                                                     <p className="font-medium">{ticket.category_name}</p>
                                                     <p className="text-sm text-gray-500 mt-1">
                                                         {t("ticket.history.buyer")}: {ticket.buyer_name}
@@ -196,13 +191,22 @@ export default function TicketHistory({ transactions }: Props) {
                                                     <p className="text-sm text-gray-500 mt-1">
                                                         {formatCurrency(ticket.price)} × {ticket.quantity}
                                                     </p>
+                                                    <div className="mt-2">
+                                                        <Badge
+                                                            key={ticket.id}
+                                                            className="px-4 py-1 text-xs"
+                                                            color={ticket.used_at ? "error" : "success"}
+                                                        >
+                                                            {ticket.status_label}
+                                                        </Badge>
+                                                    </div>
                                                 </div>
                                             </div>
                                             <div className="flex w-full flex-col items-end gap-2">
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
-                                                    className="border-primary text-primary hover:bg-gray-100"
+                                                    className="w-full sm:w-auto border-primary text-primary hover:bg-gray-100"
                                                     onClick={() => showQrCodeModal(ticket)}
                                                 >
                                                     {t("ticket.history.show.qr")}
@@ -259,19 +263,6 @@ export default function TicketHistory({ transactions }: Props) {
                                             <td className="py-2">{selectedTicket.phone}</td>
                                         </tr>
                                     )}
-                                    <tr>
-                                        <th className="py-2 font-medium">Status</th>
-                                        <td className="py-2">
-                                            {selectedTicket.used_at ? (
-                                                <span className="text-red-500">
-                                                    {t("ticket.history.used")} (
-                                                    {formatDateTime(selectedTicket.used_at)})
-                                                </span>
-                                            ) : (
-                                                <span className="text-green-500">{t("ticket.history.not_used")}</span>
-                                            )}
-                                        </td>
-                                    </tr>
                                 </tbody>
                             </table>
                         </div>

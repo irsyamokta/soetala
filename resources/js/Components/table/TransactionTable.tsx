@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
-import { usePage } from "@inertiajs/react";
-import { router } from "@inertiajs/react";
+import { usePage, usePoll } from "@inertiajs/react";
+
 import Input from "@/Components/form/input/InputField";
 import HeaderSection from "@/Components/card/HeaderSectionCard";
 import {
@@ -14,14 +14,13 @@ import { EmptyTable } from "@/Components/empty/EmptyTable";
 import Badge from "@/Components/ui/badge/Badge";
 import Pagination from "@/Components/ui/pagination/Pagination";
 import { ModalTransaction } from "../../Pages/Admin/Components/modal/ModalTransaction";
-import { Modal } from "@/Components/ui/modal";
+import { ModalPickupStatusUpdate } from "@/Components/modal/ModalPickupStatus";
 import Button from "@/Components/ui/button/Button";
-import Select from "@/Components/form/Select";
-import Label from "@/Components/form/Label";
+
 import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDateTime } from "@/utils/formateDate";
 import capitalizeFirst from "@/utils/capitalize";
-import { toast } from "react-toastify";
+
 import { LuPencil } from "react-icons/lu";
 
 interface Transaction {
@@ -55,61 +54,6 @@ interface Props {
     };
 }
 
-const ModalPickupStatusUpdate = ({ isOpen, onClose, transactionId }: { isOpen: boolean; onClose: () => void; transactionId: string }) => {
-    const [pickupStatus, setPickupStatus] = useState("");
-    const [loading, setLoading] = useState(false);
-
-    const handleSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        setLoading(true);
-
-        router.post(route("transaction.updatePickupStatus", transactionId), { pickup_status: pickupStatus }, {
-            onSuccess: () => {
-                toast.success("Status pengambilan barang berhasil diperbarui");
-                setLoading(false);
-                onClose();
-            },
-            onError: () => {
-                toast.error("Gagal memperbarui status pengambilan barang");
-                setLoading(false);
-            },
-        });
-    };
-
-    return (
-        <Modal isOpen={isOpen} onClose={onClose} className="max-w-[500px] h-[250px] m-4">
-            <div className="p-6">
-                <h4 className="mb-4 text-xl font-semibold text-gray-800 dark:text-white/90">
-                    Status Pengambilan Barang
-                </h4>
-                <form onSubmit={handleSubmit}>
-                    <div className="mb-4">
-                        <Label required={true}>Status Pengambilan</Label>
-                        <Select
-                            value={pickupStatus}
-                            onChange={(value) => setPickupStatus(value)}
-                            options={[
-                                { value: "pending", label: "Belum Diambil" },
-                                { value: "picked_up", label: "Sudah Diambil" },
-                            ]}
-                            placeholder="Pilih status pengambilan"
-                            className="w-full"
-                        />
-                    </div>
-                    <div className="flex items-center gap-3 justify-end">
-                        <Button variant="outline" onClick={onClose} disabled={loading}>
-                            Batal
-                        </Button>
-                        <Button type="submit" variant="default" disabled={loading}>
-                            {loading ? "Menyimpan..." : "Simpan"}
-                        </Button>
-                    </div>
-                </form>
-            </div>
-        </Modal>
-    );
-};
-
 export default function TransactionTable() {
     const { props } = usePage();
     const { data: transactions, links, last_page } = props.transactions as {
@@ -122,6 +66,10 @@ export default function TransactionTable() {
     const [isPickupStatusModalOpen, setIsPickupStatusModalOpen] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState("");
     const [search, setSearch] = useState("");
+
+    usePoll(5000, {
+        only: ["transactions"],
+    });
 
     const colorMap: Record<string, string> = {
         "#ffffff": "Putih",
