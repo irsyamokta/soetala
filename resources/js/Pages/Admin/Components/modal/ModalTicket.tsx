@@ -287,10 +287,13 @@ export const ModalTicket = ({ isOpen, onClose, ticket }: ModalTicketProps) => {
                                 <div className="grid grid-cols-2 gap-3">
                                     <div>
                                         <Label required={true}>Nama Kategori</Label>
-                                        <Input
+                                        <Select
                                             value={cat.category_name}
-                                            placeholder="Masukkan kategori tiket"
-                                            onChange={(e) => handleCategoryChange(index, "category_name", e.target.value)}
+                                            onChange={(val) => handleCategoryChange(index, "category_name", val)}
+                                            options={[
+                                                { value: "Dewasa", label: "Dewasa" },
+                                                { value: "Anak", label: "Anak" },
+                                            ]}
                                         />
                                         {serverErrors[`categories.${index}.category_name`] && (
                                             <p className="text-xs text-red-500 mt-1">
