@@ -38,6 +38,8 @@ export const ModalMerchandiseSelection = ({
     onClose: () => void;
     merch: Merch | null;
     handleAddMerch: (data: { merch: Merch; color: string; size: string; note: string; quantity: number }) => void;
+    currentQuantity?: number; 
+    currentNote?: string;
 }) => {
     if (!merch) return null;
 

@@ -2,12 +2,17 @@ import { useEffect, useState } from "react";
 import { usePage, router } from "@inertiajs/react";
 import { useForm } from "@inertiajs/react";
 import { toast } from "react-toastify";
+import { printReceipt } from "@/utils/printReceipt";
+import { v4 as uuidv4 } from 'uuid';
+
 import { Modal } from "@/Components/ui/modal";
 import Input from "@/Components/form/input/InputField";
 import Select from "@/Components/form/Select";
 import Label from "@/Components/form/Label";
 import Button from "@/Components/ui/button/Button";
+
 import { ModalMerchandiseSelection } from "./ModalMerchandiseSelection";
+
 import { formatCurrency } from "@/utils/formatCurrency";
 import { LuMinus, LuPlus } from "react-icons/lu";
 import { AiOutlineLoading3Quarters } from "react-icons/ai";
@@ -132,10 +137,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
         extra: Partial<OrderItem>
     ) => {
         setOrderItems((prev) => {
-            const variantKey = extra.variantKey;
-            const exist = prev.find(
-                (p) => p.type === type && p.id === id && (type === "ticket" || p.variantKey === variantKey)
-            );
+            const exist = prev.find((p) => p.type === type && p.id === id);
             let newItems: OrderItem[];
             if (exist) {
                 newItems = prev.map((p) =>
@@ -148,31 +150,34 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
         });
     };
 
-    const handleDecrease = (id: string, type: "ticket" | "product", variantKey?: string) => {
+    const handleDecrease = (id: string, type: "ticket" | "product") => {
         setOrderItems((prev) => {
             const updatedItems = prev
                 .map((p) => {
-                    if (p.type === type && p.id === id && (variantKey ? p.variantKey === variantKey : true)) {
-                        return { ...p, quantity: p.quantity - 1 };
+                    if (p.type === type && p.id === id) {
+                        if (p.quantity > 1) {
+                            return { ...p, quantity: p.quantity - 1 };
+                        }
+                        return null;
                     }
                     return p;
                 })
-                .filter((p) => p.quantity > 0);
+                .filter((p): p is OrderItem => p !== null);
             return updateTicketPrices(updatedItems);
         });
     };
 
-    const handleIncrease = (id: string, type: "ticket" | "product", variantKey?: string) => {
+    const handleIncrease = (id: string, type: "ticket" | "product") => {
         setOrderItems((prev) => {
             const updatedItems = prev.map((p) => {
-                if (p.type === type && p.id === id && (variantKey ? p.variantKey === variantKey : true)) {
+                if (p.type === type && p.id === id) {
                     if (type === "ticket") {
                         return { ...p, quantity: p.quantity + 1 };
                     }
                     if (type === "product") {
                         const merch = merchandises.find((m) => m.id === id);
                         if (merch) {
-                            const variant = merch.variants.find((v) => v.color === p.color && v.size === p.size);
+                            const variant = merch.variants[0];
                             if (variant && p.quantity < variant.stock) {
                                 return { ...p, quantity: p.quantity + 1 };
                             }
@@ -187,31 +192,37 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
 
     const handleAddMerch = ({
         merch,
-        color,
-        size,
         note,
         quantity,
     }: {
         merch: Merch;
-        color: string;
-        size: string;
         note: string;
         quantity: number;
     }) => {
-        const variantKey = `${merch.id}-${color}-${size}`;
-        const extra = {
-            product_name: merch.product_name,
-            color,
-            size,
-            note,
-            variantKey,
-        };
-        handleAddItem("product", merch.id, merch.price, quantity, extra);
+        const variant = merch.variants[0];
+        if (!variant || quantity > variant.stock) {
+            return;
+        }
+        setOrderItems((prev) => {
+            const exist = prev.find((p) => p.type === "product" && p.id === merch.id);
+            if (exist) {
+                return updateTicketPrices(prev.map((p) =>
+                    p === exist ? { ...p, quantity, note: note || p.note } : p
+                ));
+            } else {
+                const extra = {
+                    product_name: merch.product_name,
+                    note,
+                };
+                return updateTicketPrices([...prev, { type: "product", id: merch.id, price: merch.price, quantity, ...extra }]);
+            }
+        });
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setLoading(true);
+
         const ticketItems = orderItems.filter((item) => item.type === "ticket");
         const merchItems = orderItems.filter((item) => item.type === "product");
         const type =
@@ -220,6 +231,15 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                 : ticketItems.length > 0
                     ? "ticket"
                     : "merchandise";
+
+        const ticketDetailsWithQr = ticketItems.map((item) => ({
+            ticket_category_id: item.id,
+            buyer_name: data.buyer_name,
+            price: item.price,
+            quantity: item.quantity,
+            qr_code: uuidv4(),
+        }));
+
         const payload = {
             buyer_name: data.buyer_name,
             payment_method: data.payment_method,
@@ -235,32 +255,40 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                 size: item.size || "",
                 note: item.note || "",
             })),
-            ticket_details: ticketItems.map((item) => ({
-                ticket_category_id: item.id,
-                buyer_name: data.buyer_name,
-                price: item.price,
-                quantity: item.quantity,
-            })),
+            ticket_details: ticketDetailsWithQr,
         };
 
-        router.post(route("transaction.store"), payload, {
-            onSuccess: () => {
-                toast.success("Transaksi berhasil ditambahkan");
-                reset();
-                setOrderItems([]);
-                setSelectedEvent(null);
-                onClose();
-            },
-            onError: (errors) => {
-                const normalizedErrors: Record<string, string> = {};
-                Object.entries(errors).forEach(([key, val]) => {
-                    const newKey = key.replace(/\[(\d+)\]/g, ".$1");
-                    normalizedErrors[newKey] = val as string;
-                });
-                setServerErrors(normalizedErrors);
-            },
-            onFinish: () => setLoading(false),
-        });
+        try {
+            await printReceipt({
+                buyer_name: payload.buyer_name,
+                items: orderItems,
+                total_price: payload.total_price,
+                type: type,
+                ticket_details: ticketDetailsWithQr,
+            });
+
+            router.post(route("transaction.store"), payload, {
+                onSuccess: () => {
+                    toast.success("Transaksi berhasil ditambahkan");
+                    reset();
+                    setOrderItems([]);
+                    setSelectedEvent(null);
+                    onClose();
+                },
+                onError: (errors) => {
+                    const normalizedErrors: Record<string, string> = {};
+                    Object.entries(errors).forEach(([key, val]) => {
+                        const newKey = key.replace(/\[(\d+)\]/g, ".$1");
+                        normalizedErrors[newKey] = val as string;
+                    });
+                    setServerErrors(normalizedErrors);
+                },
+                onFinish: () => setLoading(false),
+            });
+        } catch (err) {
+            toast.error("Gagal print struk, transaksi dibatalkan");
+            setLoading(false);
+        }
     };
 
     const total = orderItems.reduce((sum, item) => sum + item.price * item.quantity, 0);
@@ -385,15 +413,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                                         className="flex justify-between items-center bg-gray-50 p-2 rounded"
                                                     >
                                                         <div className="flex-1">
-                                                            <div className="flex items-center gap-2 text-sm">
-                                                                {item.color && (
-                                                                    <div
-                                                                        className="w-4 h-4 rounded-full border border-gray-300"
-                                                                        style={{ backgroundColor: item.color }}
-                                                                    />
-                                                                )}
-                                                                {item.size && <span>Ukuran {item.size}</span>}
-                                                            </div>
+                                                            <p className="text-sm">{item.product_name}</p>
                                                             {item.note && (
                                                                 <p className="text-sm text-gray-500 mt-1">Note: {item.note}</p>
                                                             )}
@@ -401,7 +421,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                                         <div className="flex items-center gap-2">
                                                             <button
                                                                 type="button"
-                                                                onClick={() => handleDecrease(merch.id, "product", item.variantKey)}
+                                                                onClick={() => handleDecrease(merch.id, "product")}
                                                                 className="px-2 py-1 border rounded hover:bg-gray-100"
                                                             >
                                                                 <LuMinus size={16} />
@@ -409,7 +429,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                                             <span className="w-8 text-center">{item.quantity}</span>
                                                             <button
                                                                 type="button"
-                                                                onClick={() => handleIncrease(merch.id, "product", item.variantKey)}
+                                                                onClick={() => handleIncrease(merch.id, "product")}
                                                                 className="px-2 py-1 border rounded hover:bg-gray-100"
                                                             >
                                                                 <LuPlus size={16} />
@@ -447,11 +467,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                 {orderItems.map((item, index) => (
                                     <li key={index} className="flex justify-between text-sm border-b pb-2">
                                         <span>
-                                            {item.type === "ticket" ? item.category_name : item.product_name}{" "}
-                                            {item.size || item.color
-                                                ? `(${item.size ? item.size + ", " : ""}${colorMap[item.color || ""] || item.color})`
-                                                : ""}{" "}
-                                            x {item.quantity}
+                                            {item.type === "ticket" ? item.category_name : item.product_name} x {item.quantity}
                                         </span>
                                         <span>{formatCurrency(item.price * item.quantity)}</span>
                                     </li>
@@ -485,6 +501,8 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                 onClose={() => setMerchModal(null)}
                 merch={merchModal}
                 handleAddMerch={handleAddMerch}
+                currentQuantity={orderItems.find((p) => p.type === "product" && p.id === merchModal?.id)?.quantity || 0}
+                currentNote={orderItems.find((p) => p.type === "product" && p.id === merchModal?.id)?.note || ''}
             />
         </Modal>
     );
