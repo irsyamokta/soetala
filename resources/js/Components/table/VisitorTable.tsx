@@ -96,12 +96,14 @@ export default function VisitorTable({ visitors = [], today, onFilterChange }: V
             });
         }
 
-        if (onFilterChange) {
-            onFilterChange(result);
-        }
-
         return result;
-    }, [visitors, search, selectedDate, today, isVolunteer, onFilterChange]);
+    }, [visitors, search, selectedDate, today, isVolunteer]);
+
+    useEffect(() => {
+        if (onFilterChange) {
+            onFilterChange(filteredVisitors);
+        }
+    }, [filteredVisitors, onFilterChange]);
 
     const handleExport = () => {
         if (!selectedDate) {

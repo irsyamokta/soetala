@@ -67,7 +67,7 @@ export default function TransactionTable() {
     const [selectedTransactionId, setSelectedTransactionId] = useState("");
     const [search, setSearch] = useState("");
 
-    usePoll(5000, {
+    usePoll(15000, {
         only: ["transactions"],
     });
 

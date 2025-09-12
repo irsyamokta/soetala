@@ -21,11 +21,11 @@ class TransactionController extends Controller
     {
         $user = $request->user();
 
-        if(!$user) {
+        if (!$user) {
             abort(403);
         }
 
-        if($user->role !== 'admin' && $user->role !== 'volunteer') {
+        if ($user->role !== 'admin' && $user->role !== 'volunteer') {
             abort(403);
         }
 
@@ -41,7 +41,9 @@ class TransactionController extends Controller
             ->through(function ($transaction) {
                 return [
                     'id' => $transaction->id,
-                    'buyer_name' => $transaction->ticketOrders->first()->buyer_name ?? $transaction->user->name,
+                    'buyer_name' => $transaction->ticketOrders->first()->buyer_name
+                        ?? $transaction->buyer_name
+                        ?? $transaction->user->name,
                     'items' => $transaction->items->map(function ($item) {
                         $variantDetails = $item->variant_details ?? [];
                         return [
@@ -118,6 +120,7 @@ class TransactionController extends Controller
             $transaction = Transaction::create([
                 'user_id' => auth()->id(),
                 'responsible_id' => auth()->id(),
+                'buyer_name' => $request->buyer_name,
                 'type' => $request->type,
                 'channel' => $request->channel,
                 'total_price' => $request->total_price,
@@ -173,7 +176,7 @@ class TransactionController extends Controller
                 }
             }
 
-            if (in_array($request->type, ['ticket', 'mixed'])) {
+            if (in_array($request->type, ['ticket', 'merchandise', 'mixed'])) {
                 foreach ($request->ticket_details as $detail) {
                     $category = TicketCategory::findOrFail($detail['ticket_category_id']);
                     $totalTicketPrice = $detail['price'] * $detail['quantity'];
@@ -185,7 +188,7 @@ class TransactionController extends Controller
                         'buyer_name' => $detail['buyer_name'],
                         'price' => $totalTicketPrice,
                         'quantity' => $detail['quantity'],
-                        'qr_code' => Str::uuid()->toString()
+                        'qr_code' => $detail['qr_code'] ?? Str::uuid()->toString()
                     ]);
                 }
             }

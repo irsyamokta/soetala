@@ -15,6 +15,7 @@ return new class extends Migration
             $table->uuid('id')->primary();
             $table->uuid('user_id');
             $table->uuid('responsible_id')->nullable();
+            $table->string('buyer_name')->nullable();
             $table->enum('type', ['ticket', 'merchandise', 'mixed']);
             $table->enum('channel', ['online', 'offline']);
             $table->decimal('total_price', 12, 2)->default(0);

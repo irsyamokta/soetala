@@ -10,6 +10,7 @@ use Illuminate\Database\Eloquent\Concerns\HasUuids;
  * @property string $id
  * @property string $user_id
  * @property string|null $responsible_id
+ * @property string|null $buyer_name
  * @property string $type
  * @property string $channel
  * @property float $total_price
@@ -33,6 +34,7 @@ class Transaction extends Model
     protected $fillable = [
         'user_id',
         'responsible_id',
+        'buyer_name',
         'type',
         'channel',
         'total_price',
