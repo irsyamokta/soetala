@@ -306,7 +306,7 @@ export default function TransactionHistory({ transactions, snap_token, transacti
                     <div className="space-y-6 mt-4">
                         {transaction.map((trans) => (
                             <div key={trans.id} className="border rounded-2xl p-6 bg-white">
-                                <div className="flex justify-between items-center mb-4">
+                                <div className="flex justify-between items-start mb-4">
                                     <div>
                                         <h2 className="text-lg font-semibold">{trans.id}</h2>
                                         <p className="text-sm text-gray-500">

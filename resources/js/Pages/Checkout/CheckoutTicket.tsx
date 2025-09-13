@@ -404,7 +404,7 @@ export default function CheckoutTicket({
                                                             name: ticket.category,
                                                         })
                                                     }
-                                                    className="w-1/4 border-gray-300 hover:bg-primary/5"
+                                                    className="px-12 py-0 sm:px-0 sm:py-3 w-1/4 border-gray-300 hover:bg-primary/5"
                                                 >
                                                     {t("checkout.add")}
                                                 </Button>
@@ -468,7 +468,7 @@ export default function CheckoutTicket({
                                                             });
                                                         }
                                                     }}
-                                                    className="w-1/4 border-gray-300 hover:bg-primary/5"
+                                                    className="px-12 py-0 sm:px-0 sm:py-3 w-1/4 border-gray-300 hover:bg-primary/5"
                                                 >
                                                     {t("checkout.add")}
                                                 </Button>

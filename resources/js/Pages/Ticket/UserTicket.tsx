@@ -122,7 +122,7 @@ export default function TicketHistory({ transactions }: Props) {
     };
 
     return (
-        <div className="px-4 lg:px-20 mb-8">
+        <div className="px-4 lg:px-20 mb-8 overflow-x-hidden">
             <Head title={t("ticket.history.title")} />
             <AppNavbar lang={lang} setLang={handleSetLang} forceSolid={true} />
 
@@ -225,7 +225,7 @@ export default function TicketHistory({ transactions }: Props) {
             <Modal
                 isOpen={isModalOpen}
                 onClose={closeModal}
-                className="max-w-[400px] m-4"
+                className="sm:max-w-[400px] m-4"
             >
                 {selectedTicket && (
                     <div className="p-4">

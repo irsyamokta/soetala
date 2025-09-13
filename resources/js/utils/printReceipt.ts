@@ -5,19 +5,19 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
 
     try {
         if (!qz.websocket.isActive()) {
-            await qz.websocket.connect()
-                .then(() => console.log("Connected to QZ Tray"))
-                .catch(err => console.error("QZ Tray connection error", err));
+            await qz.websocket.connect({
+                host: "soetala.id",
+                usingSecure: true
+            })
+            .catch((err) => {
+                throw new Error("Printer not connected", err);
+            });
         }
 
         const printer = await qz.printers.find("POS58");
         const config = qz.configs.create(printer as any);
 
         const printData: any[] = [];
-
-        console.log("Printer:", printer);
-        console.log("Config:", config);
-        console.log("Data:", printData);
 
         printData.push({ type: "raw", data: "\x1B\x40" });
         printData.push({ type: "raw", data: "\x1B\x61\x01" });
@@ -78,7 +78,6 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
 
         await qz.print(config, printData);
     } catch (err) {
-        console.error(err);
         throw err;
     }
 }

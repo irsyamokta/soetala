@@ -118,20 +118,22 @@ function TicketSection() {
                             </div>
 
                             {/* Buttons */}
-                            <div className="flex items-center gap-6 mb-6">
-                                <Link href={route("checkout.index")} target="_blank">
-                                    <Button
-                                        variant="outline"
-                                        size="sm"
-                                        className="px-12 text-lg font-medium hover:bg-white/10 rounded-none"
-                                    >
-                                        {t("buy_ticket")} <IoMdArrowDropright size={24} />
-                                    </Button>
-                                </Link>
+                            <div className="w-full flex items-center gap-6 mb-6">
+                                <div className="w-full sm:w-auto">
+                                    <Link href={route("checkout.index")} target="_blank">
+                                        <Button
+                                            variant="outline"
+                                            size="sm"
+                                            className="w-full sm:w-auto px-12 text-lg font-medium hover:bg-white/10 rounded-none"
+                                        >
+                                            {t("buy_ticket")} <IoMdArrowDropright size={24} />
+                                        </Button>
+                                    </Link>
+                                </div>
                             </div>
 
                             {/* Countdown */}
-                            <div className="flex gap-3">
+                            <div className="flex justify-center sm:justify-start gap-3">
                                 <div className="bg-white/10 rounded-md px-4 py-2 text-center">
                                     <div className="text-2xl font-bold">{timeLeft.days}</div>
                                     <div className="text-xs">{t("ticket.days")}</div>

@@ -86,7 +86,7 @@ export default function Description({
             }
 
             const cleanHtml = DOMPurify.sanitize(description, {
-                ALLOWED_TAGS: ["p", "b", "i", "strong", "em"],
+                ALLOWED_TAGS: ["p", "b", "i", "strong", "em", "br", "li", "ul", "ol"],
             });
 
             if (lang === "en") {
