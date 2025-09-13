@@ -6,7 +6,7 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
     try {
         if (!qz.websocket.isActive()) {
             await qz.websocket.connect({
-                host: "soetala.id",
+                host: "print.soetala.id",
                 usingSecure: true
             })
             .catch((err) => {
