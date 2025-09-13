@@ -22,6 +22,52 @@ import { formatDateTime } from "@/utils/formateDate";
 import { FiDownload } from "react-icons/fi";
 import { Visitor } from "@/types/types";
 
+const DatePicker = ({ today, onDateChange, isDisabled }: { today: string; onDateChange: (date: string | null) => void; isDisabled: boolean }) => {
+    const dateInputRef = useRef<HTMLInputElement>(null);
+    const flatpickrInstance = useRef<flatpickr.Instance | null>(null);
+
+    useEffect(() => {
+        if (!dateInputRef.current || isDisabled || flatpickrInstance.current) return;
+
+        const zonedToday = toZonedTime(new Date(today), "Asia/Jakarta");
+        const formattedToday = format(zonedToday, "yyyy-MM-dd");
+
+        flatpickrInstance.current = flatpickr(dateInputRef.current, {
+            dateFormat: "Y-m-d",
+            defaultDate: formattedToday,
+            disableMobile: true,
+            onChange: (dates: Date[]) => {
+                if (dates.length > 0) {
+                    const zonedDate = toZonedTime(dates[0], "Asia/Jakarta");
+                    onDateChange(format(zonedDate, "yyyy-MM-dd"));
+                } else {
+                    onDateChange(null);
+                }
+            },
+        });
+
+        return () => {
+            if (flatpickrInstance.current) {
+                flatpickrInstance.current.destroy();
+                flatpickrInstance.current = null;
+            }
+        };
+    }, [today, isDisabled]);
+
+    return (
+        <Input
+            ref={dateInputRef}
+            type="text"
+            className="rounded-lg border border-gray-300 px-3 py-3 text-sm focus:border-indigo-500 focus:ring-indigo-500"
+            placeholder="Pilih tanggal kunjungan"
+            inputMode="none"
+            autoComplete="off"
+            readOnly
+            disabled={isDisabled}
+        />
+    );
+};
+
 type VisitorTableProps = {
     visitors: Visitor[];
     today: string;
@@ -31,32 +77,8 @@ type VisitorTableProps = {
 export default function VisitorTable({ visitors = [], today, onFilterChange }: VisitorTableProps) {
     const [search, setSearch] = useState("");
     const [selectedDate, setSelectedDate] = useState<string | null>(today);
-    const dateInputRef = useRef<HTMLInputElement>(null);
     const { flash, auth } = usePage().props;
     const isVolunteer = (auth as { user?: { role?: string } })?.user?.role === "volunteer";
-
-    useEffect(() => {
-        setSelectedDate(today);
-
-        if (!dateInputRef.current || isVolunteer) return;
-
-        const picker = flatpickr(dateInputRef.current, {
-            dateFormat: "Y-m-d",
-            defaultDate: today,
-            onChange: (dates: Date[]) => {
-                if (dates.length > 0) {
-                    const zonedDate = toZonedTime(dates[0], "Asia/Jakarta");
-                    setSelectedDate(format(zonedDate, "yyyy-MM-dd"));
-                } else {
-                    setSelectedDate(null);
-                }
-            },
-        });
-
-        return () => {
-            picker.destroy();
-        };
-    }, [today, isVolunteer]);
 
     useEffect(() => {
         const flashMessage = (flash as { message?: string })?.message;
@@ -137,12 +159,10 @@ export default function VisitorTable({ visitors = [], today, onFilterChange }: V
                     {!isVolunteer && (
                         <div className="w-full flex items-center gap-2">
                             <div className="w-full">
-                                <Input
-                                    ref={dateInputRef}
-                                    type="text"
-                                    className="rounded-lg border border-gray-300 px-3 py-3 text-sm focus:border-indigo-500 focus:ring-indigo-500"
-                                    placeholder="Pilih tanggal kunjungan"
-                                    readOnly
+                                <DatePicker
+                                    today={today}
+                                    onDateChange={setSelectedDate}
+                                    isDisabled={false}
                                 />
                             </div>
                             <Button onClick={handleExport} disabled={!selectedDate}>

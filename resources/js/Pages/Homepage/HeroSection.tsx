@@ -36,7 +36,7 @@ function HeroSection() {
                 </p>
 
                 <h1
-                    className="text-[160px] md:text-[250px] lg:text-[400px] 2xl:text-[450px]
+                    className="max-md:text-[140px] md:text-[250px] lg:text-[400px] 2xl:text-[450px]
                                font-mezirane mb-6 text-transparent bg-clip-text bg-center bg-cover
                                transition-all duration-700"
                     style={{

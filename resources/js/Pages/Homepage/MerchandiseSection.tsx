@@ -223,7 +223,7 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                                     setMainImage(img.image || product.thumbnail);
                                     setIsManualImageSelection(true);
                                 }}
-                                className={`w-18 h-18 md:w-24 md:h-24 lg:w-20 lg:h-20 rounded-md border cursor-pointer hover:scale-105 transition ${mainImage === img.image ? "ring-2 ring-secondary" : ""
+                                className={`w-16 h-16 md:w-24 md:h-24 lg:w-20 lg:h-20 rounded-md border cursor-pointer hover:scale-105 transition ${mainImage === img.image ? "ring-2 ring-secondary" : ""
                                     }`}
                                 alt={`thumbnail-${i}`}
                             />
@@ -243,7 +243,7 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                                             setMainImage(img.image || product.thumbnail);
                                             setIsManualImageSelection(true);
                                         }}
-                                        className={`w-18 h-18 md:w-24 md:h-24 lg:w-20 lg:h-20 rounded-md border cursor-pointer hover:scale-105 transition ${mainImage === img.image ? "ring-2 ring-secondary" : ""
+                                        className={`w-16 h-16 md:w-24 md:h-24 lg:w-20 lg:h-20 rounded-md border cursor-pointer hover:scale-105 transition ${mainImage === img.image ? "ring-2 ring-secondary" : ""
                                             }`}
                                         alt={`thumbnail-${i}`}
                                     />

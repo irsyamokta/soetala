@@ -374,7 +374,7 @@ export default function CheckoutTicket({
     };
 
     return (
-        <div className="grid lg:grid-cols-2 gap-4 md:gap-8 px-4 lg:px-20">
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 md:gap-8 px-4 lg:px-20">
             <Head title="Checkout" />
             <AppNavbar lang={lang} setLang={handleSetLang} forceSolid={true} />
 
@@ -524,7 +524,7 @@ export default function CheckoutTicket({
             </div>
 
             {/* Right Side */}
-            <div className="lg:pt-24">
+            <div className="lg:pt-24 mb-8">
                 <div className="bg-white border rounded-lg p-6 h-fit lg:sticky lg:top-24">
                     <h3 className="font-semibold text-lg mb-4">{t("checkout.detail")}</h3>
 
