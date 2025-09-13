@@ -163,22 +163,20 @@ export default function TicketHistory({ transactions }: Props) {
                                     {transaction.ticket_orders.map((ticket) => (
                                         <li
                                             key={ticket.id}
-                                            className="flex flex-col gap-4 sm:flex-row justify-between items-start border-b pb-4"
+                                            className="flex flex-col gap-4 sm:flex-row sm:justify-between sm:items-start border-b pb-4"
                                         >
-                                            <div className="flex items-center gap-8">
-                                                <div>
-                                                    {ticket.qr_code && (
-                                                        <div className="mt-2">
-                                                            <QRCodeCanvas
-                                                                id={`qr-${ticket.id}`}
-                                                                value={ticket.qr_code}
-                                                                size={100}
-                                                                level="H"
-                                                            />
-                                                        </div>
-                                                    )}
-                                                </div>
-                                                <div className="w-56 sm:w-72">
+                                            <div className="flex flex-col sm:flex-row sm:items-center gap-4 sm:gap-8 w-full">
+                                                {ticket.qr_code && (
+                                                    <div className="mt-2 sm:mt-0 flex-shrink-0">
+                                                        <QRCodeCanvas
+                                                            id={`qr-${ticket.id}`}
+                                                            value={ticket.qr_code}
+                                                            size={100}
+                                                            level="H"
+                                                        />
+                                                    </div>
+                                                )}
+                                                <div className="w-full sm:w-72">
                                                     <p className="font-medium">{ticket.category_name}</p>
                                                     <p className="text-sm text-gray-500 mt-1">
                                                         {t("ticket.history.buyer")}: {ticket.buyer_name}
@@ -202,7 +200,7 @@ export default function TicketHistory({ transactions }: Props) {
                                                     </div>
                                                 </div>
                                             </div>
-                                            <div className="flex w-full flex-col items-end gap-2">
+                                            <div className="flex w-full flex-col items-end">
                                                 <Button
                                                     variant="outline"
                                                     size="sm"
@@ -213,6 +211,7 @@ export default function TicketHistory({ transactions }: Props) {
                                                 </Button>
                                             </div>
                                         </li>
+
                                     ))}
                                 </ul>
                             </div>

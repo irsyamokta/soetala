@@ -167,6 +167,51 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
         });
     };
 
+    const handleAddMerch = ({
+        merch,
+        note,
+        quantity,
+    }: {
+        merch: Merch;
+        note: string;
+        quantity: number;
+    }) => {
+        const variant = merch.variants && merch.variants.length > 0 ? merch.variants[0] : null;
+        if (variant && quantity > variant.stock) {
+            toast.error(`Stok tidak cukup untuk ${merch.product_name}`);
+            return;
+        }
+        setOrderItems((prev) => {
+            const exist = prev.find((p) => p.type === "product" && p.id === merch.id);
+            if (exist) {
+                return updateTicketPrices(
+                    prev.map((p) =>
+                        p === exist
+                            ? {
+                                ...p,
+                                quantity,
+                                note: note || p.note,
+                                color: variant?.color || "",
+                                size: variant?.size || "",
+                            }
+                            : p
+                    )
+                );
+            } else {
+                const extra = {
+                    product_name: merch.product_name,
+                    note,
+                    color: variant?.color || "",
+                    size: variant?.size || "",
+                };
+                return updateTicketPrices([
+                    ...prev,
+                    { type: "product", id: merch.id, price: merch.price, quantity, ...extra },
+                ]);
+            }
+        });
+    };
+
     const handleIncrease = (id: string, type: "ticket" | "product") => {
         setOrderItems((prev) => {
             const updatedItems = prev.map((p) => {
@@ -177,8 +222,10 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                     if (type === "product") {
                         const merch = merchandises.find((m) => m.id === id);
                         if (merch) {
-                            const variant = merch.variants[0];
+                            const variant = merch.variants && merch.variants.length > 0 ? merch.variants[0] : null;
                             if (variant && p.quantity < variant.stock) {
+                                return { ...p, quantity: p.quantity + 1 };
+                            } else if (!variant) {
                                 return { ...p, quantity: p.quantity + 1 };
                             }
                         }
@@ -187,35 +234,6 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                 return p;
             });
             return updateTicketPrices(updatedItems);
-        });
-    };
-
-    const handleAddMerch = ({
-        merch,
-        note,
-        quantity,
-    }: {
-        merch: Merch;
-        note: string;
-        quantity: number;
-    }) => {
-        const variant = merch.variants[0];
-        if (!variant || quantity > variant.stock) {
-            return;
-        }
-        setOrderItems((prev) => {
-            const exist = prev.find((p) => p.type === "product" && p.id === merch.id);
-            if (exist) {
-                return updateTicketPrices(prev.map((p) =>
-                    p === exist ? { ...p, quantity, note: note || p.note } : p
-                ));
-            } else {
-                const extra = {
-                    product_name: merch.product_name,
-                    note,
-                };
-                return updateTicketPrices([...prev, { type: "product", id: merch.id, price: merch.price, quantity, ...extra }]);
-            }
         });
     };
 
@@ -276,6 +294,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                     onClose();
                 },
                 onError: (errors) => {
+                    console.log(errors);
                     const normalizedErrors: Record<string, string> = {};
                     Object.entries(errors).forEach(([key, val]) => {
                         const newKey = key.replace(/\[(\d+)\]/g, ".$1");

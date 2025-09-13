@@ -152,10 +152,16 @@ class TransactionController extends Controller
 
                 if ($item['item_type'] === 'product') {
                     $product = Product::findOrFail($item['item_id']);
-                    $variant = ProductVariant::where('product_id', $item['item_id'])
-                        ->where('color', $item['color'] ?? '')
-                        ->where('size', $item['size'] ?? '')
-                        ->first();
+                    $variant = null;
+
+                    if (!empty($item['color']) || !empty($item['size'])) {
+                        $variant = ProductVariant::where('product_id', $item['item_id'])
+                            ->where('color', $item['color'] ?? '')
+                            ->where('size', $item['size'] ?? '')
+                            ->first();
+                    } else {
+                        $variant = ProductVariant::where('product_id', $item['item_id'])->first();
+                    }
 
                     if ($variant) {
                         if ($variant->stock < $item['quantity']) {
@@ -168,9 +174,16 @@ class TransactionController extends Controller
                             if ($variant && $variant->stock < $item['quantity']) {
                                 throw new \Exception("Stok tidak cukup untuk {$product->product_name}");
                             }
-                            $variant->decrement('stock', $item['quantity']);
+                            if ($variant) {
+                                $variant->decrement('stock', $item['quantity']);
+                            } else {
+                                throw new \Exception("Varian tidak ditemukan untuk {$product->product_name}");
+                            }
                         } else {
-                            throw new \Exception("Varian tidak ditemukan untuk {$product->product_name}");
+                            if (ProductVariant::where('product_id', $item['item_id'])->count() === 0) {
+                            } else {
+                                throw new \Exception("Varian tidak ditemukan untuk {$product->product_name}");
+                            }
                         }
                     }
                 }
