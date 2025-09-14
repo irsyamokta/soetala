@@ -1,14 +1,14 @@
 import { Link } from "@inertiajs/react";
 import useTranslate from "@/hooks/useTranslate";
 import Button from "@/Components/ui/button/Button";
-import HeroImage from "../../../assets/images/image-hero.png";
+import HeroImage from "../../../assets/images/image-hero.webp";
 import { IoMdArrowDropright } from "react-icons/io";
 import { useEffect, useState } from "react";
 
-import Clip1 from "../../../assets/images/clip-1.png";
-import Clip2 from "../../../assets/images/clip-2.png";
-import Clip3 from "../../../assets/images/clip-3.png";
-import Clip4 from "../../../assets/images/clip-4.png";
+import Clip1 from "../../../assets/images/clip-1.webp";
+import Clip2 from "../../../assets/images/clip-2.webp";
+import Clip3 from "../../../assets/images/clip-3.webp";
+import Clip4 from "../../../assets/images/clip-4.webp";
 
 function HeroSection() {
     const t = useTranslate();

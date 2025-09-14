@@ -5,8 +5,8 @@ import Button from '@/Components/ui/button/Button';
 import { LuUser } from 'react-icons/lu';
 import { IoLocationOutline } from "react-icons/io5";
 import { HiMenuAlt3, HiX } from "react-icons/hi";
-import LogoWhite from "../../../assets/logo/logo-white.png";
-import LogoColor from "../../../assets/logo/logo-color.png";
+import LogoWhite from "../../../assets/logo/logo-white.webp";
+import LogoColor from "../../../assets/logo/logo-color.webp";
 import SvgId from "../../../assets/svg/svg-id.svg";
 import SvgUk from "../../../assets/svg/svg-uk.svg";
 

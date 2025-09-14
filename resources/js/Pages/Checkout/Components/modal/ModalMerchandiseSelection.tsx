@@ -76,10 +76,16 @@ export const ModalMerchandiseSelection = ({
                                 {getAvailableColors(merchModal.merch).map((color) => (
                                     <button
                                         key={color}
-                                        onClick={() => setMerchModal({ ...merchModal, color })}
+                                        onClick={() =>
+                                            setMerchModal({
+                                                ...merchModal,
+                                                color,
+                                                quantity: 1,
+                                            })
+                                        }
                                         className={`w-10 h-10 rounded-full border-2 ${merchModal.color === color
-                                            ? "border-blue-500 ring-2 ring-blue-200"
-                                            : "border-gray-300"
+                                                ? "border-blue-500 ring-2 ring-blue-200"
+                                                : "border-gray-300"
                                             } hover:scale-105 transition-transform`}
                                         style={{ backgroundColor: color }}
                                         title={color}
@@ -97,10 +103,16 @@ export const ModalMerchandiseSelection = ({
                                 {getAvailableSizes(merchModal.merch).map((size) => (
                                     <button
                                         key={size}
-                                        onClick={() => setMerchModal({ ...merchModal, size })}
+                                        onClick={() =>
+                                            setMerchModal({
+                                                ...merchModal,
+                                                size,
+                                                quantity: 1,
+                                            })
+                                        }
                                         className={`px-3 py-2 border rounded ${merchModal.size === size
-                                            ? "bg-primary text-white"
-                                            : "bg-white border-gray-300 hover:border-primary"
+                                                ? "bg-primary text-white"
+                                                : "bg-white border-gray-300 hover:border-primary"
                                             } transition-colors`}
                                     >
                                         {size}
