@@ -23,12 +23,30 @@ jobs:
           script: |
             export NVM_DIR="$HOME/.nvm"
             [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+            # Instal dependensi PHP yang diperlukan
+            sudo apt-get update -y
+            sudo apt-get install -y php8.3-intl
+            sudo systemctl restart php8.3-fpm || true
             cd ~/soetala/soetala
+            # Perbaiki izin direktori
+            sudo chown -R $USER:$USER .
+            sudo chmod -R u+rw .
+            # Bersihkan dan tarik kode terbaru
             git fetch --all
             git reset --hard origin/main
+            git clean -fd
             git pull origin main
+            # Instal dependensi Composer
             composer install --no-interaction --prefer-dist --optimize-autoloader
+            # Instal dan build frontend
             npm install --legacy-peer-deps
             npm run build
+            # Perbaiki izin untuk storage dan cache
+            sudo chown -R $USER:$USER storage bootstrap/cache
+            sudo chmod -R 775 storage bootstrap/cache
+            # Hapus cache lama
+            rm -rf storage/logs/*.log
+            rm -rf bootstrap/cache/*
+            # Cache konfigurasi dan rute
             php artisan config:cache
             php artisan route:cache
