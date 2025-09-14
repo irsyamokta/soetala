@@ -6,7 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
     <title inertia>{{ config('app.name', 'Soetala') }}</title>
-    <link rel="icon" href="favicon.png">
+    <link rel="icon" type="image/png" href="https://soetala.id/favicon.png" sizes="32x32">
 
     <!-- SEO -->
     <meta name="description" content="Soetala: Eksibisi karya seni lukisan yang mengangkat perjuangan Jenderal Besar Soedirman. Meresapi semangat juang melalui sentuhan seni dan kisah inspiratif." />
