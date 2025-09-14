@@ -18,7 +18,7 @@ class HomepageController extends Controller
         $user = Auth::user();
 
         if ($user && $user->hasRole('admin')) {
-            return redirect()->route('dashboard.admin');
+            return redirect()->route('dashboard');
         }
 
         if ($user && !$user->hasVerifiedEmail()) {
