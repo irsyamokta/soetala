@@ -75,7 +75,7 @@ export default function DioramaCard() {
             <ModalDiorama isOpen={isModalOpen} onClose={handleClose} diorama={editDiorama} />
 
             {/* Cards */}
-            {dioramas.length === 0 && <EmptyState title="Belum ada diorama" />}
+            {dioramas.length === 0 && <EmptyState title="Belum ada galeri" />}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {dioramas.map((item: any) => (
                     <div
