@@ -28,7 +28,7 @@ export default function UserDropdown() {
     };
 
     return (
-        <div className="relative">
+        <div className="relative ml-auto">
             <button
                 onClick={toggleDropdown}
                 className="flex items-center text-gray-700 dark:text-gray-400"
