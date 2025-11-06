@@ -39,4 +39,14 @@ class HomepageController extends Controller
             'merchant'        => $merchant,
         ]);
     }
+
+    public function privacy()
+    {
+        return Inertia::render('Privacy/PrivacyPolicy');
+    }
+
+    public function terms()
+    {
+        return Inertia::render('Privacy/TermOfService');
+    }
 }
