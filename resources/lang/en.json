@@ -73,6 +73,9 @@
     "footer.contact": "Contact",
     "footer.location": "Location",
     "footer.copyright": "Copyright Protected by Telkom University Purwokerto.",
+    "footer.help": "Help",
+    "footer.privacy": "Privacy Policy",
+    "footer.terms": "Terms of Service",
 
     "emailverify.description": "Thank you for signing up! Before you begin, please verify your email address by clicking the link we just sent you. If you haven't received the email, click the button below to resend it.",
     "emailverify.status": "A new verification link has been sent to the email address you registered.",
@@ -161,5 +164,100 @@
     "ticket.history.price": "Price",
     "ticket.history.quantity": "Quantity",
     "ticket.history.used": "Used",
-    "ticket.history.not_used": "Not used"
+    "ticket.history.not_used": "Not used",
+
+    "privacy.title": "Privacy Policy",
+    "terms.title": "Terms of Service",
+
+    "privacy.intro": "This Privacy Policy for Soetala (“we”, “us”, or “our”) explains how and why we may access, collect, store, use, and/or share (“process”) your personal information when you use our services (“Services”), including when you:",
+    "privacy.intro.point1": "Visit our website at https://soetala.id or any other linked site covered by this Privacy Policy.",
+    "privacy.intro.point2": "Use the Ticket and Merchandise features.",
+    "privacy.intro.point3": "Interact with us through related activities, including sales, marketing, or events.",
+
+    "privacy.section1.title": "1. What Information Do We Collect?",
+    "privacy.section1.summary": "We collect personal information that you voluntarily provide.",
+    "privacy.section1.desc": "We collect personal information that you provide when registering for the Services, expressing interest in our products, participating in Service-related activities, or contacting us directly. The information we collect may include:",
+    "privacy.section1.list1": "Name",
+    "privacy.section1.list2": "Phone number",
+    "privacy.section1.list3": "Email address",
+    "privacy.section1.list4": "Password",
+    "privacy.section1.list5": "Contact or authentication data",
+    "privacy.section1.note": "We do not process sensitive information.",
+    "privacy.section1.payment": "We may also collect payment data such as payment instrument numbers and security codes when you make a purchase. All payment data is processed by TriPay. You can review TriPay’s privacy policy at https://tripay.co.id/page/privacy-policy.",
+
+    "privacy.section2.title": "2. How Do We Process Your Information?",
+    "privacy.section2.summary": "We process your information to provide, improve, and manage our Services.",
+    "privacy.section2.point1": "Create and manage user accounts so you can log in and use our services.",
+    "privacy.section2.point2": "Provide requested services, including ticket and merchandise management.",
+
+    "privacy.section3.title": "3. When and With Whom Do We Share Your Information?",
+    "privacy.section3.desc": "We may share your personal information in certain situations, such as during a merger, asset sale, funding, or acquisition of part or all of our business.",
+
+    "privacy.section4.title": "4. Do We Use Cookies and Other Tracking Technologies?",
+    "privacy.section4.desc": "Yes, we may use cookies and other tracking technologies to collect and store your information to maintain website security and enhance user experience.",
+
+    "privacy.section5.title": "5. How Long Do We Keep Your Information?",
+    "privacy.section5.desc": "We keep your information as long as necessary to fulfill the purposes outlined in this Privacy Policy unless otherwise required by law. Once no longer needed, data will be securely deleted or anonymized.",
+
+    "privacy.section6.title": "6. How Do We Keep Your Information Safe?",
+    "privacy.section6.desc": "We implement reasonable organizational and technical security measures to protect your personal data. However, no internet transmission can be guaranteed to be 100% secure. We recommend accessing our services via a secure connection.",
+
+    "privacy.section7.title": "7. What Are Your Privacy Rights?",
+    "privacy.section7.summary": "You may review, modify, or delete your account at any time and withdraw consent for processing your data by contacting us via email.",
+    "privacy.section7.point1": "Log into your account to update information.",
+    "privacy.section7.point2": "Request account deletion at any time.",
+    "privacy.section7.note": "After account deletion, some data may remain stored for fraud prevention or legal compliance. You may also disable cookies via your browser settings.",
+
+    "privacy.section8.title": "8. How Can You Contact Us?",
+    "privacy.section8.email": "If you have any questions about this Privacy Policy, please contact us at:",
+    "privacy.section8.contact": "Email: soetala.lab@gmail.com | Address: Soetala, Jl. Patimura No.240a, RW No.1, Dusun II, Pasir Kidul, Banyumas, Central Java 53136, Indonesia",
+
+    "privacy.section9.title": "9. How Can You Review, Update, or Delete Your Data?",
+    "privacy.section9.desc": "In accordance with applicable Indonesian law, you have the right to access, correct, or request deletion of your personal data. Requests can be sent to soetala.lab@gmail.com with the subject “Personal Data Access or Deletion Request.”",
+
+    "terms.intro": "These Terms of Service govern the use of the website and services provided by Soetala (“we,” “us,” or “our”). By accessing or using our site and services, you acknowledge that you have read, understood, and agree to be bound by these Terms of Service.",
+
+    "terms.section1.title": "1. Acceptance of Terms",
+    "terms.section1.desc": "By using our site or services at https://soetala.id, you agree to comply with and be bound by these Terms of Service, as well as all applicable laws and regulations in the Republic of Indonesia. If you do not agree, please do not use our services.",
+
+    "terms.section2.title": "2. Changes to Terms",
+    "terms.section2.desc": "We reserve the right to change, update, or revise these Terms of Service at any time. Changes will take effect immediately upon publication on our site. You are advised to check this page periodically.",
+
+    "terms.section3.title": "3. Use of Services",
+    "terms.section3.desc": "You agree to use our services only for lawful purposes and not in violation of any law. It is prohibited to:",
+    "terms.section3.prohibited1": "Misuse features such as ticket or merchandise purchases with false data.",
+    "terms.section3.prohibited2": "Distribute, copy, or modify site content without written permission.",
+    "terms.section3.prohibited3": "Use the site for fraud, spam, or hacking purposes.",
+
+    "terms.section4.title": "4. User Accounts",
+    "terms.section4.responsibility1": "Provide true and accurate information during registration.",
+    "terms.section4.responsibility2": "Maintain the confidentiality of your account credentials.",
+    "terms.section4.responsibility3": "Immediately report any suspicious activity on your account.",
+    "terms.section4.suspension": "We reserve the right to suspend or delete accounts that violate these terms.",
+
+    "terms.section5.title": "5. Purchases and Payments",
+    "terms.section5.desc": "All transactions via Ticket and Merchandise services will be processed by TriPay. By making a purchase, you agree that:",
+    "terms.section5.point1": "Your payment data will be processed by a third party (TriPay) according to their policy: https://tripay.co.id/page/privacy-policy.",
+    "terms.section5.point2": "We are not responsible for transaction errors caused by the payment provider.",
+
+    "terms.section6.title": "6. Intellectual Property Rights",
+    "terms.section6.desc": "All content on the Soetala site, including text, logos, images, and designs, is protected by copyright and Indonesian intellectual property laws. Copying, distributing, or using content without official permission is prohibited.",
+
+    "terms.section7.title": "7. Limitation of Liability",
+    "terms.section7.desc": "We strive to keep the service available and secure, but we do not guarantee it will be free from interruptions or technical errors. Soetala is not liable for direct or indirect losses arising from:",
+    "terms.section7.limitation1": "System interruptions,",
+    "terms.section7.limitation2": "Third-party technical errors, or",
+    "terms.section7.limitation3": "User's own use of data.",
+
+    "terms.section8.title": "8. Termination of Service",
+    "terms.section8.desc": "We reserve the right to terminate or restrict your access to the service at any time if:",
+    "terms.section8.termination1": "You violate these Terms of Service, or",
+    "terms.section8.termination2": "There is a legal requirement or internal company policy.",
+
+    "terms.section9.title": "9. Governing Law",
+    "terms.section9.desc": "These terms are governed by and interpreted in accordance with the laws of the Republic of Indonesia. Disputes will be resolved through deliberation, and if not resolved, through legal proceedings in Banyumas, Central Java.",
+
+    "terms.section10.title": "10. Contact Us",
+    "terms.section10.email": "For questions or complaints regarding the Terms of Service, please contact us at:",
+    "terms.section10.contact": "Email: soetala.lab@gmail.com | Address: Soetala, Jl. Patimura No.240a, RW No.1, Dusun II, Pasir Kidul, Banyumas, Central Java 53136, Indonesia"
 }

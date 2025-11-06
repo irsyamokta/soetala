@@ -20,6 +20,8 @@ Route::get('/locale/{lang}', function ($lang) {
 
 // Homepage Routes
 Route::get('/', [HomepageController::class, 'index'])->name('homepage');
+Route::get('/kebijakan-privasi', [HomepageController::class, 'privacy'])->name('privacy');
+Route::get('/ketentuan-layanan', [HomepageController::class, 'terms'])->name('terms');
 
 Route::middleware(['auth', 'verified', 'role:visitor'])->group(function () {
     Route::get('/tickets', [CheckoutController::class, 'index'])->name('checkout.index');

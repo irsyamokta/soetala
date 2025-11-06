@@ -101,6 +101,9 @@ class AppServiceProvider extends ServiceProvider
                 'footer.contact' => __('footer.contact'),
                 'footer.location' => __('footer.location'),
                 'footer.copyright' => __('footer.copyright'),
+                'footer.help' => __('footer.help'),
+                'footer.privacy' => __('footer.privacy'),
+                'footer.terms' => __('footer.terms'),
 
                 'emailverify.description' => __('emailverify.description'),
                 'emailverify.button' => __('emailverify.button'),
@@ -189,6 +192,101 @@ class AppServiceProvider extends ServiceProvider
                 'ticket.history.quantity' => __('ticket.history.quantity'),
                 'ticket.history.used' => __('ticket.history.used'),
                 'ticket.history.not_used' => __('ticket.history.not_used'),
+
+                'privacy.title' => __('privacy.title'),
+                'terms.title' => __('terms.title'),
+
+                'privacy.intro' => __('privacy.intro'),
+                'privacy.intro.point1' => __('privacy.intro.point1'),
+                'privacy.intro.point2' => __('privacy.intro.point2'),
+                'privacy.intro.point3' => __('privacy.intro.point3'),
+
+                'privacy.section1.title' => __('privacy.section1.title'),
+                'privacy.section1.summary' => __('privacy.section1.summary'),
+                'privacy.section1.desc' => __('privacy.section1.desc'),
+                'privacy.section1.list1' => __('privacy.section1.list1'),
+                'privacy.section1.list2' => __('privacy.section1.list2'),
+                'privacy.section1.list3' => __('privacy.section1.list3'),
+                'privacy.section1.list4' => __('privacy.section1.list4'),
+                'privacy.section1.list5' => __('privacy.section1.list5'),
+                'privacy.section1.note' => __('privacy.section1.note'),
+                'privacy.section1.payment' => __('privacy.section1.payment'),
+
+                'privacy.section2.title' => __('privacy.section2.title'),
+                'privacy.section2.summary' => __('privacy.section2.summary'),
+                'privacy.section2.point1' => __('privacy.section2.point1'),
+                'privacy.section2.point2' => __('privacy.section2.point2'),
+
+                'privacy.section3.title' => __('privacy.section3.title'),
+                'privacy.section3.desc' => __('privacy.section3.desc'),
+
+                'privacy.section4.title' => __('privacy.section4.title'),
+                'privacy.section4.desc' => __('privacy.section4.desc'),
+
+                'privacy.section5.title' => __('privacy.section5.title'),
+                'privacy.section5.desc' => __('privacy.section5.desc'),
+
+                'privacy.section6.title' => __('privacy.section6.title'),
+                'privacy.section6.desc' => __('privacy.section6.desc'),
+
+                'privacy.section7.title' => __('privacy.section7.title'),
+                'privacy.section7.summary' => __('privacy.section7.summary'),
+                'privacy.section7.point1' => __('privacy.section7.point1'),
+                'privacy.section7.point2' => __('privacy.section7.point2'),
+                'privacy.section7.note' => __('privacy.section7.note'),
+
+                'privacy.section8.title' => __('privacy.section8.title'),
+                'privacy.section8.email' => __('privacy.section8.email'),
+                'privacy.section8.contact' => __('privacy.section8.contact'),
+
+                'privacy.section9.title' => __('privacy.section9.title'),
+                'privacy.section9.desc' => __('privacy.section9.desc'),
+
+                'terms.intro' => __('terms.intro'),
+                
+                'terms.section1.title' => __('terms.section1.title'),
+                'terms.section1.desc' => __('terms.section1.desc'),
+
+                'terms.section2.title' => __('terms.section2.title'),
+                'terms.section2.desc' => __('terms.section2.desc'),
+
+                'terms.section3.title' => __('terms.section3.title'),
+                'terms.section3.desc' => __('terms.section3.desc'),
+                'terms.section3.prohibited1' => __('terms.section3.prohibited1'),
+                'terms.section3.prohibited2' => __('terms.section3.prohibited2'),
+                'terms.section3.prohibited3' => __('terms.section3.prohibited3'),
+
+                'terms.section4.title' => __('terms.section4.title'),
+                'terms.section4.responsibility1' => __('terms.section4.responsibility1'),
+                'terms.section4.responsibility2' => __('terms.section4.responsibility2'),
+                'terms.section4.responsibility3' => __('terms.section4.responsibility3'),
+                'terms.section4.suspension' => __('terms.section4.suspension'),
+
+                'terms.section5.title' => __('terms.section5.title'),
+                'terms.section5.desc' => __('terms.section5.desc'),
+                'terms.section5.point1' => __('terms.section5.point1'),
+                'terms.section5.point2' => __('terms.section5.point2'),
+
+                'terms.section6.title' => __('terms.section6.title'),
+                'terms.section6.desc' => __('terms.section6.desc'),
+
+                'terms.section7.title' => __('terms.section7.title'),
+                'terms.section7.desc' => __('terms.section7.desc'),
+                'terms.section7.limitation1' => __('terms.section7.limitation1'),
+                'terms.section7.limitation2' => __('terms.section7.limitation2'),
+                'terms.section7.limitation3' => __('terms.section7.limitation3'),
+
+                'terms.section8.title' => __('terms.section8.title'),
+                'terms.section8.desc' => __('terms.section8.desc'),
+                'terms.section8.termination1' => __('terms.section8.termination1'),
+                'terms.section8.termination2' => __('terms.section8.termination2'),
+
+                'terms.section9.title' => __('terms.section9.title'),
+                'terms.section9.desc' => __('terms.section9.desc'),
+
+                'terms.section10.title' => __('terms.section10.title'),
+                'terms.section10.email' => __('terms.section10.email'),
+                'terms.section10.contact' => __('terms.section10.contact'),
             ],
         ]);
     }

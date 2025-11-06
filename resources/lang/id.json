@@ -61,6 +61,9 @@
     "footer.initiator": "Inisiator",
     "footer.contact": "Kontak",
     "footer.location": "Lokasi",
+    "footer.help": "Bantuan",
+    "footer.privacy": "Kebijakan Privasi",
+    "footer.terms": "Ketentuan Layanan",
     "footer.copyright": "Hak Cipta Dilindungi oleh Telkom University Purwokerto.",
     "emailverify.description": "Terima kasih telah mendaftar! Sebelum mulai, silakan verifikasi alamat email kamu dengan mengklik tautan yang baru saja kami kirimkan. Jika kamu belum menerima email, klik tombol di bawah ini untuk mengirim ulang.",
     "emailverify.status": "Tautan verifikasi baru telah dikirim ke alamat email yang kamu daftarkan.",
@@ -139,5 +142,100 @@
     "ticket.history.price": "Harga",
     "ticket.history.quantity": "Jumlah",
     "ticket.history.used": "Sudah digunakan",
-    "ticket.history.not_used": "Belum digunakan"
+    "ticket.history.not_used": "Belum digunakan",
+
+    "privacy.title": "Kebijakan Privasi",
+    "terms.title": "Ketentuan Layanan",
+
+    "privacy.intro": "Kebijakan Privasi ini untuk Soetala (“kami”, “kita”, atau “milik kami”) menjelaskan bagaimana dan mengapa kami dapat mengakses, mengumpulkan, menyimpan, menggunakan, dan/atau membagikan (“memproses”) informasi pribadi Anda ketika Anda menggunakan layanan kami (“Layanan”), termasuk ketika Anda:",
+    "privacy.intro.point1": "Mengunjungi situs web kami di https://soetala.id atau situs lain yang terhubung dengan Kebijakan Privasi ini.",
+    "privacy.intro.point2": "Menggunakan fitur Tiket dan Merchandise.",
+    "privacy.intro.point3": "Berinteraksi dengan kami melalui kegiatan lain yang terkait, termasuk penjualan, pemasaran, atau acara.",
+
+    "privacy.section1.title": "1. Informasi Apa yang Kami Kumpulkan?",
+    "privacy.section1.summary": "Kami mengumpulkan informasi pribadi yang Anda berikan secara sukarela.",
+    "privacy.section1.desc": "Kami mengumpulkan informasi pribadi yang Anda berikan saat mendaftar di Layanan, menyatakan minat terhadap produk kami, mengikuti kegiatan di Layanan, atau menghubungi kami secara langsung. Informasi yang kami kumpulkan dapat meliputi:",
+    "privacy.section1.list1": "Nama",
+    "privacy.section1.list2": "Nomor telepon",
+    "privacy.section1.list3": "Alamat email",
+    "privacy.section1.list4": "Kata sandi",
+    "privacy.section1.list5": "Data kontak atau autentikasi",
+    "privacy.section1.note": "Kami tidak memproses informasi sensitif.",
+    "privacy.section1.payment": "Kami juga dapat mengumpulkan data pembayaran seperti nomor instrumen pembayaran dan kode keamanan jika Anda melakukan pembelian. Semua data pembayaran diproses oleh TriPay. Kebijakan privasi TriPay dapat diakses di https://tripay.co.id/page/privacy-policy.",
+
+    "privacy.section2.title": "2. Bagaimana Kami Memproses Informasi Anda?",
+    "privacy.section2.summary": "Kami memproses informasi Anda untuk menyediakan, meningkatkan, dan mengelola Layanan kami.",
+    "privacy.section2.point1": "Membuat dan mengelola akun pengguna agar Anda dapat masuk dan menggunakan layanan kami.",
+    "privacy.section2.point2": "Menyediakan layanan yang diminta, termasuk pengelolaan tiket dan merchandise.",
+
+    "privacy.section3.title": "3. Kapan dan Dengan Siapa Kami Membagikan Informasi Anda?",
+    "privacy.section3.desc": "Kami dapat membagikan informasi pribadi Anda dalam situasi tertentu, seperti dalam proses penggabungan, penjualan aset, pendanaan, atau akuisisi sebagian/seluruh bisnis kami kepada pihak lain.",
+
+    "privacy.section4.title": "4. Apakah Kami Menggunakan Cookie dan Teknologi Pelacakan Lainnya?",
+    "privacy.section4.desc": "Ya, kami dapat menggunakan cookie dan teknologi pelacakan lainnya untuk mengumpulkan dan menyimpan informasi Anda guna menjaga keamanan situs dan meningkatkan pengalaman pengguna.",
+
+    "privacy.section5.title": "5. Berapa Lama Kami Menyimpan Informasi Anda?",
+    "privacy.section5.desc": "Kami menyimpan informasi Anda selama diperlukan untuk memenuhi tujuan dalam Kebijakan Privasi ini, kecuali diwajibkan oleh hukum untuk jangka waktu lebih lama. Setelah tidak diperlukan, data akan dihapus atau dianonimkan secara aman.",
+
+    "privacy.section6.title": "6. Bagaimana Kami Melindungi Informasi Anda?",
+    "privacy.section6.desc": "Kami menerapkan langkah-langkah keamanan organisasi dan teknis yang wajar untuk melindungi data pribadi Anda. Namun, transmisi data melalui internet tidak dapat dijamin 100% aman. Anda disarankan mengakses layanan melalui koneksi yang aman.",
+
+    "privacy.section7.title": "7. Apa Hak Privasi Anda?",
+    "privacy.section7.summary": "Anda dapat meninjau, mengubah, atau menghapus akun Anda kapan saja, serta menarik persetujuan pemrosesan data pribadi Anda dengan menghubungi kami melalui email.",
+    "privacy.section7.point1": "Masuk ke akun Anda untuk memperbarui informasi.",
+    "privacy.section7.point2": "Meminta penghapusan akun Anda kapan saja.",
+    "privacy.section7.note": "Setelah penghapusan akun, sebagian data mungkin tetap disimpan untuk pencegahan penipuan atau kepatuhan hukum. Anda juga dapat menonaktifkan cookie melalui pengaturan browser Anda.",
+
+    "privacy.section8.title": "8. Bagaimana Cara Menghubungi Kami?",
+    "privacy.section8.email": "Jika Anda memiliki pertanyaan mengenai Kebijakan Privasi ini, silakan hubungi kami di:",
+    "privacy.section8.contact": "Email: soetala.lab@gmail.com | Alamat: Soetala, Jl. Patimura No.240a, RW No.1, Dusun II, Pasir Kidul, Banyumas, Jawa Tengah 53136, Indonesia",
+
+    "privacy.section9.title": "9. Bagaimana Anda Dapat Meninjau, Memperbarui, atau Menghapus Data?",
+    "privacy.section9.desc": "Sesuai hukum yang berlaku di Indonesia, Anda berhak mengakses, memperbaiki, atau meminta penghapusan data pribadi Anda. Permintaan dapat dikirim ke soetala.lab@gmail.com dengan subjek “Permintaan Akses atau Penghapusan Data Pribadi”.",
+
+    "terms.intro": "Ketentuan Layanan ini mengatur penggunaan situs web dan layanan yang disediakan oleh Soetala (“kami”, “kita”, atau “milik kami”). Dengan mengakses atau menggunakan situs dan layanan kami, Anda dianggap telah membaca, memahami, dan menyetujui untuk terikat oleh Ketentuan Layanan ini.",
+
+    "terms.section1.title": "1. Penerimaan Ketentuan",
+    "terms.section1.desc": "Dengan menggunakan situs atau layanan kami di https://soetala.id, Anda setuju untuk mematuhi dan terikat pada Ketentuan Layanan ini, serta semua hukum dan peraturan yang berlaku di Republik Indonesia. Jika Anda tidak setuju dengan ketentuan ini, mohon untuk tidak menggunakan layanan kami.",
+
+    "terms.section2.title": "2. Perubahan Ketentuan",
+    "terms.section2.desc": "Kami berhak mengubah, memperbarui, atau meninjau Ketentuan Layanan ini kapan saja. Perubahan akan berlaku segera setelah dipublikasikan di situs kami. Anda disarankan untuk memeriksa halaman ini secara berkala.",
+
+    "terms.section3.title": "3. Penggunaan Layanan",
+    "terms.section3.desc": "Anda setuju untuk menggunakan layanan kami hanya untuk tujuan yang sah dan tidak melanggar hukum. Dilarang untuk:",
+    "terms.section3.prohibited1": "Menyalahgunakan fitur seperti pembelian tiket atau merchandise dengan data palsu.",
+    "terms.section3.prohibited2": "Mendistribusikan, menyalin, atau memodifikasi konten dari situs tanpa izin tertulis.",
+    "terms.section3.prohibited3": "Menggunakan situs untuk tujuan penipuan, spam, atau peretasan.",
+
+    "terms.section4.title": "4. Akun Pengguna",
+    "terms.section4.responsibility1": "Menyediakan informasi yang benar dan akurat saat registrasi.",
+    "terms.section4.responsibility2": "Menjaga kerahasiaan kredensial akun Anda.",
+    "terms.section4.responsibility3": "Melaporkan segera kepada kami jika terjadi aktivitas mencurigakan di akun Anda.",
+    "terms.section4.suspension": "Kami berhak menangguhkan atau menghapus akun yang melanggar ketentuan ini.",
+
+    "terms.section5.title": "5. Pembelian dan Pembayaran",
+    "terms.section5.desc": "Semua transaksi yang dilakukan melalui layanan Tiket dan Merchandise akan diproses oleh TriPay. Dengan melakukan pembelian, Anda menyetujui bahwa:",
+    "terms.section5.point1": "Data pembayaran Anda akan diproses oleh pihak ketiga (TriPay) sesuai kebijakan mereka: https://tripay.co.id/page/privacy-policy.",
+    "terms.section5.point2": "Kami tidak bertanggung jawab atas kesalahan transaksi yang disebabkan oleh pihak penyedia pembayaran.",
+
+    "terms.section6.title": "6. Hak Kekayaan Intelektual",
+    "terms.section6.desc": "Seluruh konten di situs Soetala, termasuk teks, logo, gambar, dan desain, dilindungi oleh hak cipta dan undang-undang kekayaan intelektual Indonesia. Dilarang menyalin, mendistribusikan, atau menggunakan konten tanpa izin resmi.",
+
+    "terms.section7.title": "7. Pembatasan Tanggung Jawab",
+    "terms.section7.desc": "Kami berupaya menjaga layanan tetap tersedia dan aman, namun kami tidak menjamin layanan bebas dari gangguan atau kesalahan teknis. Soetala tidak bertanggung jawab atas kerugian langsung maupun tidak langsung yang timbul akibat:",
+    "terms.section7.limitation1": "Gangguan sistem,",
+    "terms.section7.limitation2": "Kesalahan teknis pihak ketiga, atau",
+    "terms.section7.limitation3": "Penggunaan data oleh pengguna sendiri.",
+
+    "terms.section8.title": "8. Penghentian Layanan",
+    "terms.section8.desc": "Kami berhak untuk menghentikan atau membatasi akses Anda ke layanan kapan saja apabila:",
+    "terms.section8.termination1": "Anda melanggar Ketentuan Layanan ini, atau",
+    "terms.section8.termination2": "Ada kebutuhan hukum atau kebijakan internal perusahaan.",
+
+    "terms.section9.title": "9. Hukum yang Berlaku",
+    "terms.section9.desc": "Ketentuan ini diatur oleh dan ditafsirkan sesuai dengan hukum Republik Indonesia. Sengketa yang timbul akan diselesaikan secara musyawarah, dan jika tidak tercapai, akan diselesaikan melalui jalur hukum di wilayah Banyumas, Jawa Tengah.",
+
+    "terms.section10.title": "10. Hubungi Kami",
+    "terms.section10.email": "Untuk pertanyaan atau keluhan terkait Ketentuan Layanan, silakan hubungi kami di:",
+    "terms.section10.contact": "Email: soetala.lab@gmail.com | Alamat: Soetala, Jl. Patimura No.240a, RW No.1, Dusun II, Pasir Kidul, Banyumas, Jawa Tengah 53136, Indonesia"
 }
