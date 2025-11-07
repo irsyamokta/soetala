@@ -121,7 +121,13 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
         ? product.variants.find((v) => v.color === data.color && v.size === data.size)?.stock ?? 0
         : product.variants.reduce((acc, v) => acc + v.stock, 0);
 
-    const subtotal = product?.price * data.quantity;
+    const basePrice = product?.price ?? 0;
+    const priceXL = import.meta.env.VITE_SHIRT_PRICE;
+
+    const variantPrice =
+        data.size === "XL" ? basePrice + Number(priceXL) : basePrice;
+
+    const subtotal = variantPrice * data.quantity;
 
     const handleClick = () => {
         if (!auth.user) {
@@ -259,7 +265,7 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                 <h2 className="text-2xl font-semibold mb-4">{merch.title}</h2>
                 <p className="text-sm mb-4 leading-relaxed">{merch.desc}</p>
 
-                <p className="text-2xl lg:text-4xl font-semibold mb-10">{formatCurrency(product.price)}</p>
+                <p className="text-2xl lg:text-4xl font-semibold mb-10">{formatCurrency(variantPrice)}</p>
 
                 {/* Variants */}
                 {isShirt && (

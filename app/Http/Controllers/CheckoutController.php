@@ -84,7 +84,10 @@ class CheckoutController extends Controller
         DB::beginTransaction();
 
         try {
-            foreach ($request->items as $item) {
+            $totalPrice = 0;
+            $items = $request->items;
+
+            foreach ($items as &$item) {
                 if ($item['item_type'] === 'product') {
                     $product = Product::findOrFail($item['item_id']);
                     $variant = ProductVariant::where('product_id', $item['item_id'])
@@ -95,20 +98,30 @@ class CheckoutController extends Controller
                     if ($variant && $variant->stock < $item['quantity']) {
                         throw new \Exception("Insufficient stock for {$product->product_name} (Color: {$item['color']}, Size: {$item['size']})");
                     }
+
+                    $price = $product->price;
+                    if (isset($item['size']) && strtoupper($item['size']) === 'XL') {
+                        $price += config('price.shirt_xl');
+                    }
+
+                    $item['price'] = $price;
+
+                    $totalPrice += $price * $item['quantity'];
                 }
             }
+            unset($item);
 
             $transaction = Transaction::create([
                 'id' => Uuid::uuid4()->toString(),
                 'user_id' => $request->user_id,
                 'type' => $request->type,
                 'channel' => $request->channel,
-                'total_price' => (int) $request->total_price,
+                'total_price' => (int) $request->total_price ?? $totalPrice,
                 'payment_method' => $request->payment_method ?? null,
                 'status' => 'pending',
             ]);
 
-            foreach ($request->items as $item) {
+            foreach ($items as $item) {
                 TransactionItem::create([
                     'id' => Uuid::uuid4()->toString(),
                     'transaction_id' => $transaction->id,

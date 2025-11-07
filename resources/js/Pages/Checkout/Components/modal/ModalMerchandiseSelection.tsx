@@ -54,6 +54,17 @@ export const ModalMerchandiseSelection = ({
         return [...new Set(merch.variants?.map((v) => v.size) || [])];
     };
 
+    const getPrice = (merch: Merch, color: string, size: string) => {
+        let price = merch.price;
+        const priceXL = import.meta.env.VITE_SHIRT_PRICE;
+
+        if (size?.toUpperCase() === "XL") {
+            price += Number(priceXL);
+        }
+
+        return price;
+    };
+
     return (
         <div className="fixed inset-0 bg-black/80 flex items-center justify-center z-50 p-4">
             <div className="bg-white rounded-lg p-6 w-full max-w-md max-h-[90vh] overflow-y-auto">
@@ -84,8 +95,8 @@ export const ModalMerchandiseSelection = ({
                                             })
                                         }
                                         className={`w-10 h-10 rounded-full border-2 ${merchModal.color === color
-                                                ? "border-blue-500 ring-2 ring-blue-200"
-                                                : "border-gray-300"
+                                            ? "border-blue-500 ring-2 ring-blue-200"
+                                            : "border-gray-300"
                                             } hover:scale-105 transition-transform`}
                                         style={{ backgroundColor: color }}
                                         title={color}
@@ -111,8 +122,8 @@ export const ModalMerchandiseSelection = ({
                                             })
                                         }
                                         className={`px-3 py-2 border rounded ${merchModal.size === size
-                                                ? "bg-primary text-white"
-                                                : "bg-white border-gray-300 hover:border-primary"
+                                            ? "bg-primary text-white"
+                                            : "bg-white border-gray-300 hover:border-primary"
                                             } transition-colors`}
                                     >
                                         {size}
@@ -190,14 +201,17 @@ export const ModalMerchandiseSelection = ({
                         <div className="flex justify-between items-center">
                             <span className="font-medium text-sm">Subtotal:</span>
                             <span className="font-semibold text-xl text-primary">
-                                {formatCurrency(merchModal.merch.price * merchModal.quantity)}
+                                {formatCurrency(getPrice(merchModal.merch, merchModal.color, merchModal.size) * merchModal.quantity)}
                             </span>
                         </div>
                     </div>
 
                     {/* Add Button */}
                     <Button
-                        onClick={() => handleAddMerch(merchModal)}
+                        onClick={() => handleAddMerch({
+                            ...merchModal,
+                            price: getPrice(merchModal.merch, merchModal.color, merchModal.size),
+                        })}
                         className="w-full py-3 text-lg"
                         disabled={getSelectedStock(merchModal.merch, merchModal.color, merchModal.size) === 0}
                     >

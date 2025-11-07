@@ -9,13 +9,20 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
                 host: "print.soetala.id",
                 usingSecure: true
             })
-            .catch((err) => {
-                throw new Error("Printer not connected", err);
-            });
+                .catch((err) => {
+                    throw new Error("Printer not connected", err);
+                });
         }
 
         const printer = await qz.printers.find("POS58");
         const config = qz.configs.create(printer as any);
+
+        const colorMap: Record<string, string> = {
+            "#ffffff": "Putih",
+            "#000000": "Hitam",
+            "#ff0000": "Merah",
+            "#0914B7FF": "Navy",
+        };
 
         const printData: any[] = [];
 
@@ -34,10 +41,36 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
         printData.push({ type: "raw", data: "----------------------------\n" });
 
         items.forEach((item: any) => {
+            let label = "";
+
+            if (item.type === "ticket") {
+                label = item.category_name;
+            } else {
+                const colorName = colorMap[item.color] || item.color || "";
+                label = `${item.product_name} - ${item.size} (${colorName})`.trim();
+                if (!item.size && !item.color) {
+                    label = item.product_name;
+                } else if (!item.size) {
+                    label = `${item.product_name} (${colorName})`;
+                } else if (!item.color) {
+                    label = `${item.product_name} - ${item.size}`;
+                }
+            }
+
+            const totalItemPrice = item.price * item.quantity;
+            const formattedPrice = totalItemPrice.toLocaleString("id-ID");
+
             printData.push({
                 type: "raw",
-                data: `${item.product_name || item.category_name} x${item.quantity} = Rp${item.price * item.quantity}\n`,
+                data: `${label} x${item.quantity} = Rp${formattedPrice}\n`,
             });
+
+            if (item.note) {
+                printData.push({
+                    type: "raw",
+                    data: `   Note: ${item.note}\n`,
+                });
+            }
         });
 
         printData.push({ type: "raw", data: "----------------------------\n" });

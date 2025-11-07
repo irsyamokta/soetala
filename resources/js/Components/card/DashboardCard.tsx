@@ -136,6 +136,12 @@ export default function DashboardCard() {
         .filter((item: any) => item.category === "Shirt")
         .reduce((acc: number, item: any) => acc + (item.total_stock ?? 0), 0);
 
+    const shirt = stocks.find((item: any) => item.category === "Shirt");
+
+    const sizeMStock = shirt?.variants?.find((v: any) => v.size === "M")?.stock ?? 0;
+    const sizeLStock = shirt?.variants?.find((v: any) => v.size === "L")?.stock ?? 0;
+    const sizeXLStock = shirt?.variants?.find((v: any) => v.size === "XL")?.stock ?? 0;
+
     const stickerStock = stocks
         .filter((item: any) => item.category === "Sticker")
         .reduce((acc: number, item: any) => acc + (item.total_stock ?? 0), 0);
@@ -176,7 +182,13 @@ export default function DashboardCard() {
                     icon={<IoShirtOutline className="text-white size-8" />}
                     title="Stok Kaos"
                     value={shirtStock}
-                />
+                >
+                    <div className="flex gap-2 text-sm text-gray-500">
+                        <p>M: {sizeMStock}</p>
+                        <p>L: {sizeLStock}</p>
+                        <p>XL: {sizeXLStock}</p>
+                    </div>
+                </StatCard>
                 <StatCard
                     icon={<LuSticker className="text-white size-8" />}
                     title="Stok Stiker"

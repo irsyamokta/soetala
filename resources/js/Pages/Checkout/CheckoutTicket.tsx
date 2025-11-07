@@ -200,7 +200,13 @@ export default function CheckoutTicket({
         });
     };
 
-    const handleAddMerch = ({ merch, color, size, note, quantity }: { merch: Merch; color: string; size: string; note: string; quantity: number }) => {
+    const handleAddMerch = ({ merch, color, size, note, quantity }: {
+        merch: Merch;
+        color: string;
+        size: string;
+        note: string;
+        quantity: number;
+    }) => {
         const variantKey = `${merch.id}-${color}-${size}`;
         const variant = merch.variants.find((v) => v.color === color && v.size === size);
 
@@ -209,9 +215,17 @@ export default function CheckoutTicket({
             return;
         }
 
+        let finalPrice = merch.price;
+        const priceXL = import.meta.env.VITE_SHIRT_PRICE;
+
+        if (size?.toUpperCase() === "XL") {
+            finalPrice += Number(priceXL);
+        }
+
         setOrderItems((prev) => {
             const exist = prev.find((p) => p.variantKey === variantKey && p.type === "merch");
             let newItems: OrderItem[];
+
             if (exist) {
                 const newQuantity = exist.quantity + quantity;
                 if (variant.stock < newQuantity) {
@@ -220,7 +234,7 @@ export default function CheckoutTicket({
                 }
                 newItems = prev.map((p) =>
                     p.variantKey === variantKey && p.type === "merch"
-                        ? { ...p, quantity: newQuantity, note }
+                        ? { ...p, quantity: newQuantity, note, price: finalPrice }
                         : p
                 );
             } else {
@@ -229,7 +243,7 @@ export default function CheckoutTicket({
                     {
                         id: merch.id,
                         type: "merch" as const,
-                        price: merch.price,
+                        price: finalPrice,
                         quantity,
                         name: merch.product_name,
                         color,
@@ -239,10 +253,13 @@ export default function CheckoutTicket({
                     } as OrderItem,
                 ];
             }
+
             return updateTicketPrices(newItems);
         });
+
         setMerchModal(null);
     };
+
 
     const handleDecrease = (id: number, type: "ticket" | "merch", variantKey?: string) => {
         setOrderItems((prev) => {

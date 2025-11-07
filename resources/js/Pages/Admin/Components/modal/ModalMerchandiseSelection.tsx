@@ -37,8 +37,14 @@ export const ModalMerchandiseSelection = ({
     isOpen: boolean;
     onClose: () => void;
     merch: Merch | null;
-    handleAddMerch: (data: { merch: Merch; color: string; size: string; note: string; quantity: number }) => void;
-    currentQuantity?: number; 
+    handleAddMerch: (data: {
+        merch: Merch;
+        color: string;
+        size: string;
+        note: string;
+        quantity: number;
+    }) => void;
+    currentQuantity?: number;
     currentNote?: string;
 }) => {
     if (!merch) return null;
@@ -67,7 +73,10 @@ export const ModalMerchandiseSelection = ({
 
     useEffect(() => {
         if (!isSticker && availableSizes.length > 0) {
-            setSize(availableSizes[0].value);
+            const stillValid = availableSizes.some((opt) => opt.value === size);
+            if (!size || !stillValid) {
+                setSize(availableSizes[0].value);
+            }
         }
     }, [color, isSticker, availableSizes]);
 
@@ -91,13 +100,21 @@ export const ModalMerchandiseSelection = ({
                 {!isSticker && (
                     <div className="mb-4">
                         <Label required={true}>Warna</Label>
-                        <Select value={color} onChange={setColor} options={availableColors} />
+                        <Select
+                            value={color}
+                            onChange={setColor}
+                            options={availableColors}
+                        />
                     </div>
                 )}
                 {!isSticker && (
                     <div className="mb-4">
                         <Label required={true}>Ukuran</Label>
-                        <Select value={size} onChange={setSize} options={availableSizes} />
+                        <Select
+                            value={size}
+                            onChange={setSize}
+                            options={availableSizes}
+                        />
                     </div>
                 )}
                 <div className="mb-4">

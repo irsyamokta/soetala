@@ -150,11 +150,40 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
         });
     };
 
-    const handleDecrease = (id: string, type: "ticket" | "product") => {
+    const handleIncreaseTicket = (ticketId: string) => {
+        setOrderItems((prev) => {
+            const updatedItems = prev.map((p) => {
+                if (p.type === "ticket" && p.id === ticketId) {
+                    return { ...p, quantity: p.quantity + 1 };
+                }
+                return p;
+            });
+            return updateTicketPrices(updatedItems);
+        });
+    };
+
+    const handleDecreaseTicket = (ticketId: string) => {
         setOrderItems((prev) => {
             const updatedItems = prev
                 .map((p) => {
-                    if (p.type === type && p.id === id) {
+                    if (p.type === "ticket" && p.id === ticketId) {
+                        if (p.quantity > 1) {
+                            return { ...p, quantity: p.quantity - 1 };
+                        }
+                        return null;
+                    }
+                    return p;
+                })
+                .filter((p): p is OrderItem => p !== null);
+            return updateTicketPrices(updatedItems);
+        });
+    };
+
+    const handleDecrease = (variantKey: string) => {
+        setOrderItems((prev) => {
+            const updatedItems = prev
+                .map((p) => {
+                    if (p.variantKey === variantKey) {
                         if (p.quantity > 1) {
                             return { ...p, quantity: p.quantity - 1 };
                         }
@@ -169,66 +198,68 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
 
     const handleAddMerch = ({
         merch,
+        color,
+        size,
         note,
         quantity,
     }: {
         merch: Merch;
+        color: string;
+        size: string;
         note: string;
         quantity: number;
     }) => {
-        const variant = merch.variants && merch.variants.length > 0 ? merch.variants[0] : null;
+        const variantKey = `${merch.id}-${color}-${size}`;
+        const variant = merch.variants.find(v => v.color === color && v.size === size);
+
         if (variant && quantity > variant.stock) {
-            toast.error(`Stok tidak cukup untuk ${merch.product_name}`);
+            toast.error(`Stok tidak cukup untuk ${merch.product_name} (${size}, ${colorMap[color] || color})`);
             return;
         }
+
+        const priceXL = import.meta.env.VITE_SHIRT_PRICE;
+        const basePrice = merch.price;
+        const adjustedPrice = size.toUpperCase() === "XL" ? basePrice + Number(priceXL) : basePrice;
+
         setOrderItems((prev) => {
-            const exist = prev.find((p) => p.type === "product" && p.id === merch.id);
+            const exist = prev.find((p) => p.variantKey === variantKey);
+            let newItems: OrderItem[];
+
             if (exist) {
-                return updateTicketPrices(
-                    prev.map((p) =>
-                        p === exist
-                            ? {
-                                ...p,
-                                quantity,
-                                note: note || p.note,
-                                color: variant?.color || "",
-                                size: variant?.size || "",
-                            }
-                            : p
-                    )
+                newItems = prev.map((p) =>
+                    p.variantKey === variantKey
+                        ? { ...p, quantity: p.quantity + quantity, note: note || p.note, price: adjustedPrice }
+                        : p
                 );
             } else {
-                const extra = {
-                    product_name: merch.product_name,
-                    note,
-                    color: variant?.color || "",
-                    size: variant?.size || "",
-                };
-                return updateTicketPrices([
+                newItems = [
                     ...prev,
-                    { type: "product", id: merch.id, price: merch.price, quantity, ...extra },
-                ]);
+                    {
+                        type: "product",
+                        id: merch.id,
+                        price: adjustedPrice,
+                        quantity,
+                        product_name: merch.product_name,
+                        color,
+                        size,
+                        note,
+                        variantKey,
+                    },
+                ];
             }
+
+            return updateTicketPrices(newItems);
         });
     };
 
-    const handleIncrease = (id: string, type: "ticket" | "product") => {
+    const handleIncrease = (variantKey: string) => {
         setOrderItems((prev) => {
             const updatedItems = prev.map((p) => {
-                if (p.type === type && p.id === id) {
-                    if (type === "ticket") {
+                if (p.variantKey === variantKey && p.type === "product") {
+                    const merch = merchandises.find((m) => m.id === p.id);
+                    const variant = merch?.variants.find(v => v.color === p.color && v.size === p.size);
+                    if (variant && p.quantity < variant.stock) {
                         return { ...p, quantity: p.quantity + 1 };
-                    }
-                    if (type === "product") {
-                        const merch = merchandises.find((m) => m.id === id);
-                        if (merch) {
-                            const variant = merch.variants && merch.variants.length > 0 ? merch.variants[0] : null;
-                            if (variant && p.quantity < variant.stock) {
-                                return { ...p, quantity: p.quantity + 1 };
-                            } else if (!variant) {
-                                return { ...p, quantity: p.quantity + 1 };
-                            }
-                        }
                     }
                 }
                 return p;
@@ -294,7 +325,6 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                     onClose();
                 },
                 onError: (errors) => {
-                    console.log(errors);
                     const normalizedErrors: Record<string, string> = {};
                     Object.entries(errors).forEach(([key, val]) => {
                         const newKey = key.replace(/\[(\d+)\]/g, ".$1");
@@ -381,7 +411,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                                 <div className="flex items-center gap-2">
                                                     <button
                                                         type="button"
-                                                        onClick={() => handleDecrease(cat.id, "ticket")}
+                                                        onClick={() => handleDecreaseTicket(cat.id)}
                                                         className="px-2 py-1 border rounded hover:bg-gray-100"
                                                     >
                                                         <LuMinus size={16} />
@@ -389,7 +419,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                                     <span className="w-8 text-center">{exist.quantity}</span>
                                                     <button
                                                         type="button"
-                                                        onClick={() => handleIncrease(cat.id, "ticket")}
+                                                        onClick={() => handleIncreaseTicket(cat.id)}
                                                         className="px-2 py-1 border rounded hover:bg-gray-100"
                                                     >
                                                         <LuPlus size={16} />
@@ -426,36 +456,41 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                         </div>
                                         {existingItems.length > 0 && (
                                             <div className="mt-3 space-y-2">
-                                                {existingItems.map((item, index) => (
-                                                    <div
-                                                        key={index}
-                                                        className="flex justify-between items-center bg-gray-50 p-2 rounded"
-                                                    >
-                                                        <div className="flex-1">
-                                                            <p className="text-sm">{item.product_name}</p>
-                                                            {item.note && (
-                                                                <p className="text-sm text-gray-500 mt-1">Note: {item.note}</p>
-                                                            )}
+                                                {existingItems.map((item) => {
+                                                    const variantKey = `${merch.id}-${item.color}-${item.size}`;
+                                                    return (
+                                                        <div
+                                                            key={variantKey}
+                                                            className="flex justify-between items-center bg-gray-50 p-2 rounded"
+                                                        >
+                                                            <div className="flex-1">
+                                                                <p className="text-sm">
+                                                                    {item.product_name} - {item.size} ({colorMap[item.color!] || item.color})
+                                                                </p>
+                                                                {item.note && (
+                                                                    <p className="text-sm text-gray-500 mt-1">Note: {item.note}</p>
+                                                                )}
+                                                            </div>
+                                                            <div className="flex items-center gap-2">
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleDecrease(variantKey)}
+                                                                    className="px-2 py-1 border rounded hover:bg-gray-100"
+                                                                >
+                                                                    <LuMinus size={16} />
+                                                                </button>
+                                                                <span className="w-8 text-center">{item.quantity}</span>
+                                                                <button
+                                                                    type="button"
+                                                                    onClick={() => handleIncrease(variantKey)}
+                                                                    className="px-2 py-1 border rounded hover:bg-gray-100"
+                                                                >
+                                                                    <LuPlus size={16} />
+                                                                </button>
+                                                            </div>
                                                         </div>
-                                                        <div className="flex items-center gap-2">
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleDecrease(merch.id, "product")}
-                                                                className="px-2 py-1 border rounded hover:bg-gray-100"
-                                                            >
-                                                                <LuMinus size={16} />
-                                                            </button>
-                                                            <span className="w-8 text-center">{item.quantity}</span>
-                                                            <button
-                                                                type="button"
-                                                                onClick={() => handleIncrease(merch.id, "product")}
-                                                                className="px-2 py-1 border rounded hover:bg-gray-100"
-                                                            >
-                                                                <LuPlus size={16} />
-                                                            </button>
-                                                        </div>
-                                                    </div>
-                                                ))}
+                                                    );
+                                                })}
                                             </div>
                                         )}
                                     </div>
@@ -483,14 +518,20 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                             <p className="text-gray-500">Belum ada item ditambahkan</p>
                         ) : (
                             <ul className="space-y-2">
-                                {orderItems.map((item, index) => (
-                                    <li key={index} className="flex justify-between text-sm border-b pb-2">
-                                        <span>
-                                            {item.type === "ticket" ? item.category_name : item.product_name} x {item.quantity}
-                                        </span>
-                                        <span>{formatCurrency(item.price * item.quantity)}</span>
-                                    </li>
-                                ))}
+                                {orderItems.map((item, index) => {
+                                    const itemLabel = item.type === "ticket"
+                                        ? item.category_name
+                                        : `${item.product_name} - ${item.size} (${colorMap[item.color!] || item.color})`;
+
+                                    return (
+                                        <li key={index} className="flex justify-between text-sm border-b pb-2">
+                                            <span>
+                                                {itemLabel} x {item.quantity}
+                                            </span>
+                                            <span>{formatCurrency(item.price * item.quantity)}</span>
+                                        </li>
+                                    );
+                                })}
                             </ul>
                         )}
                         <div className="flex justify-between font-semibold mt-4">
