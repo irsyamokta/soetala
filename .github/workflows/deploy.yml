@@ -48,9 +48,6 @@ jobs:
             chmod -R 775 storage bootstrap/cache
             chown -R $USER:www-data storage bootstrap/cache
 
-            # Migrasi database
-            php artisan migrate:fresh --seed
-
             # Clear
             php artisan config:clear
             php artisan cache:clear

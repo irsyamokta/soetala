@@ -13,17 +13,32 @@ use CloudinaryLabs\CloudinaryLaravel\Facades\Cloudinary;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::select('*')
+        $query = User::query()
+            ->select('*')
             ->selectRaw("CASE WHEN email_verified_at IS NULL THEN 'Unverified' ELSE 'Verified' END as status_verified")
-            ->where('role', 'visitor')
-            ->orWhere('role', 'volunteer')
-            ->orderBy('created_at', 'DESC')
-            ->paginate(10);
+            ->whereIn('role', ['visitor', 'volunteer']);
+
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('name',  'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('phone', 'like', "%{$search}%");
+            });
+        }
+
+        $users = $query
+            ->orderByDesc('created_at')
+            ->paginate(10)
+            ->withQueryString();
 
         return Inertia::render('Admin/User', [
-            'users' => $users
+            'users'   => $users,
+            'filters' => [
+                'search' => $request->input('search', ''),
+            ],
         ]);
     }
 

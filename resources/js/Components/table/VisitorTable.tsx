@@ -144,9 +144,9 @@ export default function VisitorTable({ visitors = [], today, onFilterChange }: V
     return (
         <div className="overflow-hidden rounded-xl border border-gray-200 bg-white dark:border-white/[0.05] dark:bg-white/[0.03]">
             {/* Header */}
-            <div className="flex flex-col lg:flex-row items-start justify-between gap-3 p-4 border-b border-gray-100 dark:border-white/[0.05]">
+            <div className="flex flex-col items-start justify-between gap-3 p-4 border-b border-gray-100 dark:border-white/[0.05]">
                 <h1 className="font-semibold text-lg text-gray-800">Daftar Pengunjung</h1>
-                <div className="w-full lg:max-w-lg flex flex-col lg:flex-row items-center gap-3">
+                <div className="w-full flex flex-col lg:flex-row items-center gap-3">
                     <div className="w-full">
                         <Input
                             type="text"

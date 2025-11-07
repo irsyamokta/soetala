@@ -35,9 +35,19 @@ class TransactionController extends Controller
             $query->where('user_id', $user->id);
         }
 
+        if ($request->filled('search')) {
+            $search = $request->input('search');
+            $query->where(function ($q) use ($search) {
+                $q->where('buyer_name', 'like', "%{$search}%")
+                    ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"))
+                    ->orWhereHas('ticketOrders', fn($t) => $t->where('buyer_name', 'like', "%{$search}%"));
+            });
+        }
+
         $transactions = $query
             ->orderByDesc('created_at')
             ->paginate(10)
+            ->withQueryString()
             ->through(function ($transaction) {
                 return [
                     'id' => $transaction->id,
@@ -103,6 +113,9 @@ class TransactionController extends Controller
             'transactions' => $transactions,
             'events' => $events,
             'merchandises' => $merchandises,
+            'filters' => [
+                'search' => $request->search ?? '',
+            ],
         ]);
     }
 
@@ -211,6 +224,22 @@ class TransactionController extends Controller
         } catch (\Exception $e) {
             DB::rollBack();
             return back()->withErrors(['error' => $e->getMessage()])->withInput();
+        }
+    }
+
+    public function destroy($id)
+    {
+        try {
+            $transaction = Transaction::find($id);
+            if (!$transaction) {
+                return redirect()->back()->with('error', 'Transaksi tidak ditemukan');
+            }
+
+            $transaction->delete();
+
+            return redirect()->back()->with('success', 'Transaksi berhasil dihapus');
+        } catch (\Exception $e) {
+            return back()->withErrors(['error' => 'Gagal menghapus transaksi: ' . $e->getMessage()]);
         }
     }
 

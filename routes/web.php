@@ -82,6 +82,8 @@ Route::group(['prefix' => 'transaction'], function () {
     Route::post('/create', [TransactionController::class, 'store'])->name('transaction.store');
 })->middleware(['auth', 'verified', 'role:admin|volunteer']);
 
+Route::delete('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transaction.destroy')->middleware(['auth', 'verified', 'role:admin']);
+
 // Profile Routes
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');

@@ -1,5 +1,9 @@
-import { useState, useMemo } from "react";
-import { usePage, usePoll } from "@inertiajs/react";
+import { useState, useCallback } from "react";
+import { usePage, usePoll, router } from "@inertiajs/react";
+import { PageProps } from "@/types/types";
+
+import { confirmDialog } from "@/utils/confirmationDialog";
+import { toast } from "react-toastify";
 
 import Input from "@/Components/form/input/InputField";
 import HeaderSection from "@/Components/card/HeaderSectionCard";
@@ -21,7 +25,8 @@ import { formatCurrency } from "@/utils/formatCurrency";
 import { formatDateTime } from "@/utils/formateDate";
 import capitalizeFirst from "@/utils/capitalize";
 
-import { LuPencil } from "react-icons/lu";
+import { LuPencil, LuTrash2 } from "react-icons/lu";
+import { IoSearch } from "react-icons/io5";
 
 interface Transaction {
     id: string;
@@ -46,26 +51,29 @@ interface Transaction {
     };
 }
 
-interface Props {
+interface Props extends PageProps {
     transactions: {
         data: Transaction[];
-        links: {};
+        links: any[];
         last_page: number;
+    };
+    filters: {
+        search: string;
     };
 }
 
 export default function TransactionTable() {
-    const { props } = usePage();
-    const { data: transactions, links, last_page } = props.transactions as {
-        data: Transaction[];
-        links: {};
-        last_page: number;
-    };
+    const { props } = usePage<Props>();
+    const { data: transactions, links, last_page } = props.transactions;
+    const { search: initialSearch } = props.filters || { search: "" };
+
+    const isAdmin = props.auth.user.role === "admin";
 
     const [isModalOpen, setIsModalOpen] = useState(false);
     const [isPickupStatusModalOpen, setIsPickupStatusModalOpen] = useState(false);
     const [selectedTransactionId, setSelectedTransactionId] = useState("");
-    const [search, setSearch] = useState("");
+    const [search, setSearch] = useState(initialSearch);
+    const [deletingId, setDeletingId] = useState<string | null>(null);
 
     usePoll(15000, {
         only: ["transactions"],
@@ -77,13 +85,6 @@ export default function TransactionTable() {
         "#ff0000": "Merah",
         "#0914B7FF": "Navy",
     };
-
-    const filteredTransactions = useMemo(() => {
-        if (!search) return transactions;
-        return transactions.filter((transaction) =>
-            transaction.buyer_name?.toLowerCase().includes(search.toLowerCase())
-        );
-    }, [transactions, search]);
 
     const categoryMap: Record<string, string> = {
         adult: "Dewasa",
@@ -148,6 +149,48 @@ export default function TransactionTable() {
         setIsPickupStatusModalOpen(true);
     };
 
+    const handleDelete = useCallback(async (id: string) => {
+        const confirmed = await confirmDialog({
+            title: "Hapus Transaksi?",
+            text: "Transaksi yang dihapus tidak dapat dikembalikan!",
+            confirmButtonText: "Ya, Hapus",
+            cancelButtonText: "Batal",
+        });
+
+        if (!confirmed) return;
+
+        setDeletingId(id);
+        router.delete(route("transaction.destroy", id), {
+            preserveScroll: true,
+            onSuccess: () => {
+                toast.success("Transaksi berhasil dihapus");
+                setDeletingId(null);
+            },
+            onError: () => {
+                toast.error("Gagal menghapus transaksi");
+                setDeletingId(null);
+            },
+        });
+    }, []);
+
+    const handleSearch = (e: React.KeyboardEvent<HTMLInputElement>) => {
+        if (e.key === "Enter") {
+            router.get(
+                route("dashboard.transaction"),
+                { search: search.trim() },
+                { preserveState: true, replace: true }
+            );
+        }
+    };
+
+    const handleSearchClick = () => {
+        router.get(
+            route("dashboard.transaction"),
+            { search: search.trim() },
+            { preserveState: true, replace: true }
+        );
+    };
+
     return (
         <div className="grid grid-cols-1 gap-4 md:gap-6">
             {/* Header */}
@@ -168,102 +211,78 @@ export default function TransactionTable() {
             {/* Table */}
             <div className="overflow-hidden rounded-xl border border-gray-200 bg-white">
                 {/* Search Input */}
-                <div className="flex justify-between items-center p-4">
+                <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center p-4 gap-4">
                     <h1 className="text-lg font-semibold text-gray-800">Daftar Transaksi</h1>
-                    <Input
-                        type="text"
-                        placeholder="Cari nama pembeli..."
-                        value={search}
-                        onChange={(e) => setSearch(e.target.value)}
-                        className="w-full max-w-xs rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500 dark:border-white/[0.1] dark:bg-transparent"
-                    />
+                    <div className="flex items-center gap-2 w-full sm:w-2/4">
+                        <div className="w-full">
+                            <Input
+                                type="text"
+                                placeholder="Cari nama pembeli..."
+                                value={search}
+                                onChange={(e) => setSearch(e.target.value)}
+                                onKeyDown={handleSearch}
+                                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-indigo-500"
+                            />
+                        </div>
+                        <Button
+                            type="button"
+                            size="md"
+                            variant="default"
+                            onClick={handleSearchClick}
+                        >
+                            <IoSearch />
+                        </Button>
+                    </div>
                 </div>
+
                 <div className="max-w-full overflow-x-auto">
                     <Table>
-                        {/* Table Header */}
                         <TableHeader className="border-b border-gray-100">
                             <TableRow>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Nama Pembeli
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Item Order
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Total Item
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Total Harga
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Catatan
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Channel
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Metode Pembayaran
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Status Pembayaran
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Status Pengambilan
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Tanggal Transaksi
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Penanggung Jawab
                                 </TableCell>
-                                <TableCell
-                                    isHeader
-                                    className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap"
-                                >
+                                <TableCell isHeader className="px-5 py-3 font-medium text-gray-500 text-start text-theme-xs whitespace-nowrap">
                                     Aksi
                                 </TableCell>
                             </TableRow>
                         </TableHeader>
 
-                        {/* Table Body */}
-                        <TableBody className="divide-y divide-gray-100 dark:divide-white/[0.05]">
-                            {filteredTransactions.length === 0 ? (
+                        <TableBody className="divide-y divide-gray-100">
+                            {transactions.length === 0 ? (
                                 <EmptyTable colspan={12} description="Tidak ada data transaksi" />
                             ) : (
-                                filteredTransactions.map((transaction) => (
+                                transactions.map((transaction) => (
                                     <TableRow key={transaction.id}>
                                         <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm whitespace-nowrap">
                                             {transaction.buyer_name}
@@ -302,7 +321,7 @@ export default function TransactionTable() {
                                         <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm">
                                             {transaction.responsible?.name || "-"}
                                         </TableCell>
-                                        <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm">
+                                        <TableCell className="px-5 py-3 text-gray-500 text-start text-theme-sm flex gap-2">
                                             <Button
                                                 type="button"
                                                 size="md"
@@ -312,19 +331,32 @@ export default function TransactionTable() {
                                             >
                                                 <LuPencil />
                                             </Button>
+                                            {isAdmin && (
+                                                <Button
+                                                    type="button"
+                                                    size="md"
+                                                    variant="danger"
+                                                    aria-label="Hapus"
+                                                    onClick={() => handleDelete(transaction.id)}
+                                                    disabled={deletingId === transaction.id}
+                                                >
+                                                    {deletingId === transaction.id ? (
+                                                        <LuTrash2 className="animate-spin" />
+                                                    ) : (
+                                                        <LuTrash2 />
+                                                    )}
+                                                </Button>
+                                            )}
                                         </TableCell>
                                     </TableRow>
                                 ))
                             )}
                         </TableBody>
                     </Table>
+
                     {last_page > 1 && (
-                        <div className="p-4">
-                            {Array.isArray(links) ? (
-                                <Pagination links={links} />
-                            ) : (
-                                <div>Error: links is not an array</div>
-                            )}
+                        <div className="p-4 border-t">
+                            <Pagination links={links} />
                         </div>
                     )}
                 </div>

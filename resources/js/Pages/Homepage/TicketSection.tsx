@@ -107,10 +107,10 @@ function TicketSection() {
 
                             <div className="flex flex-col gap-2 mb-4">
                                 <p className="flex items-center gap-2">
-                                    <LuCalendar /> 10 - 16 November 2025
+                                    <LuCalendar /> 10 - 15 November 2025
                                 </p>
                                 <p className="flex items-center gap-2">
-                                    <LuClock /> 10.00 - 20.00 WIB
+                                    <LuClock /> 09.00 - 20.00 WIB
                                 </p>
                                 <p className="flex items-center gap-2">
                                     <LuMapPin /> Museum Panglima Besar Jenderal Soedirman
