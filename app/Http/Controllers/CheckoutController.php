@@ -13,17 +13,15 @@ use App\Helpers\ValidationHelper;
 use Illuminate\Support\Facades\DB;
 use Ramsey\Uuid\Uuid;
 use Inertia\Inertia;
-use App\Services\MidtransService;
-use Carbon\Carbon;
-use Midtrans\Config;
+use App\Services\TripayService;
 
 class CheckoutController extends Controller
 {
-    private $midtrans;
+    private $tripay;
 
-    public function __construct(MidtransService $midtrans)
+    public function __construct(TripayService $tripay)
     {
-        $this->midtrans = $midtrans;
+        $this->tripay = $tripay;
     }
 
     public function index(Request $request)
@@ -160,13 +158,17 @@ class CheckoutController extends Controller
             ->firstOrFail();
 
         if ($transaction->status !== 'pending') {
-            return redirect()->route('checkout.history')->with('error', 'Transaction is not in a pending state');
+            return redirect()->route('checkout.history')
+                ->with('error', 'Transaksi tidak dalam status pending.');
+        }
+
+        if (!empty($transaction->checkout_url) && $transaction->status === 'pending') {
+            return redirect($transaction->checkout_url);
         }
 
         $user = $request->user();
 
         $itemDetails = [];
-
         foreach ($transaction->items as $item) {
             if ($item->item_type === 'product') {
                 $itemDetails[] = [
@@ -187,92 +189,37 @@ class CheckoutController extends Controller
             ];
         }
 
-        $params = [
-            'transaction_details' => [
-                'order_id' => $transaction->id,
-                'gross_amount' => (int) $transaction->total_price,
-            ],
-            'customer_details' => [
-                'first_name' => $user->name ?? 'Guest',
-                'email' => $user->email ?? 'guest@example.com',
-                'phone' => $user->phone ?? null,
-            ],
-            'item_details' => $itemDetails,
+        $payload = [
+            'method' => 'QRIS2',
+            'merchant_ref'  => 'INV-' . $transaction->id,
+            'amount'        => (int) $transaction->total_price,
+            'customer_name' => $user->name ?? 'Guest',
+            'customer_email' => $user->email ?? 'guest@example.com',
+            'customer_phone' => $user->phone ?? '',
+            'order_items'   => $itemDetails,
+            'callback_url'  => config('tripay.callback_url'),
+            'return_url'    => config('tripay.return_url'),
+            'expired_time'  => now()->addMinutes(10)->timestamp,
         ];
 
         try {
-            $response = $this->midtrans->createTransaction($params);
+            $response = $this->tripay->createTransaction($payload);
 
-            if (!isset($response->token) || empty($response->token)) {
-                throw new \Exception('Snap token not received from Midtrans');
+            if (isset($response['data']['checkout_url'])) {
+                $transaction->update([
+                    'checkout_url' => $response['data']['checkout_url'],
+                    'status' => 'pending',
+                    'reference' => $response['data']['reference'],
+                    'raw_response' => json_encode($response),
+                ]);
+
+                return redirect($response['data']['checkout_url']);
             }
 
-            $snapToken = $response->token;
-
-            $transaction->update([
-                'snap_token' => $snapToken,
-                'snap_token_expired_at' => Carbon::now()->addHours(24),
-                'raw_response' => json_encode($response),
-            ]);
-
-            $transactions = Transaction::where('user_id', $request->user()->id)
-                ->with([
-                    'items' => function ($query) {
-                        $query->select('id', 'transaction_id', 'item_type', 'item_name', 'item_id', 'quantity', 'price', 'variant_details');
-                    },
-                    'ticketOrders' => function ($query) {
-                        $query->select('id', 'transaction_id', 'ticket_id', 'ticket_category_id', 'buyer_name', 'phone', 'quantity', 'price', 'qr_code')
-                            ->with(['category' => function ($query) {
-                                $query->select('id', 'category_name');
-                            }]);
-                    },
-                ])
-                ->select('id', 'user_id', 'type', 'total_price', 'status', 'created_at', 'snap_token', 'snap_token_expired_at')
-                ->orderBy('created_at', 'desc')
-                ->get()
-                ->map(function ($transaction) {
-                    return [
-                        'id' => $transaction->id,
-                        'type' => $transaction->type,
-                        'total_price' => $transaction->total_price,
-                        'status' => $transaction->status,
-                        'created_at' => $transaction->created_at->toIso8601String(),
-                        'snap_token' => $transaction->snap_token,
-                        'snap_token_expired_at' => $transaction->snap_token_expired_at?->toIso8601String(),
-                        'items' => $transaction->items->map(function ($item) {
-                            return [
-                                'item_type' => $item->item_type,
-                                'item_name' => $item->item_name,
-                                'item_id' => $item->item_id,
-                                'quantity' => $item->quantity,
-                                'price' => $item->price,
-                                'color' => $item->variant_details['color'] ?? null,
-                                'size' => $item->variant_details['size'] ?? null,
-                                'note' => $item->variant_details['note'] ?? null,
-                            ];
-                        }),
-                        'ticket_orders' => $transaction->ticketOrders->map(function ($order) {
-                            return [
-                                'ticket_id' => $order->ticket_id,
-                                'ticket_category_id' => $order->ticket_category_id,
-                                'buyer_name' => $order->buyer_name,
-                                'phone' => $order->phone,
-                                'quantity' => $order->quantity,
-                                'category_name' => $order->category ? $order->category->category_name : null,
-                                'price' => $order->price,
-                                'qr_code' => $order->qr_code,
-                            ];
-                        }),
-                    ];
-                });
-
-            return Inertia::render('Transaction/UserTransaction', [
-                'transactions' => $transactions,
-                'snap_token' => $snapToken,
-                'transaction_id' => $transaction->id,
-            ]);
-        } catch (\Exception $e) {
-            return redirect()->route('checkout.history')->with('error', 'Failed to initiate payment: ' . $e->getMessage());
+            throw new \Exception('Gagal menerima checkout URL dari Tripay.');
+        } catch (\Throwable $th) {
+            return redirect()->route('checkout.history')
+                ->with('error', 'Gagal membuat transaksi Tripay: ' . $th->getMessage());
         }
     }
 
@@ -290,7 +237,7 @@ class CheckoutController extends Controller
                         }]);
                 },
             ])
-            ->select('id', 'user_id', 'type', 'total_price', 'status', 'created_at', 'snap_token', 'snap_token_expired_at')
+            ->select('id', 'user_id', 'type', 'total_price', 'status', 'created_at', 'checkout_url')
             ->orderBy('created_at', 'desc')
             ->get()
             ->map(function ($transaction) {
@@ -300,8 +247,7 @@ class CheckoutController extends Controller
                     'total_price' => $transaction->total_price,
                     'status' => $transaction->status,
                     'created_at' => $transaction->created_at->toIso8601String(),
-                    'snap_token' => $transaction->snap_token,
-                    'snap_token_expired_at' => $transaction->snap_token_expired_at?->toIso8601String(),
+                    'checkout_url' => $transaction->checkout_url,
                     'items' => $transaction->items->map(function ($item) {
                         return [
                             'item_type' => $item->item_type,
@@ -339,28 +285,40 @@ class CheckoutController extends Controller
         $transaction = Transaction::where('id', $transactionId)
             ->where('user_id', $request->user()->id)
             ->where('status', 'pending')
-            ->with('items')
             ->firstOrFail();
 
         DB::beginTransaction();
 
         try {
-            if ($transaction->snap_token) {
+            if ($transaction->checkout_url) {
                 try {
-                    $statusResponse = (object) $this->midtrans->status($transaction->id);
+                    $statusResponse = $this->tripay->getTransactionStatus($transaction->reference);
 
-                    if (in_array($statusResponse->transaction_status, ['cancel', 'expire', 'deny'])) {
-                        $transaction->update([
-                            'status' => $statusResponse->transaction_status,
-                            'snap_token' => null,
-                            'snap_token_expired_at' => null,
-                        ]);
-                        DB::commit();
-                        return redirect()->route('checkout.history')
-                            ->with('message', 'Transaction already ' . $statusResponse->transaction_status);
+                    if (!$statusResponse || empty($statusResponse['success'])) {
+                        throw new \Exception('Gagal mengambil status transaksi dari Tripay.');
                     }
 
-                    $this->midtrans->cancelTransaction($transaction->id);
+                    $tripayStatus = $statusResponse['data']['status'];
+
+                    $mappedStatus = match ($tripayStatus) {
+                        'PAID' => 'paid',
+                        'UNPAID' => 'pending',
+                        'EXPIRED' => 'expired',
+                        default => 'failed',
+                    };
+
+                    if (in_array($mappedStatus, ['pending', 'expired'])) {
+                        $transaction->update([
+                            'status' => 'canceled',
+                            'checkout_url' => null,
+                        ]);
+                    } else {
+                        $transaction->update(['status' => $mappedStatus]);
+                    }
+
+                    DB::commit();
+                    return redirect()->route('checkout.history')
+                        ->with('message', 'Transaksi berhasil dibatalkan atau diperbarui ke status terbaru.');
                 } catch (\Exception $e) {
                     throw $e;
                 }
@@ -368,65 +326,61 @@ class CheckoutController extends Controller
 
             $transaction->update([
                 'status' => 'canceled',
-                'snap_token' => null,
-                'snap_token_expired_at' => null,
+                'checkout_url' => null,
             ]);
 
             DB::commit();
-            return redirect()->route('checkout.history')->with('message', 'Transaction canceled successfully');
+            return redirect()->route('checkout.history')
+                ->with('message', 'Transaksi dibatalkan di sistem.');
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->route('checkout.history')->with('error', 'Failed to cancel transaction: ' . $e->getMessage());
+            return redirect()->route('checkout.history')
+                ->with('error', 'Gagal membatalkan transaksi: ' . $e->getMessage());
         }
     }
 
-    public function handleNotification(Request $request)
+    public function callback(Request $request)
     {
-        Config::$serverKey = config('midtrans.server_key');
-        Config::$isProduction = config('midtrans.is_production', false);
+        $json = $request->getContent();
+        $signature = hash_hmac('sha256', $json, config('tripay.private_key'));
+
+        if ($signature !== $request->header('X-Callback-Signature')) {
+            return response()->json(['success' => false, 'message' => 'Invalid signature'], 403);
+        }
+
+        $data = json_decode($json, true);
+
+        $merchantRef = $data['merchant_ref'] ?? null;
+        if (!$merchantRef) {
+            return response()->json(['success' => false, 'message' => 'Missing merchant_ref'], 400);
+        }
+
+        $transactionId = str_replace('INV-', '', $merchantRef);
+        $transaction = Transaction::with('items')->where('id', $transactionId)->first();
+
+        if (!$transaction) {
+            return response()->json(['success' => false, 'message' => 'Transaction not found'], 404);
+        }
+
+        $tripayStatus = strtoupper($data['status'] ?? 'FAILED');
+        $status = match ($tripayStatus) {
+            'PAID' => 'paid',
+            'EXPIRED' => 'expired',
+            'UNPAID' => 'pending',
+            default => 'failed',
+        };
+
+        DB::beginTransaction();
 
         try {
-            $notification = new \Midtrans\Notification();
+            $transaction->update([
+                'status' => $status,
+                'payment_method' => $data['payment_method'] ?? null,
+                'reference' => $data['reference'] ?? null,
+                'raw_callback' => $json,
+            ]);
 
-            $serverKey = Config::$serverKey;
-            $orderId = $notification->order_id;
-            $statusCode = $notification->status_code;
-            $grossAmount = (string) $notification->gross_amount;
-            $expectedSignature = hash('SHA512', $orderId . $statusCode . $grossAmount . $serverKey);
-
-            if ($notification->signature_key !== $expectedSignature) {
-                return response()->json(['message' => 'Invalid signature'], 403);
-            }
-
-            $transactionId = $notification->order_id;
-            $status = $notification->transaction_status;
-            $fraudStatus = $notification->fraud_status ?? 'accept';
-            $paymentType = $notification->payment_type ?? null;
-
-            $transaction = Transaction::with('items')->where('id', $transactionId)->first();
-            if (!$transaction) {
-                return response()->json(['message' => 'Transaction not found'], 404);
-            }
-
-            DB::beginTransaction();
-
-            $updateData = ['status' => $status];
-            if (in_array($status, ['capture', 'settlement']) && $fraudStatus === 'accept') {
-                $updateData['status'] = 'paid';
-                $updateData['payment_method'] = $paymentType;
-            } elseif ($status === 'capture' && $fraudStatus !== 'accept') {
-                $updateData['status'] = 'canceled';
-            } elseif (in_array($status, ['cancel', 'deny'])) {
-                $updateData['status'] = 'canceled';
-            } elseif ($status === 'expire') {
-                $updateData['status'] = 'expired';
-            }
-
-            $updateData['raw_notification'] = json_encode($notification->getResponse());
-
-            $transaction->update($updateData);
-
-            if ($updateData['status'] === 'paid') {
+            if ($status === 'paid') {
                 foreach ($transaction->items as $item) {
                     if ($item->item_type === 'product' && $item->quantity > 0) {
                         $color = $item->variant_details['color'] ?? null;
@@ -462,11 +416,13 @@ class CheckoutController extends Controller
             }
 
             DB::commit();
-
-            return response()->json(['message' => 'Notification handled'], 200);
+            return response()->json(['success' => true]);
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['message' => 'Failed to handle notification: ' . $e->getMessage()]);
+            return response()->json([
+                'success' => false,
+                'message' => 'Internal error'
+            ], 500);
         }
     }
 }
