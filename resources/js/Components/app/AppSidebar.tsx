@@ -69,7 +69,7 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ navItems, othersItems = [] }) =
 
     return (
         <aside
-            className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-primary text-white h-screen transition-all duration-300 ease-in-out z-50 border-r border-gray-200
+            className={`fixed mt-16 flex flex-col lg:mt-0 top-0 px-5 left-0 bg-primary text-white h-screen transition-all duration-300 ease-in-out z-50
         ${isExpanded || isMobileOpen ? "w-[290px]" : isHovered ? "w-[290px]" : "w-[90px]"}
         ${isMobileOpen ? "translate-x-0" : "-translate-x-full"}
         lg:translate-x-0`}
@@ -84,13 +84,13 @@ const AppSidebar: React.FC<AppSidebarProps> = ({ navItems, othersItems = [] }) =
                 <Link href="/">
                     {isExpanded || isHovered || isMobileOpen ? (
                         <>
-                            <img src={logoWhite} alt="Logo" className="dark:hidden w-48" />
-                            <img src={logoColor} alt="Logo" className="hidden dark:block w-48" />
+                            <img src={logoWhite} alt="Logo" className={`dark:hidden w-48 ${isMobileOpen ? "hidden" : ""}`} />
+                            <img src={logoColor} alt="Logo" className={`hidden dark:block w-48 ${isMobileOpen ? "hidden" : ""}`} />
                         </>
                     ) : (
                         <img
                             className="w-10"
-                            src="/favicon.png"
+                            src="/logo-mini.svg"
                             alt="Logo"
                             width={32}
                             height={32}

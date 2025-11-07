@@ -213,7 +213,7 @@ function MerchItem({ product, locale, t, translate }: MerchItemProps) {
                     alt={merch.title}
                     className="rounded-md shadow-md h-[300px] md:h-[400px] object-cover"
                 />
-                <div className="flex justify-center gap-4">
+                <div className="flex justify-center gap-4 lg:p-2">
                     {galleryImages.length <= 4 ? (
                         galleryImages.map((img, i) => (
                             <img

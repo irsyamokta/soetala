@@ -26,12 +26,20 @@ export const useSidebar = () => {
 export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
     children,
 }) => {
-    const [isExpanded, setIsExpanded] = useState(true);
+    const [isExpanded, setIsExpanded] = useState<boolean>(() => {
+        const stored = localStorage.getItem("sidebarExpanded");
+        return stored ? JSON.parse(stored) : true;
+    });
+
     const [isMobileOpen, setIsMobileOpen] = useState(false);
     const [isMobile, setIsMobile] = useState(false);
     const [isHovered, setIsHovered] = useState(false);
     const [activeItem, setActiveItem] = useState<string | null>(null);
     const [openSubmenu, setOpenSubmenu] = useState<string | null>(null);
+
+    useEffect(() => {
+        localStorage.setItem("sidebarExpanded", JSON.stringify(isExpanded));
+    }, [isExpanded]);
 
     useEffect(() => {
         const handleResize = () => {
@@ -44,14 +52,15 @@ export const SidebarProvider: React.FC<{ children: React.ReactNode }> = ({
 
         handleResize();
         window.addEventListener("resize", handleResize);
-
-        return () => {
-            window.removeEventListener("resize", handleResize);
-        };
+        return () => window.removeEventListener("resize", handleResize);
     }, []);
 
     const toggleSidebar = () => {
-        setIsExpanded((prev) => !prev);
+        setIsExpanded((prev) => {
+            const newValue = !prev;
+            localStorage.setItem("sidebarExpanded", JSON.stringify(newValue));
+            return newValue;
+        });
     };
 
     const toggleMobileSidebar = () => {
