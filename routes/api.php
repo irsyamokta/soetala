@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CheckoutController;
 
-Route::post('/midtrans/notification', [CheckoutController::class, 'handleNotification'])->name('midtrans.notification');
+Route::post('/tripay/callback', [CheckoutController::class, 'callback'])->name('tripay.callback');
 
 Route::get('/cert/qz-tray.crt', function () {
     return response()->file(storage_path('app/qz/qz-tray.crt'));

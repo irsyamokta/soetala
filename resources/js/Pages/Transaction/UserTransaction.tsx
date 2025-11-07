@@ -41,57 +41,52 @@ type Transaction = {
     status: "pending" | "paid" | "canceled" | "expired";
     status_label: string;
     created_at: string;
-    snap_token?: string;
-    snap_token_expired_at?: string;
+    pay_url?: string;
+    pay_url_expired_at?: string;
     items: TransactionItem[];
     ticket_orders: TicketOrder[];
 };
 
 type Props = {
     transactions: Transaction[];
-    snap_token?: string;
-    transaction_id?: string;
 };
 
-export default function TransactionHistory({ transactions, snap_token, transaction_id }: Props) {
+export default function TransactionHistory({ transactions: initialTransactions }: Props) {
     const [lang, setLang] = useState<"id" | "en">("id");
-    const [transaction, setTransaction] = useState<Transaction[]>(transactions || []);
+    const [transactions, setTransaction] = useState<Transaction[]>(initialTransactions || []);
     const [isLoading, setIsLoading] = useState<Record<string, boolean>>({});
-    const [paymentAttempted, setPaymentAttempted] = useState<Record<string, boolean>>({});
     const [error, setError] = useState<string | null>(null);
-    const [isSnapLoaded, setIsSnapLoaded] = useState<boolean>(false);
 
     const { locale } = usePage().props;
     const t = useTranslate();
     const { translate } = useApiTranslate();
 
-    const categoryMap: Record<string, string> = {
-        adult: "Dewasa",
-        child: "Anak",
-    };
-
+    const categoryMap: Record<string, string> = { adult: "Dewasa", child: "Anak" };
     const statusMap: Record<string, string> = {
         pending: "Menunggu",
         paid: "Dibayar",
         canceled: "Dibatalkan",
         expired: "Kedaluwarsa",
+        failed: "Gagal",
     };
 
     useEffect(() => {
         const interval = setInterval(() => {
-            const hasPending = transaction.some((t) => t.status === "pending");
+            const hasPending = transactions.some((t) => t.status === "pending");
             if (hasPending) {
                 router.reload({ only: ["transactions"] });
             }
         }, 30000);
         return () => clearInterval(interval);
-    }, [transaction]);
+    }, [transactions]);
 
     useEffect(() => {
         const doTranslate = async () => {
+            let source = initialTransactions;
+
             if (locale === "en") {
                 const translated = await Promise.all(
-                    transactions.map(async (t: Transaction) => {
+                    source.map(async (t: Transaction) => {
                         const items = await Promise.all(
                             t.items.map(async (i) => ({
                                 ...i,
@@ -111,7 +106,7 @@ export default function TransactionHistory({ transactions, snap_token, transacti
                 );
                 setTransaction(translated);
             } else {
-                const localized = transactions.map((t) => ({
+                const localized = source.map((t) => ({
                     ...t,
                     status_label: statusMap[t.status] || capitalizeFirst(t.status),
                     items: t.items.map((i) => ({
@@ -126,72 +121,9 @@ export default function TransactionHistory({ transactions, snap_token, transacti
                 setTransaction(localized);
             }
         };
+
         doTranslate();
-    }, [locale, transactions]);
-
-    useEffect(() => {
-        const loadSnapScript = () => {
-            if (typeof window === "undefined" || (window as any).snap) {
-                setIsSnapLoaded(true);
-                return;
-            }
-
-            const clientKey = import.meta.env.VITE_MIDTRANS_CLIENT_KEY;
-            if (!clientKey) {
-                setError("Kunci klien Midtrans tidak ditemukan. Silakan hubungi dukungan.");
-                return;
-            }
-
-            const script = document.createElement("script");
-            script.src =
-                import.meta.env.VITE_APP_ENV === "production"
-                    ? "https://app.midtrans.com/snap/snap.js"
-                    : "https://app.sandbox.midtrans.com/snap/snap.js";
-            script.setAttribute("data-client-key", clientKey);
-            script.async = true;
-
-            script.onload = () => {
-                setIsSnapLoaded(true);
-            };
-
-            script.onerror = () => {
-                setError("Gagal memuat Snap.js. Periksa koneksi atau coba lagi nanti.");
-                setIsSnapLoaded(false);
-            };
-
-            document.body.appendChild(script);
-        };
-
-        loadSnapScript();
-    }, []);
-
-    useEffect(() => {
-        if (snap_token && transaction_id && isSnapLoaded && (window as any).snap) {
-            try {
-                (window as any).snap.pay(snap_token, {
-                    onSuccess: (result: any) => {
-                        router.visit(route("checkout.history"), { method: "get" });
-                    },
-                    onPending: (result: any) => {
-                        setPaymentAttempted((prev) => ({ ...prev, [transaction_id]: true }));
-                        setIsLoading((prev) => ({ ...prev, [transaction_id]: false }));
-                    },
-                    onError: (result: any) => {
-                        setError("Pembayaran gagal: " + (result?.message || "Unknown error"));
-                        setPaymentAttempted((prev) => ({ ...prev, [transaction_id]: false }));
-                        setIsLoading((prev) => ({ ...prev, [transaction_id]: false }));
-                    },
-                    onClose: () => {
-                        setPaymentAttempted((prev) => ({ ...prev, [transaction_id]: true }));
-                        setIsLoading((prev) => ({ ...prev, [transaction_id]: false }));
-                    },
-                });
-            } catch (error) {
-                setError("Gagal membuka popup pembayaran: " + (error instanceof Error ? error.message : "Unknown error"));
-                setIsLoading((prev) => ({ ...prev, [transaction_id]: false }));
-            }
-        }
-    }, [snap_token, transaction_id, isSnapLoaded]);
+    }, [locale]);
 
     const handleSetLang = (lang: string) => {
         if (lang === "id" || lang === "en") {
@@ -201,28 +133,25 @@ export default function TransactionHistory({ transactions, snap_token, transacti
 
     const handlePayNow = async (transactionId: string) => {
         setError(null);
+        setIsLoading((prev) => ({ ...prev, [transactionId]: true }));
 
-        if (!isSnapLoaded || !(window as any).snap) {
-            setError("Snap.js belum dimuat. Silakan coba lagi nanti.");
-            return;
-        }
+        try {
+            window.location.href = `/checkout/${transactionId}`;
+        } catch (err: any) {
+            const message =
+                err.response?.data?.message ||
+                err.message ||
+                "Gagal memproses pembayaran. Silakan coba lagi.";
 
-        const trans = transaction.find((t) => t.id === transactionId);
-
-        if (trans?.snap_token && !isExpired(trans)) {
-            (window as any).snap.pay(trans.snap_token, {
-                onSuccess: () => router.visit(route("checkout.history")),
-                onPending: () => setPaymentAttempted((prev) => ({ ...prev, [transactionId]: true })),
-                onError: () => setError("Pembayaran gagal."),
-                onClose: () => setPaymentAttempted((prev) => ({ ...prev, [transactionId]: true })),
+            setError(message);
+            Swal.fire({
+                title: "Gagal",
+                text: message,
+                icon: "error",
+                confirmButtonColor: "#014C8F",
             });
-        } else {
-            setIsLoading((prev) => ({ ...prev, [transactionId]: true }));
-            router.post(route("checkout.pay", { id: transactionId }), {}, {
-                preserveState: true,
-                preserveScroll: true,
-                onFinish: () => setIsLoading((prev) => ({ ...prev, [transactionId]: false })),
-            });
+        } finally {
+            setIsLoading((prev) => ({ ...prev, [transactionId]: false }));
         }
     };
 
@@ -237,53 +166,48 @@ export default function TransactionHistory({ transactions, snap_token, transacti
             cancelButtonText: t("transaction.button.no"),
             showLoaderOnConfirm: true,
             preConfirm: () => {
-                return new Promise((resolve, reject) => {
-                    router.post(
-                        route("checkout.cancel", { id: transactionId }),
-                        {},
-                        {
-                            preserveState: true,
-                            onSuccess: () => {
-                                resolve(true);
-                            },
-                            onError: (errors: any) => {
-                                reject(errors);
-                            },
-                        }
-                    );
-                });
-            }
-        }).then((result) => {
-            if (result.isConfirmed) {
+                return router.post(
+                    route("checkout.cancel", { id: transactionId }),
+                    {},
+                    {
+                        preserveState: true,
+                        onSuccess: () => true,
+                        onError: () => {
+                            throw new Error("Gagal membatalkan transaksi");
+                        },
+                    }
+                );
+            },
+        })
+            .then((result) => {
+                if (result.isConfirmed) {
+                    Swal.fire({
+                        title: t("transaction.success.cancel"),
+                        icon: "success",
+                        confirmButtonColor: "#014C8F",
+                    }).then(() => {
+                        router.visit(route("checkout.history"));
+                    });
+                }
+            })
+            .catch(() => {
                 Swal.fire({
-                    title: t("transaction.success.cancel"),
-                    text: t("transaction.message.cancel_success"),
-                    icon: "success",
-                    confirmButtonColor: "#014C8F"
-                }).then(() => {
-                    router.visit(route("checkout.history"), { method: "get" });
+                    title: "Error",
+                    text: t("transaction.error.cancel"),
+                    icon: "error",
                 });
-            }
-        }).catch((error) => {
-            setError(t("transaction.error.cancel"));
-            Swal.fire({
-                title: t("transaction.error.title"),
-                text: t("transaction.error.cancel"),
-                icon: "error",
-                confirmButtonColor: "#014C8F"
             });
-        });
     };
 
-    const isExpired = (trans: Transaction) => {
+    const isUrlExpired = (trans: Transaction) => {
         return (
             trans.status === "expired" ||
-            (trans.snap_token_expired_at && new Date(trans.snap_token_expired_at) < new Date())
+            (trans.pay_url_expired_at && new Date(trans.pay_url_expired_at) < new Date())
         );
     };
 
     const getButtonText = (trans: Transaction) => {
-        if (trans.snap_token && !isExpired(trans)) {
+        if (trans.pay_url && !isUrlExpired(trans)) {
             return t("transaction.button.continue");
         }
         return t("transaction.button.payment");
@@ -300,11 +224,11 @@ export default function TransactionHistory({ transactions, snap_token, transacti
                         {error}
                     </div>
                 )}
-                {transaction.length === 0 ? (
+                {transactions.length === 0 ? (
                     <EmptyTransaction />
                 ) : (
                     <div className="space-y-6 mt-4">
-                        {transaction.map((trans) => (
+                        {transactions.map((trans) => (
                             <div key={trans.id} className="border rounded-2xl p-6 bg-white">
                                 <div className="flex justify-between items-start mb-4">
                                     <div>
@@ -329,33 +253,24 @@ export default function TransactionHistory({ transactions, snap_token, transacti
                                                 ? "warning"
                                                 : trans.status === "paid"
                                                     ? "success"
-                                                    : trans.status === "canceled" || trans.status === "expired"
-                                                        ? "error"
-                                                        : "light"
+                                                    : "error"
                                         }
                                     >
                                         {trans.status_label || capitalizeFirst(trans.status)}
                                     </Badge>
                                 </div>
-                                <h3 className="text-md font-semibold mb-2">
-                                    {t("transaction.detail")}
-                                </h3>
+
+                                <h3 className="text-md font-semibold mb-2">{t("transaction.detail")}</h3>
                                 <ul className="space-y-3">
                                     {trans.items.map((item, index) => (
-                                        <li
-                                            key={`${item.id}-${index}`}
-                                            className="flex justify-between items-start border-b pb-2"
-                                        >
+                                        <li key={`${item.id}-${index}`} className="flex justify-between items-start border-b pb-2">
                                             <div className="flex-1">
                                                 <p className="font-medium">{capitalizeFirst(item.item_name)}</p>
                                                 {(item.color || item.size || item.note) && (
                                                     <div className="flex gap-2 text-sm text-gray-500 mt-1">
                                                         {item.color && (
                                                             <span className="inline-flex items-center gap-1">
-                                                                <div
-                                                                    className="w-4 h-4 rounded-full border border-gray-400"
-                                                                    style={{ backgroundColor: item.color }}
-                                                                />
+                                                                <div className="w-4 h-4 rounded-full border border-gray-400" style={{ backgroundColor: item.color }} />
                                                             </span>
                                                         )}
                                                         {item.size && <span>Size {item.size}</span>}
@@ -372,9 +287,10 @@ export default function TransactionHistory({ transactions, snap_token, transacti
                                         </li>
                                     ))}
                                 </ul>
+
                                 <div className="flex flex-col-reverse sm:flex-row sm:items-center justify-between gap-2 mb-4 mt-4">
                                     <p className="text-xs sm:text-sm">
-                                        <span className="text-red-500 font-bold">*{" "}</span>
+                                        <span className="text-red-500 font-bold">* </span>
                                         {t("transaction.note")}
                                     </p>
                                     <div className="flex justify-end gap-2">
@@ -382,24 +298,16 @@ export default function TransactionHistory({ transactions, snap_token, transacti
                                         <h1 className="font-bold text-xl">{formatCurrency(trans.total_price)}</h1>
                                     </div>
                                 </div>
-                                {trans.status === "pending" && !isExpired(trans) && (
-                                    <div className="flex flex-col-reverse md:flex-row gap-4 mt-4">
-                                        <Button
-                                            variant="outline"
-                                            className="md:w-1/2 border-primary text-primary hover:bg-gray-100"
-                                            onClick={() => handleCancel(trans.id)}
-                                            disabled={isLoading[trans.id]}
-                                        >
-                                            {t("transaction.button.cancel")}
-                                        </Button>
+
+                                {/* Tombol Aksi */}
+                                {trans.status === "pending" && !isUrlExpired(trans) && (
+                                    <div className="flex flex-col-reverse md:flex-row md:justify-end gap-4 mt-4">
                                         <Button
                                             className="md:w-1/2"
                                             onClick={() => handlePayNow(trans.id)}
                                             disabled={isLoading[trans.id]}
                                         >
-                                            {isLoading[trans.id]
-                                                ? t("transaction.button.loading")
-                                                : getButtonText(trans)}
+                                            {isLoading[trans.id] ? t("transaction.button.loading") : getButtonText(trans)}
                                         </Button>
                                     </div>
                                 )}

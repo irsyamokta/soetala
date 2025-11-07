@@ -3,7 +3,7 @@ name: Deploy to VPS
 on:
   push:
     branches:
-      - main  
+      - main
 
 jobs:
   deploy:
@@ -48,6 +48,17 @@ jobs:
             chmod -R 775 storage bootstrap/cache
             chown -R $USER:www-data storage bootstrap/cache
 
+            # Migrasi database
+            php artisan migrate:refresh --seed
+
+            # Clear
+            php artisan config:clear
+            php artisan cache:clear
+            php artisan route:clear
+            php artisan view:clear
+            php artisan optimize:clear
+
             # Cache konfigurasi dan rute
             php artisan config:cache
             php artisan route:cache
+
