@@ -28,7 +28,7 @@ Route::middleware(['auth', 'verified', 'role:visitor'])->group(function () {
     Route::post('/ticket/checkout', [CheckoutController::class, 'store'])->name('checkout.store');
     Route::get('/transactions', [CheckoutController::class, 'history'])->name('checkout.history');
     Route::get('/ticket/history', [UserTicketController::class, 'index'])->name('ticket.history');
-    Route::get('/checkout/{transactionId}', [CheckoutController::class, 'checkout'])->name('checkout.pay');
+    Route::get('/checkout/{transactionId}', [CheckoutController::class, 'checkout'])->name('checkout.pay.get');
     Route::post('/checkout/{transactionId}', [CheckoutController::class, 'checkout'])->name('checkout.pay');
     Route::post('/checkout/{transactionId}/cancel', [CheckoutController::class, 'cancel'])->name('checkout.cancel');
 });
