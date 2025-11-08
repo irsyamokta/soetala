@@ -230,9 +230,9 @@ class CheckoutController extends Controller
             }
 
             throw new \Exception('Gagal menerima checkout URL dari Tripay.');
-        } catch (\Throwable $th) {
+        } catch (\Exception $e) {
             return redirect()->route('checkout.history')
-                ->with('error', 'Gagal membuat transaksi Tripay: ' . $th->getMessage());
+                ->with('error', 'Gagal membuat transaksi Tripay: ' . $e->getMessage());
         }
     }
 

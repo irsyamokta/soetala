@@ -8,10 +8,9 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
             await qz.websocket.connect({
                 host: "print.soetala.id",
                 usingSecure: true
-            })
-                .catch((err) => {
-                    throw new Error("Printer not connected", err);
-                });
+            }).catch((err) => {
+                throw new Error("Printer not connected", err);
+            });
         }
 
         const printer = await qz.printers.find("POS58");
@@ -30,14 +29,14 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
         printData.push({ type: "raw", data: "\x1B\x61\x01" });
 
         printData.push({ type: "raw", data: "\x1B!\x30" });
+
         printData.push({ type: "raw", data: "SOETALA\n\n" });
 
         printData.push({ type: "raw", data: "\x1B!\x00" });
         printData.push({ type: "raw", data: `${new Date().toLocaleString()}\n` });
         printData.push({ type: "raw", data: "\x1B\x61\x00" });
 
-        printData.push({ type: "raw", data: "\n" });
-        printData.push({ type: "raw", data: "Pembeli : " + buyer_name + "\n" });
+        printData.push({ type: "raw", data: "\nPembeli : " + buyer_name + "\n" });
         printData.push({ type: "raw", data: "----------------------------\n" });
 
         items.forEach((item: any) => {
@@ -48,39 +47,27 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
             } else {
                 const colorName = colorMap[item.color] || item.color || "";
                 label = `${item.product_name} - ${item.size} (${colorName})`.trim();
-                if (!item.size && !item.color) {
-                    label = item.product_name;
-                } else if (!item.size) {
-                    label = `${item.product_name} (${colorName})`;
-                } else if (!item.color) {
-                    label = `${item.product_name} - ${item.size}`;
-                }
+                if (!item.size && !item.color) label = item.product_name;
+                else if (!item.size) label = `${item.product_name} (${colorName})`;
+                else if (!item.color) label = `${item.product_name} - ${item.size}`;
             }
 
             const totalItemPrice = item.price * item.quantity;
             const formattedPrice = totalItemPrice.toLocaleString("id-ID");
 
-            printData.push({
-                type: "raw",
-                data: `${label} x${item.quantity} = Rp${formattedPrice}\n`,
-            });
+            printData.push({ type: "raw", data: `${label} x${item.quantity} = Rp${formattedPrice}\n` });
 
             if (item.note) {
-                printData.push({
-                    type: "raw",
-                    data: `   Note: ${item.note}\n`,
-                });
+                printData.push({ type: "raw", data: `   Note: ${item.note}\n` });
             }
         });
 
         printData.push({ type: "raw", data: "----------------------------\n" });
-        printData.push({ type: "raw", data: "Total : Rp" + total_price + "\n" });
-        printData.push({ type: "raw", data: "\n" });
+        printData.push({ type: "raw", data: "Total : Rp" + total_price.toLocaleString("id-ID") + "\n\n" });
 
         if (type === "ticket" || type === "mixed") {
             ticket_details.forEach((detail: any) => {
                 const qrData = detail.qr_code;
-
                 const qrSize = 8;
                 const errorCorrection = 49;
 
@@ -88,9 +75,7 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
                 const pL = (dataLength + 3) % 256;
                 const pH = Math.floor((dataLength + 3) / 256);
 
-                printData.push({ type: "raw", data: "\n" });
-                printData.push({ type: "raw", data: "\x1B\x61\x01" });
-
+                printData.push({ type: "raw", data: "\n\x1B\x61\x01" });
                 printData.push({ type: "raw", data: "\x1D\x28\x6B\x03\x00\x31\x41\x32" });
                 printData.push({ type: "raw", data: `\x1D\x28\x6B\x03\x00\x31\x43${String.fromCharCode(qrSize)}` });
                 printData.push({ type: "raw", data: `\x1D\x28\x6B\x03\x00\x31\x45${String.fromCharCode(errorCorrection)}` });
@@ -99,18 +84,27 @@ export async function printReceipt({ buyer_name, items, total_price, type, ticke
                     data: `\x1D\x28\x6B${String.fromCharCode(pL)}${String.fromCharCode(pH)}\x31\x50\x30${qrData}`,
                 });
                 printData.push({ type: "raw", data: "\x1D\x28\x6B\x03\x00\x31\x51\x30\n" });
-
                 printData.push({ type: "raw", data: "----------------------------\n" });
             });
         }
 
         printData.push({ type: "raw", data: "\x1B\x61\x01" });
-        printData.push({ type: "raw", data: "Terima kasih telah berkunjung\n\n" });
-        printData.push({ type: "raw", data: "\n\n\n" });
+        printData.push({ type: "raw", data: "Terima kasih telah berkunjung\n\n\n" });
+        printData.push({ type: "raw", data: "\n\n" });
         printData.push({ type: "raw", data: "\x1B\x69" });
 
         await qz.print(config, printData);
     } catch (err) {
+        console.error("Print error:", err);
         throw err;
+    } finally {
+        if (qz.websocket.isActive()) {
+            try {
+                await qz.websocket.disconnect();
+                console.log("QZ Tray disconnected.");
+            } catch (e) {
+                console.warn("Failed to disconnect QZ Tray:", e);
+            }
+        }
     }
 }

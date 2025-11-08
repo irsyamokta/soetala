@@ -40,7 +40,6 @@ jobs:
             npm run build
 
             # Hapus cache lama
-            rm -rf storage/logs/*.log
             rm -rf bootstrap/cache/*
 
             # Atur permission supaya tidak error
