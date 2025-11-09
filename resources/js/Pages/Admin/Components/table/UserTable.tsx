@@ -154,7 +154,7 @@ export default function UserTable() {
                     </div>
                 </div>
 
-                <div className="max-w-full overflow-x-auto">
+                <div className="max-w-full overflow-x-auto no-scrollbar">
                     <Table>
                         <TableHeader className="border-b border-gray-100">
                             <TableRow>
@@ -282,14 +282,12 @@ export default function UserTable() {
                             )}
                         </TableBody>
                     </Table>
-
-                    {/* Pagination */}
-                    {last_page > 1 && (
-                        <div className="p-4 border-t">
-                            <Pagination links={links} />
-                        </div>
-                    )}
                 </div>
+                {last_page > 1 && (
+                    <div className="p-4 border-t">
+                        <Pagination links={links} />
+                    </div>
+                )}
             </div>
         </div>
     );

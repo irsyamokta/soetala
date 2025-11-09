@@ -5,7 +5,7 @@ function Pagination({ links }: { links: any[] }) {
     if (!links || links.length === 0) return null;
 
     return (
-        <div className="flex justify-center mt-6">
+        <div className="flex justify-center">
             <nav className="inline-flex items-center space-x-1">
                 {links.map((link, index) => {
                     // Previous
