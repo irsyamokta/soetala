@@ -17,7 +17,7 @@ class HomepageController extends Controller
     {
         $user = Auth::user();
 
-        if ($user && $user->hasRole('admin')) {
+        if ($user && $user->hasRole(['admin', 'volunteer'])) {
             return redirect()->route('dashboard');
         }
 

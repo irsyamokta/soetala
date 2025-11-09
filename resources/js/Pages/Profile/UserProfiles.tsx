@@ -7,7 +7,7 @@ import UserInfoCard from "@/Components/profile/UserInfoCard";
 import DashboardLayout from "@/Layouts/DashboardLayout";
 import ChangePasswordCard from "@/Components/profile/ChangePasswordCard";
 import AppNavbar from "@/Components/app/AppNavbar";
-import DeleteProfile from "@/Components/profile/DeleteProfile";
+// import DeleteProfile from "@/Components/profile/DeleteProfile";
 
 export default function UserProfiles() {
     const { auth }: any = usePage().props;
@@ -16,7 +16,6 @@ export default function UserProfiles() {
     const [lang, setLang] = useState("id");
 
     const t = useTranslate();
-
 
     const content = (
         <>
@@ -50,7 +49,7 @@ export default function UserProfiles() {
                             <UserMetaCard />
                             <UserInfoCard />
                             <ChangePasswordCard />
-                            <DeleteProfile />
+                            {/* <DeleteProfile /> */}
                         </div>
                     </div>
                 </div>

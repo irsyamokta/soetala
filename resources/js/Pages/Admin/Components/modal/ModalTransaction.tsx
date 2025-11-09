@@ -110,24 +110,38 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
     };
 
     const updateTicketPrices = (items: OrderItem[]): OrderItem[] => {
-        const totalTicketQuantity = items
-            .filter((item) => item.type === "ticket")
-            .reduce((sum, item) => sum + item.quantity, 0);
+        if (!selectedEvent) return items;
 
-        return items.map((item) => {
-            if (item.type === "ticket" && selectedEvent) {
+        const categoryCounts: Record<string, number> = {};
+
+        items.forEach((item) => {
+            if (item.type === "ticket") {
                 const category = selectedEvent.categories.find((cat) => cat.id === item.id);
                 if (category) {
                     const categoryType = getCategoryType(category.category_name);
-                    if (totalTicketQuantity >= 20 && TICKET_DISCOUNT_PRICE[categoryType]) {
+                    categoryCounts[categoryType] = (categoryCounts[categoryType] || 0) + item.quantity;
+                }
+            }
+        });
+
+        return items.map((item) => {
+            if (item.type === "ticket") {
+                const category = selectedEvent.categories.find((cat) => cat.id === item.id);
+                if (category) {
+                    const categoryType = getCategoryType(category.category_name);
+                    const count = categoryCounts[categoryType] || 0;
+
+                    if (count >= 20 && TICKET_DISCOUNT_PRICE[categoryType]) {
                         return { ...item, price: TICKET_DISCOUNT_PRICE[categoryType] };
+                    } else {
+                        return { ...item, price: category.price };
                     }
-                    return { ...item, price: category.price };
                 }
             }
             return item;
         });
     };
+
 
     const handleAddItem = (
         type: "ticket" | "product",
@@ -465,7 +479,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                                         >
                                                             <div className="flex-1">
                                                                 <p className="text-sm">
-                                                                    {item.product_name} - {item.size} ({colorMap[item.color!] || item.color})
+                                                                    {item.product_name} {item.size ? `- ${item.size}` : ""} {item.color ? (colorMap[item.color!] || item.color) : ""}
                                                                 </p>
                                                                 {item.note && (
                                                                     <p className="text-sm text-gray-500 mt-1">Note: {item.note}</p>
@@ -521,7 +535,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                 {orderItems.map((item, index) => {
                                     const itemLabel = item.type === "ticket"
                                         ? item.category_name
-                                        : `${item.product_name} - ${item.size} (${colorMap[item.color!] || item.color})`;
+                                        :  `${item.product_name}${item.size ? ` - ${item.size}` : ""} ${item.color ? (colorMap[item.color!] || item.color) : ""}`;
 
                                     return (
                                         <li key={index} className="flex justify-between text-sm border-b pb-2">
