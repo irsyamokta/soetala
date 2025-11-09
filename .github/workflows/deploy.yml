@@ -47,6 +47,10 @@ jobs:
             chmod -R 775 storage bootstrap/cache
             chown -R $USER:www-data storage bootstrap/cache
 
+            # Atur permission untuk file .env
+            chmod 644 .env
+            chown $USER:www-data .env
+
             # Clear
             php artisan config:clear
             php artisan cache:clear
