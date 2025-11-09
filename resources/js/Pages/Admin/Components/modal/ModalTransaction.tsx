@@ -142,7 +142,6 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
         });
     };
 
-
     const handleAddItem = (
         type: "ticket" | "product",
         id: string,

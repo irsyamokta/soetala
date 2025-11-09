@@ -260,4 +260,49 @@ class TransactionController extends Controller
             return back()->withErrors(['error' => 'Gagal memperbarui status pengambilan barang']);
         }
     }
+    
+    public function printData($id)
+    {
+        $transaction = Transaction::with([
+            'ticketOrders.category',
+        ])->findOrFail($id);
+
+        $orderItems = $transaction->items->map(function ($item) {
+            $variant = $item->variant_details ?? [];
+
+            return [
+                'type' => $item->item_type === 'ticket' ? 'ticket' : 'product',
+                'id' => (string) $item->item_id,
+                'price' => (float) $item->price,
+                'quantity' => $item->quantity,
+                'category_name' => $item->item_type === 'ticket' ? $item->item_name : null,
+                'product_name' => $item->item_type === 'product' ? $item->item_name : null,
+                'color' => $variant['color'] ?? null,
+                'size' => $variant['size'] ?? null,
+                'note' => $variant['note'] ?? null,
+            ];
+        })->toArray();
+
+        $ticketDetails = $transaction->ticketOrders->map(function ($order) {
+            return [
+                'ticket_category_id' => (string) $order->ticket_category_id,
+                'buyer_name' => $order->buyer_name,
+                'price' => (float) $order->price,
+                'quantity' => $order->quantity,
+                'qr_code' => $order->qr_code,
+            ];
+        })->toArray();
+
+        $hasTicket = $transaction->items->contains('item_type', 'ticket');
+        $hasMerch = $transaction->items->contains('item_type', 'product');
+        $type = $hasTicket && $hasMerch ? 'mixed' : ($hasTicket ? 'ticket' : 'merchandise');
+
+        return response()->json([
+            'buyer_name' => $transaction->buyer_name,
+            'items' => $orderItems,
+            'total_price' => (float) $transaction->total_price,
+            'type' => $type,
+            'ticket_details' => $ticketDetails,
+        ]);
+    }
 }

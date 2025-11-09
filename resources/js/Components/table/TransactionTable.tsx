@@ -3,7 +3,9 @@ import { usePage, usePoll, router } from "@inertiajs/react";
 import { PageProps } from "@/types/types";
 
 import { confirmDialog } from "@/utils/confirmationDialog";
+import { printReceipt } from "@/utils/printReceipt";
 import { toast } from "react-toastify";
+import axios from "axios";
 
 import Input from "@/Components/form/input/InputField";
 import HeaderSection from "@/Components/card/HeaderSectionCard";
@@ -27,6 +29,8 @@ import capitalizeFirst from "@/utils/capitalize";
 
 import { LuPencil, LuTrash2 } from "react-icons/lu";
 import { IoSearch } from "react-icons/io5";
+import { MdOutlineLocalPrintshop } from "react-icons/md";
+import { AiOutlineLoading3Quarters } from "react-icons/ai";
 
 interface Transaction {
     id: string;
@@ -74,6 +78,7 @@ export default function TransactionTable() {
     const [selectedTransactionId, setSelectedTransactionId] = useState("");
     const [search, setSearch] = useState(initialSearch);
     const [deletingId, setDeletingId] = useState<string | null>(null);
+    const [printingId, setPrintingId] = useState<string | null>(null);
 
     usePoll(15000, {
         only: ["transactions"],
@@ -147,6 +152,36 @@ export default function TransactionTable() {
     const handleEditPickupStatus = (transactionId: string) => {
         setSelectedTransactionId(transactionId);
         setIsPickupStatusModalOpen(true);
+    };
+
+    const handlePrint = async (transactionId: string) => {
+        setPrintingId(transactionId);
+
+        try {
+            const response = await axios.get(route('transaction.print-data', transactionId));
+            const data = response.data;
+
+            await printReceipt({
+                buyer_name: data.buyer_name,
+                items: data.items,
+                total_price: data.total_price,
+                type: data.type,
+                ticket_details: data.ticket_details,
+            });
+
+            toast.success("Struk berhasil dicetak");
+        } catch (error: any) {
+            if (error.response?.status === 404) {
+                toast.error("Transaksi tidak ditemukan");
+            } else if (error.code === 'ERR_NETWORK') {
+                toast.error("Koneksi gagal");
+            } else {
+                toast.error("Gagal mencetak struk");
+            }
+            console.error("Print error:", error);
+        } finally {
+            setPrintingId(null);
+        }
     };
 
     const handleDelete = useCallback(async (id: string) => {
@@ -330,6 +365,20 @@ export default function TransactionTable() {
                                                 onClick={() => handleEditPickupStatus(transaction.id)}
                                             >
                                                 <LuPencil />
+                                            </Button>
+                                            <Button
+                                                type="button"
+                                                size="md"
+                                                variant="alternate"
+                                                aria-label="Print struk"
+                                                onClick={() => handlePrint(transaction.id)}
+                                                disabled={printingId === transaction.id}
+                                            >
+                                                {printingId === transaction.id ? (
+                                                    <AiOutlineLoading3Quarters className="animate-spin" size={16} />
+                                                ) : (
+                                                    <MdOutlineLocalPrintshop size={16} />
+                                                )}
                                             </Button>
                                             {isAdmin && (
                                                 <Button

@@ -80,6 +80,7 @@ Route::middleware(['auth', 'verified', 'role:admin|volunteer'])->group(function 
 Route::group(['prefix' => 'transaction'], function () {
     Route::get('/', [TransactionController::class, 'index'])->name('dashboard.transaction');
     Route::post('/create', [TransactionController::class, 'store'])->name('transaction.store');
+    Route::get('/{id}/print-data', [TransactionController::class, 'printData'])->name('transaction.print-data');
 })->middleware(['auth', 'verified', 'role:admin|volunteer']);
 
 Route::delete('/transactions/{id}', [TransactionController::class, 'destroy'])->name('transaction.destroy')->middleware(['auth', 'verified', 'role:admin']);
