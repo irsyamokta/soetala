@@ -57,7 +57,3 @@ jobs:
             # Cache konfigurasi dan rute
             php artisan config:cache
             php artisan route:cache
-
-            # Atur permission untuk file .env
-            chmod 644 .env
-            chown www-data:www-data .env
