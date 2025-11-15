@@ -70,8 +70,8 @@ const colorMap: Record<string, string> = {
 };
 
 const TICKET_DISCOUNT_PRICE: Record<string, number> = {
-    adult: 22500,
-    child: 12500,
+    adult: import.meta.env.VITE_ADULT_DISCOUNT,
+    child: import.meta.env.VITE_CHILD_DISCOUNT,
 };
 
 export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => {
@@ -534,7 +534,7 @@ export const ModalTransaction = ({ isOpen, onClose }: ModalTransactionProps) => 
                                 {orderItems.map((item, index) => {
                                     const itemLabel = item.type === "ticket"
                                         ? item.category_name
-                                        :  `${item.product_name}${item.size ? ` - ${item.size}` : ""} ${item.color ? (colorMap[item.color!] || item.color) : ""}`;
+                                        : `${item.product_name}${item.size ? ` - ${item.size}` : ""} ${item.color ? (colorMap[item.color!] || item.color) : ""}`;
 
                                     return (
                                         <li key={index} className="flex justify-between text-sm border-b pb-2">

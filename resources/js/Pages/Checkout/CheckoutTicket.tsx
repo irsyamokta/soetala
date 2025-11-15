@@ -109,8 +109,8 @@ export default function CheckoutTicket({
         items.filter((i) => i.type === "ticket").reduce((sum, i) => sum + i.quantity, 0);
 
     const TICKET_DISCOUNT_PRICE: Record<string, number> = {
-        adult: 22500,
-        child: 12500,
+        adult: import.meta.env.VITE_ADULT_DISCOUNT,
+        child: import.meta.env.VITE_CHILD_DISCOUNT,
     };
 
     const updateTicketPrices = (items: OrderItem[]): OrderItem[] => {
