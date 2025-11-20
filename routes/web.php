@@ -10,6 +10,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\TransactionController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CheckoutController;
+use App\Http\Controllers\ReportController;
 use App\Http\Controllers\UserTicketController;
 
 // Localization
@@ -61,6 +62,8 @@ Route::middleware(['auth', 'verified', 'role:admin'])
             Route::delete('/variants/image/{id}', [ProductController::class, 'destroyVariantImage'])->name('merchandise.variants.image.destroy');
             Route::delete('/delete/{id}', [ProductController::class, 'destroy'])->name('merchandise.destroy');
         });
+
+        Route::get('/report', [ReportController::class, 'index'])->name('dashboard.report');
 
         Route::group(['prefix' => 'user'], function () {
             Route::get('/', [UserController::class, 'index'])->name('dashboard.user');

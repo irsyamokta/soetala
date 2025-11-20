@@ -2,6 +2,7 @@ import { LuLayoutDashboard, LuTicket, LuUserRound } from "react-icons/lu";
 import { MdOutlineProductionQuantityLimits } from "react-icons/md";
 import { GrTransaction } from "react-icons/gr";
 import { IoImageOutline } from "react-icons/io5";
+import { TbReportAnalytics } from "react-icons/tb";
 
 export const navConfig: Record<string, any[]> = {
     admin: [
@@ -10,6 +11,7 @@ export const navConfig: Record<string, any[]> = {
         { icon: <IoImageOutline />, name: "Galeri", path: "/gallery" },
         { icon: <MdOutlineProductionQuantityLimits />, name: "Merchandise", path: "/merchandise" },
         { icon: <GrTransaction />, name: "Transaksi", path: "/transaction" },
+        { icon: <TbReportAnalytics />, name: "Laporan", path: "/report" },
         { icon: <LuUserRound />, name: "User", path: "/user" },
     ],
     volunteer: [
